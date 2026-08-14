@@ -3,7 +3,13 @@ import { MoonCountdown } from '@/components/countdown/moon-countdown'
 import { Card, CardContent } from '@/components/ui/card'
 import { BudgetSummaryCard } from '@/features/shopping/budget-summary-card'
 import { useAppStore } from '@/stores/appStore'
-import { getPregnancyProgress, getWeeklyInfo, getWeeklyFruit } from '@/lib/pregnancy'
+import {
+  getPregnancyProgress,
+  getWeeklyInfo,
+  getWeeklyFruit,
+  getWeeklyAnimal,
+  formatHebrewDateWithWeekday,
+} from '@/lib/pregnancy'
 import { getDailyMessage } from '@/lib/messages'
 
 export default function HomePage() {
@@ -14,6 +20,7 @@ export default function HomePage() {
   const progress = getPregnancyProgress(settings.dueDate)
   const weeklyInfo = getWeeklyInfo(progress.week)
   const weeklyFruit = getWeeklyFruit(progress.week)
+  const weeklyAnimal = getWeeklyAnimal(progress.week)
   const openTasks = tasks.filter((t) => !t.done).length
 
   return (
@@ -21,10 +28,13 @@ export default function HomePage() {
       <MoonCountdown
         moonFraction={progress.moonFraction}
         week={progress.week}
+        dayOfWeek={progress.dayOfWeek}
         daysLeft={progress.daysLeft}
         hasArrived={progress.hasArrived}
         babyName={settings.babyName}
+        dateLabel={formatHebrewDateWithWeekday()}
         fruit={weeklyFruit}
+        animal={weeklyAnimal}
       />
 
       <p className="text-center text-sm text-muted-foreground">{getDailyMessage()}</p>

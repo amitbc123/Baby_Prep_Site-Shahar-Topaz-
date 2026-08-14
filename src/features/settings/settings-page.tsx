@@ -20,7 +20,8 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog'
 import { useAppStore } from '@/stores/appStore'
-import type { AppSnapshot, ThemeMode } from '@/types/models'
+import { isValidAppSnapshot } from '@/lib/snapshot-validation'
+import type { ThemeMode } from '@/types/models'
 
 export default function SettingsPage() {
   const settings = useAppStore((s) => s.settings)
@@ -56,11 +57,11 @@ export default function SettingsPage() {
     if (!file) return
     try {
       const text = await file.text()
-      const snapshot = JSON.parse(text) as AppSnapshot
-      if (!snapshot.settings || !Array.isArray(snapshot.shoppingItems)) {
+      const parsed: unknown = JSON.parse(text)
+      if (!isValidAppSnapshot(parsed)) {
         throw new Error('invalid')
       }
-      importSnapshot(snapshot, importModeRef.current)
+      importSnapshot(parsed, importModeRef.current)
       toast.success('הנתונים יובאו בהצלחה')
     } catch {
       toast.error('לא הצלחנו לקרוא את הקובץ. ודאו שזה קובץ שיוצא מהאתר הזה.')

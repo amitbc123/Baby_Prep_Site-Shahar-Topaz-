@@ -51,6 +51,12 @@ function newId(): string {
   return crypto.randomUUID()
 }
 
+/** Merges imported records into existing ones, skipping any id already present. */
+function mergeById<T extends { id: string }>(existing: T[], incoming: T[]): T[] {
+  const existingIds = new Set(existing.map((item) => item.id))
+  return [...existing, ...incoming.filter((item) => !existingIds.has(item.id))]
+}
+
 export const useAppStore = create<AppState>()(
   persist(
     (set, get) => ({
@@ -115,9 +121,9 @@ export const useAppStore = create<AppState>()(
               }
             : {
                 settings: snapshot.settings,
-                shoppingItems: [...s.shoppingItems, ...snapshot.shoppingItems],
-                tasks: [...s.tasks, ...snapshot.tasks],
-                importantDates: [...s.importantDates, ...snapshot.importantDates],
+                shoppingItems: mergeById(s.shoppingItems, snapshot.shoppingItems),
+                tasks: mergeById(s.tasks, snapshot.tasks),
+                importantDates: mergeById(s.importantDates, snapshot.importantDates),
               },
         ),
       clearAllData: () =>

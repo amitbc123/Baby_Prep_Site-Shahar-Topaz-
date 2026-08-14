@@ -1,13 +1,16 @@
 import { NavLink, Outlet } from 'react-router'
 import { cn } from '@/lib/utils'
 import { NAV_ITEMS } from '@/components/layout/nav-items'
+import { useVisualViewportHeight } from '@/lib/use-visual-viewport'
 
 export function RootLayout() {
+  useVisualViewportHeight()
+
   return (
     <div className="mx-auto flex min-h-dvh max-w-3xl flex-col bg-background">
       <header className="sticky top-0 z-40 border-b border-border bg-background/90 backdrop-blur">
         <div className="flex items-center justify-between px-4 py-3">
-          <span className="font-heading text-xl text-foreground">עוד ירח</span>
+          <span className="font-heading text-xl text-foreground">אור ירח</span>
           <nav className="hidden gap-1 sm:flex">
             {NAV_ITEMS.map(({ to, label, icon: Icon }) => (
               <NavLink
