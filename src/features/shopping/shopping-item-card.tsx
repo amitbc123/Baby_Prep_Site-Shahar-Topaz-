@@ -19,7 +19,13 @@ export function ShoppingItemCard({
 
   return (
     <Card
-      className={cn('cursor-pointer transition-colors', bought && 'bg-muted/40')}
+      className={cn(
+        'cursor-pointer border-s-4 transition-colors',
+        item.priority === 'high' && 'border-s-blush',
+        item.priority === 'normal' && 'border-s-moss',
+        item.priority === 'low' && 'border-s-border',
+        bought && 'bg-muted/40',
+      )}
       onClick={onClick}
     >
       <CardContent className="flex items-start gap-3 py-3">

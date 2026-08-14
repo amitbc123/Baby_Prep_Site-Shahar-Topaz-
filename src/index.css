@@ -1,14 +1,12 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "@fontsource-variable/heebo";
-@import "@fontsource/frank-ruhl-libre/400.css";
-@import "@fontsource/frank-ruhl-libre/500.css";
-@import "@fontsource/frank-ruhl-libre/700.css";
+@import "@fontsource-variable/assistant";
 
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-    --font-heading: 'Frank Ruhl Libre', ui-serif, serif;
+    --font-heading: 'Assistant Variable', 'Assistant', ui-sans-serif, sans-serif;
     --font-sans: 'Heebo Variable', 'Heebo', ui-sans-serif, sans-serif;
     --color-sidebar-ring: var(--sidebar-ring);
     --color-sidebar-border: var(--sidebar-border);
@@ -55,79 +53,79 @@
 }
 
 :root {
-    --background: #F7F1E6;
-    --foreground: #2B2418;
-    --card: #FFFCF5;
-    --card-foreground: #2B2418;
-    --popover: #FFFCF5;
-    --popover-foreground: #2B2418;
-    --primary: #E8A268;
-    --primary-foreground: #2B2418;
-    --secondary: #7C8B6F;
-    --secondary-foreground: #F7F1E6;
-    --muted: #EDE4D3;
-    --muted-foreground: #6B5F4E;
+    --background: #F6EFE1;
+    --foreground: #2B2A1F;
+    --card: #FFFDF6;
+    --card-foreground: #2B2A1F;
+    --popover: #FFFDF6;
+    --popover-foreground: #2B2A1F;
+    --primary: #6E7F5E;
+    --primary-foreground: #F6EFE1;
+    --secondary: #E8A268;
+    --secondary-foreground: #2B2418;
+    --muted: #EAE1CE;
+    --muted-foreground: #6B6250;
     --accent: #F0DCD5;
     --accent-foreground: #2B2418;
-    --moss: #7C8B6F;
-    --moss-foreground: #F7F1E6;
-    --blush: #E7A9A0;
+    --moss: #8B9A7B;
+    --moss-foreground: #24291D;
+    --blush: #E0938A;
     --blush-foreground: #2B2418;
     --destructive: #B0503A;
-    --border: #E2D5BE;
-    --input: #E2D5BE;
-    --ring: #E8A268;
-    --chart-1: #E8A268;
-    --chart-2: #7C8B6F;
-    --chart-3: #E7A9A0;
+    --border: #E0D4BC;
+    --input: #E0D4BC;
+    --ring: #6E7F5E;
+    --chart-1: #6E7F5E;
+    --chart-2: #E8A268;
+    --chart-3: #E0938A;
     --chart-4: #B0503A;
     --chart-5: #232A3D;
     --radius: 0.85rem;
-    --sidebar: #F0EADC;
-    --sidebar-foreground: #2B2418;
-    --sidebar-primary: #E8A268;
-    --sidebar-primary-foreground: #2B2418;
+    --sidebar: #EFE6D2;
+    --sidebar-foreground: #2B2A1F;
+    --sidebar-primary: #6E7F5E;
+    --sidebar-primary-foreground: #F6EFE1;
     --sidebar-accent: #F0DCD5;
     --sidebar-accent-foreground: #2B2418;
-    --sidebar-border: #E2D5BE;
-    --sidebar-ring: #E8A268;
+    --sidebar-border: #E0D4BC;
+    --sidebar-ring: #6E7F5E;
 }
 
 .dark {
-    --background: #232A3D;
-    --foreground: #F7F1E6;
-    --card: #2B3348;
-    --card-foreground: #F7F1E6;
-    --popover: #2B3348;
-    --popover-foreground: #F7F1E6;
+    --background: #2A2636;
+    --foreground: #F3ECDD;
+    --card: #332E45;
+    --card-foreground: #F3ECDD;
+    --popover: #332E45;
+    --popover-foreground: #F3ECDD;
     --primary: #E8A268;
-    --primary-foreground: #232A3D;
-    --secondary: #7C8B6F;
-    --secondary-foreground: #1B2130;
-    --muted: #2E3650;
-    --muted-foreground: #B7B0A0;
-    --accent: #3A3348;
-    --accent-foreground: #F7F1E6;
+    --primary-foreground: #2A2636;
+    --secondary: #8FA080;
+    --secondary-foreground: #1F1D2B;
+    --muted: #3A3450;
+    --muted-foreground: #C7BFAE;
+    --accent: #453C4F;
+    --accent-foreground: #F3ECDD;
     --moss: #8FA080;
-    --moss-foreground: #1B2130;
+    --moss-foreground: #1F1D2B;
     --blush: #E7A9A0;
-    --blush-foreground: #232A3D;
+    --blush-foreground: #2A2636;
     --destructive: #E07856;
-    --border: #3A4360;
-    --input: #3A4360;
+    --border: #46405C;
+    --input: #46405C;
     --ring: #E8A268;
     --chart-1: #E8A268;
     --chart-2: #8FA080;
     --chart-3: #E7A9A0;
     --chart-4: #E07856;
-    --chart-5: #F7F1E6;
-    --sidebar: #1E2534;
-    --sidebar-foreground: #F7F1E6;
+    --chart-5: #F3ECDD;
+    --sidebar: #241F30;
+    --sidebar-foreground: #F3ECDD;
     --sidebar-primary: #E8A268;
-    --sidebar-primary-foreground: #232A3D;
-    --sidebar-accent: #3A3348;
-    --sidebar-accent-foreground: #F7F1E6;
-    --sidebar-border: #3A4360;
+    --sidebar-primary-foreground: #2A2636;
+    --sidebar-accent: #453C4F;
+    --sidebar-accent-foreground: #F3ECDD;
+    --sidebar-border: #46405C;
     --sidebar-ring: #E8A268;
 }
 
@@ -143,5 +141,6 @@
     }
   h1, h2, h3, .font-heading {
     font-family: var(--font-heading);
+    font-weight: 600;
     }
 }

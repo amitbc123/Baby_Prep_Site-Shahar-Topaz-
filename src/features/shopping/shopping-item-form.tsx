@@ -95,7 +95,10 @@ export function ShoppingItemForm({
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="bottom" className="max-h-[92dvh] overflow-y-auto rounded-t-3xl">
+      <SheetContent
+        side="bottom"
+        className="max-h-[min(92dvh,calc(var(--visual-vh,100dvh)*0.92))] overflow-y-auto rounded-t-3xl"
+      >
         <form onSubmit={handleSubmit} className="mx-auto flex w-full max-w-lg flex-col gap-4 pb-4">
           <SheetHeader className="px-0">
             <SheetTitle className="font-heading">{initial ? 'עריכת פריט' : 'פריט חדש'}</SheetTitle>

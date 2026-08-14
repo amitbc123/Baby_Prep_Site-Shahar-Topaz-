@@ -17,7 +17,15 @@ export function TaskCard({
   const overdue = task.dueDate && !task.done && isPastDate(task.dueDate)
 
   return (
-    <Card className="cursor-pointer transition-colors" onClick={onClick}>
+    <Card
+      className={cn(
+        'cursor-pointer border-s-4 transition-colors',
+        task.priority === 'high' && 'border-s-blush',
+        task.priority === 'normal' && 'border-s-moss',
+        task.priority === 'low' && 'border-s-border',
+      )}
+      onClick={onClick}
+    >
       <CardContent className="flex items-start gap-3 py-3">
         <Checkbox
           checked={task.done}

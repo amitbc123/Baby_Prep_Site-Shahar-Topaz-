@@ -1,13 +1,16 @@
 import { useId, useMemo } from 'react'
-import type { WeeklyFruit } from '@/lib/pregnancy'
+import type { WeeklyAnimal, WeeklyFruit } from '@/lib/pregnancy'
 
 interface MoonCountdownProps {
   moonFraction: number
   week: number
+  dayOfWeek: number
   daysLeft: number
   hasArrived: boolean
   babyName?: string
+  dateLabel: string
   fruit?: WeeklyFruit
+  animal?: WeeklyAnimal
 }
 
 const STARS = [
@@ -23,18 +26,23 @@ const STARS = [
 export function MoonCountdown({
   moonFraction,
   week,
+  dayOfWeek,
   daysLeft,
   hasArrived,
   babyName,
+  dateLabel,
   fruit,
+  animal,
 }: MoonCountdownProps) {
   const clipId = useId()
   const glowId = useId()
   const fillY = useMemo(() => 200 - moonFraction * 200, [moonFraction])
 
   return (
-    <div className="overflow-hidden rounded-3xl bg-[#232A3D] px-6 py-8 text-center shadow-lg">
-      <svg viewBox="0 0 200 200" className="mx-auto h-40 w-40" role="img" aria-label={`${moonFraction * 100} אחוז מהדרך אל הירח המלא`}>
+    <div className="overflow-hidden rounded-3xl bg-[#292540] px-6 py-8 text-center shadow-lg">
+      <p className="text-xs text-[#C9C2AE]">{dateLabel}</p>
+
+      <svg viewBox="0 0 200 200" className="mx-auto mt-3 h-40 w-40" role="img" aria-label={`${moonFraction * 100} אחוז מהדרך אל הירח המלא`}>
         <defs>
           <clipPath id={clipId}>
             <circle cx="100" cy="100" r="76" />
@@ -47,24 +55,24 @@ export function MoonCountdown({
         </defs>
 
         {STARS.map((s, i) => (
-          <circle key={i} cx={s.x} cy={s.y} r={s.r} fill="#F7F1E6" opacity={0.55} />
+          <circle key={i} cx={s.x} cy={s.y} r={s.r} fill="#F3ECDD" opacity={0.55} />
         ))}
 
-        <circle cx="100" cy="100" r="76" fill="#2B3348" stroke="#3A4360" strokeWidth="1" />
+        <circle cx="100" cy="100" r="76" fill="#332E4A" stroke="#463F5E" strokeWidth="1" />
 
         <g clipPath={`url(#${clipId})`}>
           <rect x="0" y={fillY} width="200" height="200" fill={`url(#${glowId})`} className="transition-[y] duration-700 ease-out" />
         </g>
 
-        <circle cx="100" cy="100" r="76" fill="none" stroke="#4A5372" strokeWidth="1" />
+        <circle cx="100" cy="100" r="76" fill="none" stroke="#544C6E" strokeWidth="1" />
       </svg>
 
-      <p className="mt-4 font-heading text-lg text-[#F7F1E6]">
+      <p className="mt-4 font-heading text-lg text-[#F3ECDD]">
         {hasArrived
           ? babyName
             ? `${babyName} כאן!`
             : 'היא כאן!'
-          : `שבוע ${week} מתוך 40`}
+          : `שבוע ${week}, יום ${dayOfWeek} מתוך 40`}
       </p>
       <p className="mt-1 text-sm text-[#C9C2AE]">
         {hasArrived
@@ -74,10 +82,21 @@ export function MoonCountdown({
             : `עוד ${daysLeft} ימים עד התאריך המשוער`}
       </p>
 
-      {!hasArrived && fruit && (
-        <p className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-white/5 px-3 py-1 text-xs text-[#F7F1E6]">
-          <span className="text-base leading-none">{fruit.emoji}</span>
-          היא בערך בגודל של {fruit.name}
+      {!hasArrived && (fruit || animal) && (
+        <p className="mt-3 inline-flex flex-wrap items-center justify-center gap-x-1.5 gap-y-1 rounded-full bg-white/5 px-3 py-1.5 text-xs text-[#F3ECDD]">
+          {fruit && (
+            <span className="inline-flex items-center gap-1">
+              <span className="text-base leading-none">{fruit.emoji}</span>
+              בגודל {fruit.name}
+            </span>
+          )}
+          {fruit && animal && <span className="text-[#C9C2AE]">•</span>}
+          {animal && (
+            <span className="inline-flex items-center gap-1">
+              <span className="text-base leading-none">{animal.emoji}</span>
+              כמו {animal.name}
+            </span>
+          )}
         </p>
       )}
     </div>
