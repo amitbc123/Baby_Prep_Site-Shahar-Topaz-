@@ -7,6 +7,7 @@ import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.oryareach.core.model.Assignee
 import com.oryareach.core.model.Priority
+import com.oryareach.core.model.RecurrenceFrequency
 import com.oryareach.core.model.TaskCategory
 
 @Entity(
@@ -30,5 +31,8 @@ data class TaskEntity(
     @ColumnInfo(name = "due_date") val dueDate: String?,
     val assignee: Assignee?,
     val note: String?,
+    @ColumnInfo(name = "recurrence_frequency") val recurrenceFrequency: RecurrenceFrequency?,
+    @ColumnInfo(name = "recurrence_interval") val recurrenceInterval: Int?,
+    val tags: List<String>,
     @Embedded val sync: SyncMetaEntity,
 )

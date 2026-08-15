@@ -4,6 +4,7 @@ import androidx.room.withTransaction
 import com.oryareach.core.common.AppError
 import com.oryareach.core.common.AppResult
 import com.oryareach.core.database.OrYareachDatabase
+import com.oryareach.core.database.SearchIndexer
 import com.oryareach.core.database.entity.SyncConflictEntity
 import com.oryareach.core.database.entity.SyncCursorEntity
 import com.oryareach.core.database.mapper.toEntity
@@ -13,7 +14,11 @@ import com.oryareach.core.database.mapper.toImportantDate
 import com.oryareach.core.database.mapper.toShoppingItem
 import com.oryareach.core.database.mapper.toAppSettings
 import com.oryareach.core.database.mapper.toFolder
+import com.oryareach.core.database.mapper.toDocument
+import com.oryareach.core.database.mapper.toCycleEntry
 import com.oryareach.core.model.AppSettings
+import com.oryareach.core.model.CycleEntry
+import com.oryareach.core.model.Document
 import com.oryareach.core.model.EntityType
 import com.oryareach.core.model.Folder
 import com.oryareach.core.model.ImportantDate
@@ -49,6 +54,9 @@ class RoomSyncStore(
     private val importantDates get() = database.importantDateDao()
     private val appSettings get() = database.appSettingsDao()
     private val folders get() = database.folderDao()
+    private val documents get() = database.documentDao()
+    private val cycleEntries get() = database.cycleEntryDao()
+    private val search = SearchIndexer(database)
     private val operations get() = database.syncOperationDao()
     private val state get() = database.syncStateDao()
 
@@ -78,6 +86,8 @@ class RoomSyncStore(
                 EntityType.IMPORTANT_DATE -> importantDates.markSynced(recordId, SyncStatus.SYNCED, version)
                 EntityType.SETTINGS -> appSettings.markSynced(recordId, SyncStatus.SYNCED, version)
                 EntityType.FOLDER -> folders.markSynced(recordId, SyncStatus.SYNCED, version)
+                EntityType.DOCUMENT -> documents.markSynced(recordId, SyncStatus.SYNCED, version)
+                EntityType.CYCLE_ENTRY -> cycleEntries.markSynced(recordId, SyncStatus.SYNCED, version)
                 else -> tasks.markSynced(recordId, SyncStatus.SYNCED, version)
             }
             operations.removeByRecord(recordId)
@@ -103,6 +113,8 @@ class RoomSyncStore(
                 EntityType.IMPORTANT_DATE -> importantDates.markSynced(recordId, SyncStatus.CONFLICT, server.version)
                 EntityType.SETTINGS -> appSettings.markSynced(recordId, SyncStatus.CONFLICT, server.version)
                 EntityType.FOLDER -> folders.markSynced(recordId, SyncStatus.CONFLICT, server.version)
+                EntityType.DOCUMENT -> documents.markSynced(recordId, SyncStatus.CONFLICT, server.version)
+                EntityType.CYCLE_ENTRY -> cycleEntries.markSynced(recordId, SyncStatus.CONFLICT, server.version)
                 else -> tasks.markSynced(recordId, SyncStatus.CONFLICT, server.version)
             }
             // The queued operation is dropped: replaying it would just conflict again. The
@@ -133,6 +145,7 @@ class RoomSyncStore(
                             json.decodeFromString<MenstrualCycle>(decoded.data)
                         }.getOrNull() ?: continue
                         cycles.upsert(cycle.toEntity(workspace, record, now()))
+                        reindex(EntityType.CYCLE, record, workspace, "", cycle.note.orEmpty())
                     }
 
                     EntityType.TASK -> {
@@ -140,6 +153,7 @@ class RoomSyncStore(
                             json.decodeFromString<Task>(decoded.data)
                         }.getOrNull() ?: continue
                         tasks.upsert(task.toEntity(workspace, record, now()))
+                        reindex(EntityType.TASK, record, workspace, task.title, task.note.orEmpty())
                     }
 
                     EntityType.SHOPPING_ITEM -> {
@@ -147,6 +161,7 @@ class RoomSyncStore(
                             json.decodeFromString<ShoppingItem>(decoded.data)
                         }.getOrNull() ?: continue
                         shoppingItems.upsert(item.toEntity(workspace, record, now()))
+                        reindex(EntityType.SHOPPING_ITEM, record, workspace, item.name, item.note.orEmpty())
                     }
 
                     EntityType.IMPORTANT_DATE -> {
@@ -154,6 +169,7 @@ class RoomSyncStore(
                             json.decodeFromString<ImportantDate>(decoded.data)
                         }.getOrNull() ?: continue
                         importantDates.upsert(date.toEntity(workspace, record, now()))
+                        reindex(EntityType.IMPORTANT_DATE, record, workspace, date.title, date.wish.orEmpty())
                     }
 
                     EntityType.SETTINGS -> {
@@ -168,13 +184,36 @@ class RoomSyncStore(
                             json.decodeFromString<Folder>(decoded.data)
                         }.getOrNull() ?: continue
                         folders.upsert(folder.toEntity(workspace, record, now()))
+                        reindex(EntityType.FOLDER, record, workspace, folder.name, "")
                     }
 
-                    // Types this build does not handle yet stay on the server; the cursor is
-                    // per workspace, so they arrive again once support ships.
-                    else -> continue
+                    EntityType.DOCUMENT -> {
+                        val document = runCatching {
+                            json.decodeFromString<Document>(decoded.data)
+                        }.getOrNull() ?: continue
+                        documents.upsert(document.toEntity(workspace, record, now()))
+                        reindex(EntityType.DOCUMENT, record, workspace, document.name, "")
+                    }
+
+                    EntityType.CYCLE_ENTRY -> {
+                        val entry = runCatching {
+                            json.decodeFromString<CycleEntry>(decoded.data)
+                        }.getOrNull() ?: continue
+                        cycleEntries.upsert(entry.toEntity(workspace, record, now()))
+                        reindex(EntityType.CYCLE_ENTRY, record, workspace, "", entry.note.orEmpty())
+                    }
                 }
             }
+        }
+    }
+
+    /** Mirrors an incoming record's tombstone state into the search index too — a remote
+     * delete must remove it from search results just as reliably as a local one does. */
+    private suspend fun reindex(entityType: EntityType, record: RemoteRecord, workspace: String, title: String, body: String) {
+        if (record.deletedAt != null) {
+            search.remove(record.id)
+        } else {
+            search.index(entityType, record.id, workspace, title, body)
         }
     }
 
@@ -212,7 +251,13 @@ class RoomSyncStore(
             Payload(json.encodeToString(it.toFolder()), it.sync.version)
         }
 
-        else -> null
+        EntityType.DOCUMENT -> documents.findById(recordId)?.let {
+            Payload(json.encodeToString(it.toDocument()), it.sync.version)
+        }
+
+        EntityType.CYCLE_ENTRY -> cycleEntries.findById(recordId)?.let {
+            Payload(json.encodeToString(it.toCycleEntry()), it.sync.version)
+        }
     }
 
     /** Every syncable table is checked in turn; `TASK` is the fallback for a row not found
@@ -223,6 +268,8 @@ class RoomSyncStore(
         importantDates.findById(recordId) != null -> EntityType.IMPORTANT_DATE
         appSettings.findById(recordId) != null -> EntityType.SETTINGS
         folders.findById(recordId) != null -> EntityType.FOLDER
+        documents.findById(recordId) != null -> EntityType.DOCUMENT
+        cycleEntries.findById(recordId) != null -> EntityType.CYCLE_ENTRY
         else -> EntityType.TASK
     }
 }

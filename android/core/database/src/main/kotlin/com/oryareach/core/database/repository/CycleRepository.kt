@@ -2,6 +2,7 @@ package com.oryareach.core.database.repository
 
 import androidx.room.withTransaction
 import com.oryareach.core.database.OrYareachDatabase
+import com.oryareach.core.database.SearchIndexer
 import com.oryareach.core.database.entity.MenstrualCycleEntity
 import com.oryareach.core.database.entity.SyncMetaEntity
 import com.oryareach.core.database.entity.SyncOperationEntity
@@ -29,6 +30,7 @@ class CycleRepository(
 ) {
     private val cycles get() = database.menstrualCycleDao()
     private val operations get() = database.syncOperationDao()
+    private val search = SearchIndexer(database)
 
     fun observeAll(workspaceId: String): Flow<List<MenstrualCycle>> =
         cycles.observeAll(workspaceId).map { list -> list.map { it.toCycle() } }
@@ -75,6 +77,7 @@ class CycleRepository(
         val timestamp = now()
         database.withTransaction {
             cycles.softDelete(id, timestamp)
+            search.remove(id)
             val opId = operations.enqueue(
                 SyncOperationEntity(
                     recordId = id,
@@ -100,6 +103,7 @@ class CycleRepository(
     private suspend fun enqueue(entity: MenstrualCycleEntity, operation: SyncOperationType) {
         database.withTransaction {
             cycles.upsert(entity)
+            search.index(EntityType.CYCLE, entity.id, entity.sync.workspaceId, "", entity.note.orEmpty())
             val opId = operations.enqueue(
                 SyncOperationEntity(
                     recordId = entity.id,

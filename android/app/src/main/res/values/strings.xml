@@ -1,4 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Sahar</string>
+    <string name="reminder_channel_name">Reminders</string>
+    <string name="reminder_title">One More Moon</string>
+    <string name="reminder_body">You have updates to check.</string>
+    <string name="lock_title">App locked</string>
+    <string name="lock_unlock">Unlock</string>
+    <string name="lock_prompt_title">Unlock One More Moon</string>
+    <string name="app_back">Back</string>
 </resources>

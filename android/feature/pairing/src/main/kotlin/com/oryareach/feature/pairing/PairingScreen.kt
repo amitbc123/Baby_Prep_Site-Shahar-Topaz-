@@ -56,6 +56,7 @@ fun PairingScreen(
                 is PairingStage.ShowRecoveryPhrase -> RecoveryPhraseStage(stage, uiState, actions)
                 PairingStage.EnterCode -> EnterCodeStage(uiState, actions)
                 PairingStage.AwaitingKey -> AwaitingKeyStage(uiState, actions)
+                PairingStage.EnterRecoveryPhrase -> EnterRecoveryPhraseStage(uiState, actions)
                 is PairingStage.Ready -> ReadyStage(stage, uiState, actions)
             }
 
@@ -92,6 +93,12 @@ private fun ChooseStage(uiState: PairingUiState, actions: PairingActions) {
         enabled = !uiState.busy,
         modifier = Modifier.fillMaxWidth(),
     ) { Text(stringResource(R.string.pairing_join)) }
+
+    androidx.compose.material3.TextButton(
+        onClick = actions::onShowRecoveryPhraseEntry,
+        enabled = !uiState.busy,
+        modifier = Modifier.fillMaxWidth(),
+    ) { Text(stringResource(R.string.pairing_recover_with_phrase)) }
 }
 
 @Composable
@@ -167,6 +174,36 @@ private fun AwaitingKeyStage(uiState: PairingUiState, actions: PairingActions) {
         enabled = !uiState.busy,
         modifier = Modifier.fillMaxWidth(),
     ) { Text(stringResource(R.string.pairing_check_again)) }
+
+    androidx.compose.material3.TextButton(
+        onClick = actions::onShowRecoveryPhraseEntry,
+        enabled = !uiState.busy,
+        modifier = Modifier.fillMaxWidth(),
+    ) { Text(stringResource(R.string.pairing_recover_with_phrase)) }
+}
+
+@Composable
+private fun EnterRecoveryPhraseStage(uiState: PairingUiState, actions: PairingActions) {
+    Heading(R.string.pairing_recovery_entry_title, R.string.pairing_recovery_entry_body)
+
+    OutlinedTextField(
+        value = uiState.recoveryPhraseInput,
+        onValueChange = actions::onRecoveryPhraseInputChange,
+        label = { Text(stringResource(R.string.pairing_recovery_entry_label)) },
+        modifier = Modifier.fillMaxWidth(),
+    )
+
+    Button(
+        onClick = actions::onSubmitRecoveryPhrase,
+        enabled = uiState.recoveryPhraseInput.isNotBlank() && !uiState.busy,
+        modifier = Modifier.fillMaxWidth(),
+    ) { Text(stringResource(R.string.pairing_recovery_entry_submit)) }
+
+    OutlinedButton(
+        onClick = actions::onDismissRecoveryPhraseEntry,
+        enabled = !uiState.busy,
+        modifier = Modifier.fillMaxWidth(),
+    ) { Text(stringResource(R.string.pairing_recovery_entry_cancel)) }
 }
 
 @Composable
@@ -239,6 +276,33 @@ private fun ReadyStage(
         }
     }
 
+    if (stage.revocableDevices.isNotEmpty()) {
+        Text(
+            text = stringResource(R.string.pairing_devices_title),
+            style = MaterialTheme.typography.titleSmall,
+            color = MaterialTheme.colorScheme.onBackground,
+        )
+        stage.revocableDevices.forEach { device ->
+            Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)) {
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(16.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(
+                        text = device.label,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurface,
+                    )
+                    OutlinedButton(
+                        onClick = { actions.onRevokeDevice(device.deviceKeyId) },
+                        enabled = !uiState.busy,
+                    ) { Text(stringResource(R.string.pairing_revoke)) }
+                }
+            }
+        }
+    }
+
     Spacer(Modifier.height(8.dp))
 
     Button(onClick = actions::onRefresh, modifier = Modifier.fillMaxWidth()) {
@@ -280,5 +344,10 @@ private object NoopPairingActions : PairingActions {
     override fun onFinishRecoveryPhrase() = Unit
     override fun onGenerateInvite() = Unit
     override fun onApproveDevice(deviceKeyId: String) = Unit
+    override fun onRevokeDevice(deviceKeyId: String) = Unit
+    override fun onShowRecoveryPhraseEntry() = Unit
+    override fun onDismissRecoveryPhraseEntry() = Unit
+    override fun onRecoveryPhraseInputChange(value: String) = Unit
+    override fun onSubmitRecoveryPhrase() = Unit
     override fun onRefresh() = Unit
 }

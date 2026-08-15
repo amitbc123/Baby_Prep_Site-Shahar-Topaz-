@@ -1,9 +1,28 @@
 package com.oryareach.core.domain.pregnancy
 
+import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.minus
+import kotlinx.datetime.plus
 
 private const val FULL_TERM_WEEKS = 40
 private const val TOTAL_DAYS = FULL_TERM_WEEKS * 7
+
+/** Naegele's rule: due date = first day of the last menstrual period + 280 days (40 weeks).
+ * The standard obstetric estimate, and more accurate as a starting point than a due date
+ * entered directly — a due date someone remembers or was told is one hop removed from the
+ * actual measurement (when the last period started), which introduces room for drift that
+ * computing it fresh from the LMP avoids. */
+private const val LMP_TO_DUE_DATE_DAYS = TOTAL_DAYS
+
+fun dueDateFromLastPeriod(lastPeriodStart: LocalDate): LocalDate =
+    lastPeriodStart.plus(LMP_TO_DUE_DATE_DAYS, DateTimeUnit.DAY)
+
+/** Inverse of [dueDateFromLastPeriod] — exact, since the forward direction is a fixed
+ * day-count offset with no rounding. Used to re-derive the last-period date for display when
+ * re-opening the editor, since only [com.oryareach.core.model.AppSettings.dueDate] is stored. */
+fun lastPeriodFromDueDate(dueDate: LocalDate): LocalDate =
+    dueDate.minus(LMP_TO_DUE_DATE_DAYS, DateTimeUnit.DAY)
 
 fun daysUntil(dueDate: LocalDate, from: LocalDate): Int =
     (dueDate.toEpochDays() - from.toEpochDays()).toInt()

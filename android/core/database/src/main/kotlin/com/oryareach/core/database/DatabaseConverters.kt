@@ -3,10 +3,15 @@ package com.oryareach.core.database
 import androidx.room.TypeConverter
 import com.oryareach.core.model.Assignee
 import com.oryareach.core.model.EntityType
+import com.oryareach.core.model.FlowLevel
+import com.oryareach.core.model.Mood
+import com.oryareach.core.model.PainLevel
 import com.oryareach.core.model.Priority
+import com.oryareach.core.model.RecurrenceFrequency
 import com.oryareach.core.model.ShoppingAlternative
 import com.oryareach.core.model.ShoppingCategory
 import com.oryareach.core.model.ShoppingStatus
+import com.oryareach.core.model.Symptom
 import com.oryareach.core.model.SyncOperationType
 import com.oryareach.core.model.SyncStatus
 import com.oryareach.core.model.TaskCategory
@@ -50,4 +55,23 @@ class DatabaseConverters {
         Json.encodeToString(value)
     @TypeConverter fun stringToAlternatives(value: String): List<ShoppingAlternative> =
         Json.decodeFromString(value)
+
+    @TypeConverter fun flowLevelToString(value: FlowLevel?): String? = value?.name
+    @TypeConverter fun stringToFlowLevel(value: String?): FlowLevel? = value?.let(FlowLevel::valueOf)
+
+    @TypeConverter fun painLevelToString(value: PainLevel?): String? = value?.name
+    @TypeConverter fun stringToPainLevel(value: String?): PainLevel? = value?.let(PainLevel::valueOf)
+
+    @TypeConverter fun symptomsToString(value: List<Symptom>): String = Json.encodeToString(value)
+    @TypeConverter fun stringToSymptoms(value: String): List<Symptom> = Json.decodeFromString(value)
+
+    @TypeConverter fun moodToString(value: List<Mood>): String = Json.encodeToString(value)
+    @TypeConverter fun stringToMood(value: String): List<Mood> = Json.decodeFromString(value)
+
+    @TypeConverter fun recurrenceFrequencyToString(value: RecurrenceFrequency?): String? = value?.name
+    @TypeConverter fun stringToRecurrenceFrequency(value: String?): RecurrenceFrequency? =
+        value?.let(RecurrenceFrequency::valueOf)
+
+    @TypeConverter fun tagsToString(value: List<String>): String = Json.encodeToString(value)
+    @TypeConverter fun stringToTags(value: String): List<String> = Json.decodeFromString(value)
 }

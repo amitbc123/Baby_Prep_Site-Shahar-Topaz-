@@ -29,10 +29,20 @@ sealed interface PairingStage {
     /** Joined the workspace, but the partner has not yet released the key to this device. */
     data object AwaitingKey : PairingStage
 
+    /**
+     * Typing back the 24-word phrase to recover the key directly, without waiting for a
+     * partner device to approve this one — the only path back in when there is no other
+     * device left to ask (see `docs/architecture/007-encryption.md`). Reachable from [Choose]
+     * (signed in, never joined a workspace on this device) and from [AwaitingKey] (joined,
+     * but waiting is slower than just recovering directly).
+     */
+    data object EnterRecoveryPhrase : PairingStage
+
     /** This device holds the key and can show an invitation for the partner. */
     data class Ready(
         val inviteCode: String? = null,
         val pendingDevices: List<PendingDevice> = emptyList(),
+        val revocableDevices: List<PairedDevice> = emptyList(),
     ) : PairingStage
 }
 
@@ -42,11 +52,19 @@ data class PendingDevice(
     val label: String,
 )
 
+/** A device other than this one that already holds the key, and so can be revoked. */
+@Immutable
+data class PairedDevice(
+    val deviceKeyId: String,
+    val label: String,
+)
+
 @Immutable
 data class PairingUiState(
     val stage: PairingStage = PairingStage.Loading,
     val enteredCode: String = "",
     val phraseConfirmed: Boolean = false,
+    val recoveryPhraseInput: String = "",
     val busy: Boolean = false,
     @StringRes val errorMessage: Int? = null,
 ) {

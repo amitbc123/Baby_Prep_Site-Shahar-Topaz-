@@ -2,6 +2,7 @@ package com.oryareach.core.database.repository
 
 import androidx.room.withTransaction
 import com.oryareach.core.database.OrYareachDatabase
+import com.oryareach.core.database.SearchIndexer
 import com.oryareach.core.database.entity.ImportantDateEntity
 import com.oryareach.core.database.entity.SyncMetaEntity
 import com.oryareach.core.database.entity.SyncOperationEntity
@@ -25,6 +26,7 @@ class ImportantDateRepository(
 ) {
     private val dates get() = database.importantDateDao()
     private val operations get() = database.syncOperationDao()
+    private val search = SearchIndexer(database)
 
     fun observeAll(workspaceId: String): Flow<List<ImportantDate>> =
         dates.observeAll(workspaceId).map { list -> list.map { it.toImportantDate() } }
@@ -58,6 +60,7 @@ class ImportantDateRepository(
         val timestamp = now()
         database.withTransaction {
             dates.softDelete(id, timestamp)
+            search.remove(id)
             val opId = operations.enqueue(
                 SyncOperationEntity(
                     recordId = id,
@@ -83,6 +86,7 @@ class ImportantDateRepository(
     private suspend fun enqueue(entity: ImportantDateEntity, operation: SyncOperationType) {
         database.withTransaction {
             dates.upsert(entity)
+            search.index(EntityType.IMPORTANT_DATE, entity.id, entity.sync.workspaceId, entity.title, entity.wish.orEmpty())
             val opId = operations.enqueue(
                 SyncOperationEntity(
                     recordId = entity.id,

@@ -63,4 +63,15 @@ class PregnancyProgressTest {
     fun `isPastDate treats an earlier date as past`() {
         isPastDate(LocalDate(2026, 3, 10), LocalDate(2026, 3, 11)) shouldBe true
     }
+
+    @Test
+    fun `dueDateFromLastPeriod adds 280 days`() {
+        dueDateFromLastPeriod(LocalDate(2026, 1, 1)) shouldBe LocalDate(2026, 1, 1).plus(280, kotlinx.datetime.DateTimeUnit.DAY)
+    }
+
+    @Test
+    fun `lastPeriodFromDueDate is the exact inverse of dueDateFromLastPeriod`() {
+        val lastPeriod = LocalDate(2026, 3, 15)
+        lastPeriodFromDueDate(dueDateFromLastPeriod(lastPeriod)) shouldBe lastPeriod
+    }
 }

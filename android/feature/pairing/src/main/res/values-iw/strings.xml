@@ -18,6 +18,13 @@
     <string name="pairing_waiting_title">כמעט סיימנו</string>
     <string name="pairing_waiting_body">הצטרפתם למרחב. בן/בת הזוג צריכים לאשר את הטלפון הזה לפני שיוכל לקרוא משהו — בקשו מהם ללחוץ על אישור ואז בדקו שוב.</string>
     <string name="pairing_check_again">בדיקה חוזרת</string>
+    <string name="pairing_recover_with_phrase">שחזור עם משפט במקום זאת</string>
+
+    <string name="pairing_recovery_entry_title">הזינו את משפט השחזור שלכם</string>
+    <string name="pairing_recovery_entry_body">הקלידו את 24 המילים שכתבתם כשהמרחב הזה נוצר, מופרדות ברווחים, לפי הסדר.</string>
+    <string name="pairing_recovery_entry_label">משפט שחזור</string>
+    <string name="pairing_recovery_entry_submit">שחזור</string>
+    <string name="pairing_recovery_entry_cancel">ביטול</string>
 
     <string name="pairing_ready_title">המרחב שלכם מוכן</string>
     <string name="pairing_invite_generate">הזמנת בן/בת הזוג</string>
@@ -26,11 +33,14 @@
     <string name="pairing_pending_body">הטלפון הזה הצטרף למרחב שלכם. אשרו רק אם אתם מזהים אותו — אישור מוסר לו את המפתח להכול.</string>
     <string name="pairing_approve">אישור</string>
     <string name="pairing_continue">המשך לאפליקציה</string>
+    <string name="pairing_devices_title">מכשירים מקושרים</string>
+    <string name="pairing_revoke">שלילת הרשאה</string>
 
     <string name="pairing_error_offline">אין חיבור. בדקו את האינטרנט ונסו שוב.</string>
     <string name="pairing_error_timeout">השרת לא הגיב בזמן. נסו שוב.</string>
     <string name="pairing_error_invalid_code">הקוד אינו תקף. ייתכן שפג תוקפו או שכבר נעשה בו שימוש.</string>
     <string name="pairing_error_workspace_full">במרחב הזה כבר נמצאים שני אנשים.</string>
     <string name="pairing_error_key_mismatch">הטלפון הזה לא הצליח לפתוח את המפתח שקיבל.</string>
+    <string name="pairing_error_invalid_phrase">המשפט אינו תקף. בדקו את המילים ונסו שוב.</string>
     <string name="pairing_error_generic">משהו השתבש. נסו שוב.</string>
 </resources>

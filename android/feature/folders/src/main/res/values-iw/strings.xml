@@ -12,4 +12,11 @@
     <string name="folders_delete">מחק</string>
     <string name="folders_delete_title">למחוק את התיקייה?</string>
     <string name="folders_delete_body">"%1$s וכל מה שבתוכה יימחקו."</string>
+    <string name="folders_import">ייבוא מסמך</string>
+    <string name="folders_scan">סריקת מסמך</string>
+    <string name="folders_delete_document_title">למחוק את המסמך?</string>
+    <string name="folders_delete_document_body">"%1$s יימחק."</string>
+    <string name="folders_preview_close">סגור</string>
+    <string name="folders_preview_unsupported">אין תצוגה מקדימה לסוג קובץ זה.</string>
+    <string name="folders_preview_failed">לא ניתן לטעון את המסמך.</string>
 </resources>

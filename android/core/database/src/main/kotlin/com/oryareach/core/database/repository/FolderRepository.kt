@@ -2,6 +2,7 @@ package com.oryareach.core.database.repository
 
 import androidx.room.withTransaction
 import com.oryareach.core.database.OrYareachDatabase
+import com.oryareach.core.database.SearchIndexer
 import com.oryareach.core.database.entity.FolderEntity
 import com.oryareach.core.database.entity.SyncMetaEntity
 import com.oryareach.core.database.entity.SyncOperationEntity
@@ -27,6 +28,7 @@ class FolderRepository(
 ) {
     private val folders get() = database.folderDao()
     private val operations get() = database.syncOperationDao()
+    private val search = SearchIndexer(database)
 
     fun observeChildren(workspaceId: String, parentId: String?): Flow<List<Folder>> =
         folders.observeChildren(workspaceId, parentId).map { list -> list.map { it.toFolder() } }
@@ -67,6 +69,7 @@ class FolderRepository(
         database.withTransaction {
             (subtree + target).distinctBy { it.id }.forEach { folder ->
                 folders.softDelete(folder.id, timestamp)
+                search.remove(folder.id)
                 val opId = operations.enqueue(
                     SyncOperationEntity(
                         recordId = folder.id,
@@ -93,6 +96,7 @@ class FolderRepository(
     private suspend fun enqueue(entity: FolderEntity, operation: SyncOperationType) {
         database.withTransaction {
             folders.upsert(entity)
+            search.index(EntityType.FOLDER, entity.id, entity.sync.workspaceId, entity.name, "")
             val opId = operations.enqueue(
                 SyncOperationEntity(
                     recordId = entity.id,

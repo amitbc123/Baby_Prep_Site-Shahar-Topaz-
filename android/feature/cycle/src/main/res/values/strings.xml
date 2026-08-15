@@ -10,4 +10,65 @@
     <string name="cycle_history_row_ongoing">%1$s – ongoing</string>
     <string name="cycle_history_row_range">%1$s – %2$s (%3$d days)</string>
     <string name="cycle_delete">Delete</string>
+
+    <string name="cycle_stats_title">Statistics</string>
+    <string name="cycle_stats_count">Periods logged: %1$d</string>
+    <string name="cycle_stats_avg_cycle">Average cycle length: %1$d days</string>
+    <string name="cycle_stats_avg_period">Average period length: %1$d days</string>
+    <string name="cycle_stats_range">Shortest–longest cycle: %1$d–%2$d days</string>
+
+    <string name="cycle_prediction_title">Prediction</string>
+    <string name="cycle_prediction_insufficient">Log at least two periods to see a prediction.</string>
+    <string name="cycle_prediction_next_period">Next period expected around %1$s</string>
+    <string name="cycle_prediction_fertile_window">Estimated fertile window: %1$s–%2$s</string>
+    <string name="cycle_prediction_ovulation">Estimated ovulation: %1$s</string>
+
+    <string name="cycle_calendar_title">Calendar</string>
+    <string name="cycle_calendar_previous_month">Previous month</string>
+    <string name="cycle_calendar_next_month">Next month</string>
+    <string name="cycle_calendar_legend_actual">Logged period</string>
+    <string name="cycle_calendar_legend_predicted">Predicted period</string>
+    <string name="cycle_calendar_legend_fertile">Fertile window</string>
+    <string name="cycle_calendar_legend_ovulation">Estimated ovulation</string>
+
+    <string name="cycle_day_sheet_title">%1$s</string>
+    <string name="cycle_day_flow">Flow</string>
+    <string name="cycle_day_pain">Pain</string>
+    <string name="cycle_day_mood">Mood</string>
+    <string name="cycle_day_symptoms">Symptoms</string>
+    <string name="cycle_day_note">Note</string>
+    <string name="cycle_day_save">Save</string>
+    <string name="cycle_day_delete_entry">Delete entry</string>
+
+    <string name="cycle_flow_spotting">Spotting</string>
+    <string name="cycle_flow_light">Light</string>
+    <string name="cycle_flow_medium">Medium</string>
+    <string name="cycle_flow_heavy">Heavy</string>
+
+    <string name="cycle_pain_none">None</string>
+    <string name="cycle_pain_mild">Mild</string>
+    <string name="cycle_pain_moderate">Moderate</string>
+    <string name="cycle_pain_severe">Severe</string>
+
+    <string name="cycle_symptom_cramps">Cramps</string>
+    <string name="cycle_symptom_headache">Headache</string>
+    <string name="cycle_symptom_bloating">Bloating</string>
+    <string name="cycle_symptom_fatigue">Fatigue</string>
+    <string name="cycle_symptom_nausea">Nausea</string>
+    <string name="cycle_symptom_backache">Backache</string>
+    <string name="cycle_symptom_tender_breasts">Tender breasts</string>
+    <string name="cycle_symptom_acne">Acne</string>
+
+    <string name="cycle_mood_happy">Happy</string>
+    <string name="cycle_mood_calm">Calm</string>
+    <string name="cycle_mood_sad">Sad</string>
+    <string name="cycle_mood_irritable">Irritable</string>
+    <string name="cycle_mood_anxious">Anxious</string>
+    <string name="cycle_mood_energetic">Energetic</string>
+    <string name="cycle_mood_tired">Tired</string>
+
+    <string name="cycle_attachments">Attachments</string>
+    <string name="cycle_attach_document">Attach document</string>
+    <string name="cycle_scan_document">Scan document</string>
+    <string name="cycle_remove_attachment">Remove attachment</string>
 </resources>

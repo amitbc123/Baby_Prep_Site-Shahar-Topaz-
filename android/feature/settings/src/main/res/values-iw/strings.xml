@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings_title">הגדרות</string>
+
+    <string name="settings_security_title">אבטחה</string>
+    <string name="settings_biometric_unlock">דרישת פתיחה ביומטרית</string>
+    <string name="settings_block_screenshots">חסימת צילומי מסך</string>
+    <string name="settings_lock_now">נעילה עכשיו</string>
+    <string name="settings_auto_lock_timeout">נעילה אוטומטית אחרי %1$d דקות</string>
+    <string name="settings_auto_lock_minutes">%1$d דקות</string>
+
+    <string name="settings_notifications_title">התראות</string>
+    <string name="settings_notifications_enabled">תזכורת יומית</string>
+    <string name="settings_notifications_body">תזכורת כללית בלבד — לעולם לא תוכן פרטי, שמגש ההתראות אינו יכול להגן עליו.</string>
+
+    <string name="settings_recovery_title">משפט שחזור</string>
+    <string name="settings_recovery_body">משפט 24 המילים שהוצג בעת יצירת סביבת העבודה. זו הדרך היחידה לחזור אליה אם כל המכשירים המצומדים אבדו.</string>
+    <string name="settings_show_recovery_phrase">הצגת משפט שחזור</string>
+    <string name="settings_recovery_phrase_title">משפט שחזור</string>
+
+    <string name="settings_devices_title">מכשירים</string>
+    <string name="settings_manage_devices">ניהול מכשירים</string>
+
+    <string name="settings_sign_out">התנתקות</string>
+    <string name="settings_sign_out_title">להתנתק?</string>
+    <string name="settings_sign_out_body">יהיה עליך לצמד את המכשיר הזה מחדש כדי לראות את הנתונים שלך.</string>
+
+    <string name="settings_close">סגור</string>
+    <string name="settings_cancel">ביטול</string>
+</resources>

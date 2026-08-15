@@ -1,13 +1,21 @@
 package com.oryareach.app.di
 
+import com.oryareach.app.lock.AutoLockController
+import com.oryareach.app.notifications.WorkManagerReminderScheduler
 import com.oryareach.app.sync.WorkManagerSyncTrigger
+import com.oryareach.core.settings.ReminderScheduler
+import com.oryareach.core.settings.SettingsPreferences
 import com.oryareach.core.database.DatabaseFactory
 import com.oryareach.core.database.DatabasePassphrase
 import com.oryareach.core.database.OrYareachDatabase
 import com.oryareach.core.database.repository.AppSettingsRepository
+import com.oryareach.core.database.repository.CycleEntryRepository
 import com.oryareach.core.database.repository.CycleRepository
+import com.oryareach.core.database.repository.DocumentRepository
 import com.oryareach.core.database.repository.FolderRepository
+import com.oryareach.core.database.repository.ConflictRepository
 import com.oryareach.core.database.repository.ImportantDateRepository
+import com.oryareach.core.database.repository.SearchRepository
 import com.oryareach.core.database.repository.ShoppingItemRepository
 import com.oryareach.core.database.repository.TaskRepository
 import com.oryareach.core.database.sync.RoomSyncStore
@@ -33,6 +41,10 @@ import com.oryareach.feature.shopping.ShoppingViewModel
 import com.oryareach.feature.dates.DatesViewModel
 import com.oryareach.feature.home.HomeViewModel
 import com.oryareach.feature.folders.FoldersViewModel
+import com.oryareach.feature.settings.SettingsViewModel
+import com.oryareach.feature.search.SearchViewModel
+import com.oryareach.feature.calendar.CalendarViewModel
+import com.oryareach.feature.conflicts.ConflictsViewModel
 import org.koin.core.module.dsl.viewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
@@ -50,6 +62,10 @@ import org.koin.dsl.module
 val appModule = module {
 
     single { SessionState() }
+    single<com.oryareach.core.security.SessionController> { get<SessionState>() }
+    single { SettingsPreferences(androidContext()) }
+    single { AutoLockController(session = get(), preferences = get()) }
+    single<ReminderScheduler> { WorkManagerReminderScheduler(androidContext()) }
 
     // Consumed by :core:network, which must not depend on the session type.
     single(workspaceIdQualifier) { { get<SessionState>().workspaceId } }
@@ -59,10 +75,12 @@ val appModule = module {
     single { DatabaseFactory.create(androidContext(), get()) }
     single { get<OrYareachDatabase>().taskDao() }
     single { get<OrYareachDatabase>().menstrualCycleDao() }
+    single { get<OrYareachDatabase>().cycleEntryDao() }
     single { get<OrYareachDatabase>().shoppingItemDao() }
     single { get<OrYareachDatabase>().importantDateDao() }
     single { get<OrYareachDatabase>().appSettingsDao() }
     single { get<OrYareachDatabase>().folderDao() }
+    single { get<OrYareachDatabase>().documentDao() }
     single { get<OrYareachDatabase>().syncOperationDao() }
     single { get<OrYareachDatabase>().syncStateDao() }
 
@@ -91,10 +109,14 @@ val appModule = module {
     single<SyncTrigger> { WorkManagerSyncTrigger(androidContext()) }
     single { TaskRepository(database = get(), syncTrigger = get()) }
     single { CycleRepository(database = get(), syncTrigger = get()) }
+    single { CycleEntryRepository(database = get(), syncTrigger = get()) }
     single { ShoppingItemRepository(database = get(), syncTrigger = get()) }
     single { ImportantDateRepository(database = get(), syncTrigger = get()) }
     single { AppSettingsRepository(database = get(), syncTrigger = get()) }
     single { FolderRepository(database = get(), syncTrigger = get()) }
+    single { DocumentRepository(database = get(), syncTrigger = get(), blobStore = get(), keys = get()) }
+    single { SearchRepository(database = get()) }
+    single { ConflictRepository(database = get(), codec = get()) }
 
     viewModel { AuthViewModel(auth = get()) }
     viewModel {
@@ -110,6 +132,7 @@ val appModule = module {
     viewModel {
         TasksViewModel(
             repository = get(),
+            documents = get(),
             auth = get(),
             workspaceId = { get<SessionState>().workspaceId },
         )
@@ -117,6 +140,8 @@ val appModule = module {
     viewModel {
         CycleViewModel(
             repository = get(),
+            entryRepository = get(),
+            documents = get(),
             auth = get(),
             workspaceId = { get<SessionState>().workspaceId },
         )
@@ -142,14 +167,40 @@ val appModule = module {
             shoppingRepository = get(),
             importantDateRepository = get(),
             auth = get(),
+            syncEngine = get(),
             workspaceId = { get<SessionState>().workspaceId },
         )
     }
     viewModel {
         FoldersViewModel(
             repository = get(),
+            documents = get(),
             auth = get(),
             workspaceId = { get<SessionState>().workspaceId },
         )
     }
+    viewModel {
+        SettingsViewModel(
+            preferences = get(),
+            reminders = get(),
+            identity = get(),
+            session = get(),
+            auth = get(),
+        )
+    }
+    viewModel {
+        SearchViewModel(
+            repository = get(),
+            workspaceId = { get<SessionState>().workspaceId },
+        )
+    }
+    viewModel {
+        CalendarViewModel(
+            tasks = get(),
+            importantDates = get(),
+            cycles = get(),
+            workspaceId = { get<SessionState>().workspaceId },
+        )
+    }
+    viewModel { ConflictsViewModel(repository = get()) }
 }

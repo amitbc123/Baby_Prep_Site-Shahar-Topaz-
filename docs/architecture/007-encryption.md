@@ -60,8 +60,9 @@ told to record the new one. Accepted — rotation is a rare, deliberate act.
 
 ## Consequences
 
-- No server-side search, filtering, sorting or validation. Search becomes Room FTS5 over
-  locally decrypted data.
+- No server-side search, filtering, sorting or validation. Search becomes Room FTS4 over
+  locally decrypted data (corrected from an earlier "FTS5" here — Room 2.8.4 has no `@Fts5`
+  annotation, only `@Fts3`/`@Fts4`; found while building Phase 8 search).
 - No server-generated notification content. Reminders are scheduled locally.
 - Metadata still leaks: row counts and `updated_at` reveal *that* something was logged and
   when, not what. Removing that needs padding and decoy traffic; out of scope, and stated

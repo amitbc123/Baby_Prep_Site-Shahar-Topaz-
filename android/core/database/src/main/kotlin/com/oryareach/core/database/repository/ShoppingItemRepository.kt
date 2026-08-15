@@ -2,6 +2,7 @@ package com.oryareach.core.database.repository
 
 import androidx.room.withTransaction
 import com.oryareach.core.database.OrYareachDatabase
+import com.oryareach.core.database.SearchIndexer
 import com.oryareach.core.database.entity.ShoppingItemEntity
 import com.oryareach.core.database.entity.SyncMetaEntity
 import com.oryareach.core.database.entity.SyncOperationEntity
@@ -29,6 +30,7 @@ class ShoppingItemRepository(
 ) {
     private val items get() = database.shoppingItemDao()
     private val operations get() = database.syncOperationDao()
+    private val search = SearchIndexer(database)
 
     fun observeAll(workspaceId: String): Flow<List<ShoppingItem>> =
         items.observeAll(workspaceId).map { list -> list.map { it.toShoppingItem() } }
@@ -108,6 +110,7 @@ class ShoppingItemRepository(
         val timestamp = now()
         database.withTransaction {
             items.softDelete(id, timestamp)
+            search.remove(id)
             val opId = operations.enqueue(
                 SyncOperationEntity(
                     recordId = id,
@@ -133,6 +136,7 @@ class ShoppingItemRepository(
     private suspend fun enqueue(entity: ShoppingItemEntity, operation: SyncOperationType) {
         database.withTransaction {
             items.upsert(entity)
+            search.index(EntityType.SHOPPING_ITEM, entity.id, entity.sync.workspaceId, entity.name, entity.note.orEmpty())
             val opId = operations.enqueue(
                 SyncOperationEntity(
                     recordId = entity.id,

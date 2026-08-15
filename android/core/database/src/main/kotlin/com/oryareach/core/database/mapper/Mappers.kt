@@ -1,6 +1,8 @@
 package com.oryareach.core.database.mapper
 
 import com.oryareach.core.database.entity.AppSettingsEntity
+import com.oryareach.core.database.entity.CycleEntryEntity
+import com.oryareach.core.database.entity.DocumentEntity
 import com.oryareach.core.database.entity.FolderEntity
 import com.oryareach.core.database.entity.ImportantDateEntity
 import com.oryareach.core.database.entity.MenstrualCycleEntity
@@ -8,6 +10,8 @@ import com.oryareach.core.database.entity.ShoppingItemEntity
 import com.oryareach.core.database.entity.SyncMetaEntity
 import com.oryareach.core.database.entity.TaskEntity
 import com.oryareach.core.model.AppSettings
+import com.oryareach.core.model.CycleEntry
+import com.oryareach.core.model.Document
 import com.oryareach.core.model.Folder
 import com.oryareach.core.model.ImportantDate
 import com.oryareach.core.model.MenstrualCycle
@@ -33,6 +37,8 @@ fun TaskEntity.toTask() = Task(
     dueDate = dueDate?.let(LocalDate::parse),
     assignee = assignee,
     note = note,
+    recurrence = recurrenceFrequency?.let { com.oryareach.core.model.Recurrence(it, recurrenceInterval ?: 1) },
+    tags = tags,
 )
 
 fun ShoppingItemEntity.toShoppingItem() = ShoppingItem(
@@ -58,6 +64,18 @@ fun AppSettingsEntity.toAppSettings() = AppSettings(
 
 fun FolderEntity.toFolder() = Folder(id = id, name = name, parentId = parentId, path = path)
 
+fun DocumentEntity.toDocument() = Document(
+    id = id,
+    folderId = folderId,
+    taskId = taskId,
+    cycleId = cycleId,
+    name = name,
+    mimeType = mimeType,
+    sizeBytes = sizeBytes,
+    sha256 = sha256,
+    thumbnailBase64 = thumbnailBase64,
+)
+
 fun ImportantDateEntity.toImportantDate() = ImportantDate(
     id = id,
     date = LocalDate.parse(date),
@@ -72,6 +90,16 @@ fun MenstrualCycleEntity.toCycle() = MenstrualCycle(
     note = note,
 )
 
+fun CycleEntryEntity.toCycleEntry() = CycleEntry(
+    id = id,
+    date = LocalDate.parse(date),
+    flow = flow,
+    symptoms = symptoms,
+    mood = mood,
+    pain = pain,
+    note = note,
+)
+
 /** Builds the local row for a record that arrived from the server, already synced. */
 fun Task.toEntity(workspaceId: String, record: RemoteRecord, now: Long) = TaskEntity(
     id = id,
@@ -82,6 +110,9 @@ fun Task.toEntity(workspaceId: String, record: RemoteRecord, now: Long) = TaskEn
     dueDate = dueDate?.toString(),
     assignee = assignee,
     note = note,
+    recurrenceFrequency = recurrence?.frequency,
+    recurrenceInterval = recurrence?.interval,
+    tags = tags,
     sync = record.toSyncMeta(workspaceId, now),
 )
 
@@ -116,6 +147,19 @@ fun Folder.toEntity(workspaceId: String, record: RemoteRecord, now: Long) = Fold
     sync = record.toSyncMeta(workspaceId, now),
 )
 
+fun Document.toEntity(workspaceId: String, record: RemoteRecord, now: Long) = DocumentEntity(
+    id = id,
+    folderId = folderId,
+    taskId = taskId,
+    cycleId = cycleId,
+    name = name,
+    mimeType = mimeType,
+    sizeBytes = sizeBytes,
+    sha256 = sha256,
+    thumbnailBase64 = thumbnailBase64,
+    sync = record.toSyncMeta(workspaceId, now),
+)
+
 fun ImportantDate.toEntity(workspaceId: String, record: RemoteRecord, now: Long) = ImportantDateEntity(
     id = id,
     date = date.toString(),
@@ -132,6 +176,17 @@ fun MenstrualCycle.toEntity(workspaceId: String, record: RemoteRecord, now: Long
         note = note,
         sync = record.toSyncMeta(workspaceId, now),
     )
+
+fun CycleEntry.toEntity(workspaceId: String, record: RemoteRecord, now: Long) = CycleEntryEntity(
+    id = id,
+    date = date.toString(),
+    flow = flow,
+    symptoms = symptoms,
+    mood = mood,
+    pain = pain,
+    note = note,
+    sync = record.toSyncMeta(workspaceId, now),
+)
 
 private fun RemoteRecord.toSyncMeta(workspaceId: String, now: Long) = SyncMetaEntity(
     workspaceId = workspaceId,

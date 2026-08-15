@@ -3,6 +3,7 @@ package com.oryareach.feature.tasks
 import androidx.annotation.StringRes
 import com.oryareach.core.model.Assignee
 import com.oryareach.core.model.Priority
+import com.oryareach.core.model.RecurrenceFrequency
 import com.oryareach.core.model.TaskCategory
 
 @StringRes
@@ -19,6 +20,14 @@ internal fun Priority.labelRes(): Int = when (this) {
     Priority.LOW -> R.string.priority_low
     Priority.NORMAL -> R.string.priority_normal
     Priority.HIGH -> R.string.priority_high
+}
+
+@StringRes
+internal fun RecurrenceFrequency?.recurrenceLabelRes(): Int = when (this) {
+    null -> R.string.tasks_recurrence_none
+    RecurrenceFrequency.DAILY -> R.string.tasks_recurrence_daily
+    RecurrenceFrequency.WEEKLY -> R.string.tasks_recurrence_weekly
+    RecurrenceFrequency.MONTHLY -> R.string.tasks_recurrence_monthly
 }
 
 @StringRes

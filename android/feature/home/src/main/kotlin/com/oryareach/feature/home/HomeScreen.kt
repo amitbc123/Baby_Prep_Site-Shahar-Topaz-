@@ -29,6 +29,7 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -74,46 +75,51 @@ fun HomeScreen(
     }
 
     Scaffold(modifier = modifier.fillMaxSize().safeDrawingPadding()) { padding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .verticalScroll(rememberScrollState())
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
+        PullToRefreshBox(
+            isRefreshing = uiState.refreshing,
+            onRefresh = actions::onRefresh,
+            modifier = Modifier.fillMaxSize().padding(padding),
         ) {
-            if (!uiState.hasDueDate) {
-                NoDueDateCard(actions = actions)
-            } else {
-                MoonCountdown(uiState = uiState)
-
-                Text(
-                    text = dailyMessage(),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.fillMaxWidth(),
-                )
-
-                uiState.progress?.let { progress -> WeeklyInfoCard(progress = progress) }
-
-                BudgetSummaryCard(uiState = uiState)
-
-                if (uiState.openTaskCount > 0) {
-                    OpenTasksCard(count = uiState.openTaskCount)
-                }
-
-                TextButton(onClick = actions::onEditDueDate, modifier = Modifier.fillMaxWidth()) {
-                    Text(stringResource(R.string.home_edit_due_date))
-                }
-            }
-
-            TextButton(
-                onClick = { importLauncher.launch(arrayOf("application/json")) },
-                enabled = !uiState.importing,
-                modifier = Modifier.fillMaxWidth(),
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
-                Text(stringResource(R.string.home_import_from_web))
+                if (!uiState.hasDueDate) {
+                    NoDueDateCard(actions = actions)
+                } else {
+                    MoonCountdown(uiState = uiState)
+
+                    Text(
+                        text = dailyMessage(),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+
+                    uiState.progress?.let { progress -> WeeklyInfoCard(progress = progress) }
+
+                    BudgetSummaryCard(uiState = uiState)
+
+                    if (uiState.openTaskCount > 0) {
+                        OpenTasksCard(count = uiState.openTaskCount)
+                    }
+
+                    TextButton(onClick = actions::onEditDueDate, modifier = Modifier.fillMaxWidth()) {
+                        Text(stringResource(R.string.home_edit_due_date))
+                    }
+                }
+
+                TextButton(
+                    onClick = { importLauncher.launch(arrayOf("application/json")) },
+                    enabled = !uiState.importing,
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    Text(stringResource(R.string.home_import_from_web))
+                }
             }
         }
     }
@@ -149,12 +155,12 @@ fun HomeScreen(
     }
 
     if (uiState.datePickerVisible) {
-        val pickerState = rememberDatePickerState(initialSelectedDateMillis = uiState.editingDueDate?.toUtcMillis())
+        val pickerState = rememberDatePickerState(initialSelectedDateMillis = uiState.editingLastPeriodDate?.toUtcMillis())
         DatePickerDialog(
             onDismissRequest = actions::onDismissDatePicker,
             confirmButton = {
                 TextButton(onClick = {
-                    pickerState.selectedDateMillis?.let { actions.onDueDateChange(it.toLocalDate()) }
+                    pickerState.selectedDateMillis?.let { actions.onLastPeriodChange(it.toLocalDate()) }
                 }) { Text(stringResource(R.string.home_pick_confirm)) }
             },
             dismissButton = {
@@ -339,7 +345,7 @@ private fun DueDateForm(uiState: HomeUiState, actions: HomeActions) {
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         OutlinedButton(onClick = actions::onOpenDatePicker, modifier = Modifier.fillMaxWidth()) {
-            Text(uiState.editingDueDate?.toString() ?: stringResource(R.string.home_due_date_field))
+            Text(uiState.editingLastPeriodDate?.toString() ?: stringResource(R.string.home_due_date_field))
         }
 
         OutlinedTextField(
@@ -390,9 +396,10 @@ private object NoopHomeActions : HomeActions {
     override fun onDismissSheet() = Unit
     override fun onOpenDatePicker() = Unit
     override fun onDismissDatePicker() = Unit
-    override fun onDueDateChange(value: LocalDate) = Unit
+    override fun onLastPeriodChange(value: LocalDate) = Unit
     override fun onBabyNameChange(value: String) = Unit
     override fun onSubmit() = Unit
     override fun onImportJson(json: String) = Unit
     override fun onDismissImportResult() = Unit
+    override fun onRefresh() = Unit
 }

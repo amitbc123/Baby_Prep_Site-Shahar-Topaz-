@@ -29,6 +29,11 @@ interface PairingActions {
     fun onFinishRecoveryPhrase()
     fun onGenerateInvite()
     fun onApproveDevice(deviceKeyId: String)
+    fun onRevokeDevice(deviceKeyId: String)
+    fun onShowRecoveryPhraseEntry()
+    fun onDismissRecoveryPhraseEntry()
+    fun onRecoveryPhraseInputChange(value: String)
+    fun onSubmitRecoveryPhrase()
     fun onRefresh()
 }
 
@@ -138,6 +143,53 @@ class PairingViewModel(
 
     override fun onChooseJoin() = set { it.copy(stage = PairingStage.EnterCode, errorMessage = null) }
 
+    override fun onShowRecoveryPhraseEntry() = set {
+        it.copy(stage = PairingStage.EnterRecoveryPhrase, recoveryPhraseInput = "", errorMessage = null)
+    }
+
+    override fun onDismissRecoveryPhraseEntry() {
+        set { it.copy(recoveryPhraseInput = "", errorMessage = null) }
+        onRefresh()
+    }
+
+    override fun onRecoveryPhraseInputChange(value: String) =
+        set { it.copy(recoveryPhraseInput = value, errorMessage = null) }
+
+    /**
+     * Recovers the key directly from the 24-word phrase instead of waiting for a partner
+     * device to approve this one — the only path back in with no other device left to ask.
+     * Needs the workspace id from wherever this device already knows it (joined but still
+     * waiting) or from the account's membership (never joined on this device at all); a
+     * phrase alone carries no workspace id of its own.
+     */
+    override fun onSubmitRecoveryPhrase() {
+        val phrase = _uiState.value.recoveryPhraseInput
+        if (phrase.isBlank() || _uiState.value.busy) return
+        busy(true)
+
+        viewModelScope.launch {
+            val workspaceId = identity.workspaceId ?: when (val remote = workspaces.currentWorkspaceId()) {
+                is AppResult.Failure -> return@launch fail(remote.error)
+                is AppResult.Success -> remote.data ?: return@launch fail(AppError.Crypto.KeyUnavailable)
+            }
+
+            when (val decoded = RecoveryPhrase.decode(phrase)) {
+                is AppResult.Failure -> fail(decoded.error)
+                is AppResult.Success -> {
+                    val key = decoded.data
+                    identity.workspaceId = workspaceId
+                    identity.saveWorkspaceKey(key)
+                    // Publishes this device's key too, so it shows up in device management —
+                    // recovering the workspace key doesn't mean this device was ever registered.
+                    registerDevice(workspaceId)
+                    onWorkspaceOpened(workspaceId, key)
+                    showReady(workspaceId)
+                    _effects.trySend(PairingEffect.Completed)
+                }
+            }
+        }
+    }
+
     override fun onCodeChange(value: String) {
         set { it.copy(enteredCode = InvitationToken.normalize(value), errorMessage = null) }
     }
@@ -216,6 +268,27 @@ class PairingViewModel(
         }
     }
 
+    /**
+     * Marks a partner device as revoked so it stops being offered as a pairing target for
+     * future key-wrap grants. This does not end that device's ongoing Supabase Auth session
+     * or rotate the workspace key — see `supabase/migrations/0006_revoke_device_key.sql`.
+     */
+    override fun onRevokeDevice(deviceKeyId: String) {
+        val workspaceId = identity.workspaceId ?: return
+        if (_uiState.value.busy) return
+        busy(true)
+
+        viewModelScope.launch {
+            when (val revoked = workspaces.revokeDevice(deviceKeyId)) {
+                is AppResult.Failure -> fail(revoked.error)
+                is AppResult.Success -> {
+                    busy(false)
+                    showReady(workspaceId)
+                }
+            }
+        }
+    }
+
     /** For a device that has joined but not yet been handed the key. */
     private suspend fun tryClaimKey(workspaceId: String) {
         val deviceKeyId = identity.registeredKeyId
@@ -261,11 +334,18 @@ class PairingViewModel(
 
     private fun showReady(workspaceId: String) {
         viewModelScope.launch {
-            val pending = when (val devices = workspaces.devices(workspaceId)) {
-                is AppResult.Failure -> emptyList()
-                is AppResult.Success -> devices.data
-                    .filterNot { it.hasWrappedKey }
-                    .map { PendingDevice(it.deviceKeyId, it.label.orEmpty()) }
+            val (pending, revocable) = when (val devices = workspaces.devices(workspaceId)) {
+                is AppResult.Failure -> emptyList<PendingDevice>() to emptyList()
+                is AppResult.Success -> {
+                    val active = devices.data.filterNot { it.isRevoked }
+                    val pendingList = active
+                        .filterNot { it.hasWrappedKey }
+                        .map { PendingDevice(it.deviceKeyId, it.label.orEmpty()) }
+                    val revocableList = active
+                        .filter { it.hasWrappedKey && it.deviceKeyId != identity.registeredKeyId }
+                        .map { PairedDevice(it.deviceKeyId, it.label.orEmpty()) }
+                    pendingList to revocableList
+                }
             }
 
             set { state ->
@@ -275,6 +355,7 @@ class PairingViewModel(
                     stage = PairingStage.Ready(
                         inviteCode = existing?.inviteCode,
                         pendingDevices = pending,
+                        revocableDevices = revocable,
                     ),
                 )
             }
@@ -305,5 +386,8 @@ private fun AppError.toMessageRes(): Int = when (this) {
         else -> R.string.pairing_error_generic
     }
     is AppError.Crypto.DecryptionFailed -> R.string.pairing_error_key_mismatch
+    // Only reachable here via RecoveryPhrase.decode's failure — a malformed or mistyped
+    // phrase, checksummed so it fails loudly rather than silently yielding a wrong key.
+    is AppError.Crypto.KeyUnavailable -> R.string.pairing_error_invalid_phrase
     else -> R.string.pairing_error_generic
 }

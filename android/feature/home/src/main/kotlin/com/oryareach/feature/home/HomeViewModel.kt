@@ -9,9 +9,12 @@ import com.oryareach.core.database.repository.ShoppingItemRepository
 import com.oryareach.core.database.repository.TaskRepository
 import com.oryareach.core.domain.importer.parseWebSnapshot
 import com.oryareach.core.domain.importer.toImportedSnapshot
+import com.oryareach.core.domain.pregnancy.dueDateFromLastPeriod
 import com.oryareach.core.domain.pregnancy.getPregnancyProgress
+import com.oryareach.core.domain.pregnancy.lastPeriodFromDueDate
 import com.oryareach.core.domain.shopping.calculateBudget
 import com.oryareach.core.network.auth.AuthRepository
+import com.oryareach.core.sync.SyncEngine
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -29,11 +32,12 @@ interface HomeActions {
     fun onDismissSheet()
     fun onOpenDatePicker()
     fun onDismissDatePicker()
-    fun onDueDateChange(value: LocalDate)
+    fun onLastPeriodChange(value: LocalDate)
     fun onBabyNameChange(value: String)
     fun onSubmit()
     fun onImportJson(json: String)
     fun onDismissImportResult()
+    fun onRefresh()
 }
 
 /**
@@ -46,6 +50,7 @@ class HomeViewModel(
     private val shoppingRepository: ShoppingItemRepository,
     private val importantDateRepository: ImportantDateRepository,
     private val auth: AuthRepository,
+    private val syncEngine: SyncEngine,
     private val workspaceId: () -> String?,
     private val today: () -> LocalDate = { Clock.System.todayIn(TimeZone.currentSystemDefault()) },
     private val newId: () -> String = { java.util.UUID.randomUUID().toString() },
@@ -76,7 +81,7 @@ class HomeViewModel(
                         computed.copy(
                             sheetVisible = current.sheetVisible,
                             datePickerVisible = current.datePickerVisible,
-                            editingDueDate = current.editingDueDate,
+                            editingLastPeriodDate = current.editingLastPeriodDate,
                             editingBabyName = current.editingBabyName,
                         )
                     }
@@ -86,27 +91,31 @@ class HomeViewModel(
     }
 
     override fun onEditDueDate() = set {
-        it.copy(sheetVisible = true, editingDueDate = it.dueDate, editingBabyName = it.babyName.orEmpty())
+        it.copy(
+            sheetVisible = true,
+            editingLastPeriodDate = it.dueDate?.let(::lastPeriodFromDueDate),
+            editingBabyName = it.babyName.orEmpty(),
+        )
     }
 
     override fun onDismissSheet() = set { it.copy(sheetVisible = false) }
     override fun onOpenDatePicker() = set { it.copy(datePickerVisible = true) }
     override fun onDismissDatePicker() = set { it.copy(datePickerVisible = false) }
-    override fun onDueDateChange(value: LocalDate) = set {
-        it.copy(editingDueDate = value, datePickerVisible = false)
+    override fun onLastPeriodChange(value: LocalDate) = set {
+        it.copy(editingLastPeriodDate = value, datePickerVisible = false)
     }
     override fun onBabyNameChange(value: String) = set { it.copy(editingBabyName = value) }
 
     override fun onSubmit() {
         val state = _uiState.value
         val workspace = workspaceId() ?: return
-        val dueDate = state.editingDueDate ?: return
+        val lastPeriodDate = state.editingLastPeriodDate ?: return
 
         viewModelScope.launch {
             settingsRepository.save(
                 workspaceId = workspace,
                 userId = auth.currentUserId().orEmpty(),
-                dueDate = dueDate,
+                dueDate = dueDateFromLastPeriod(lastPeriodDate),
                 babyName = state.editingBabyName.ifBlank { null },
             )
             set { it.copy(sheetVisible = false) }
@@ -186,6 +195,22 @@ class HomeViewModel(
     }
 
     override fun onDismissImportResult() = set { it.copy(importResult = null) }
+
+    /**
+     * Pull-to-refresh: the app otherwise only syncs on a 6-hour periodic worker or right after
+     * a local write, so there was no way to ask "check the partner's changes now" from the UI.
+     * Calls SyncEngine directly rather than going through WorkManager/SyncTrigger, since this
+     * needs to await completion to know when to stop spinning.
+     */
+    override fun onRefresh() {
+        if (_uiState.value.refreshing) return
+        set { it.copy(refreshing = true) }
+
+        viewModelScope.launch {
+            syncEngine.sync()
+            set { it.copy(refreshing = false) }
+        }
+    }
 
     private suspend fun taskTitlesSnapshot(workspace: String): Set<String> =
         taskRepository.observeAll(workspace).first().map { it.title.trim().lowercase() }.toSet()

@@ -1,6 +1,7 @@
 package com.oryareach.core.network.di
 
 import com.oryareach.core.network.SupabaseClientProvider
+import com.oryareach.core.network.SupabaseDocumentBlobStore
 import com.oryareach.core.network.SupabaseRecordRemoteDataSource
 import com.oryareach.core.network.auth.AuthRepository
 import com.oryareach.core.network.auth.EncryptedSessionManager
@@ -8,6 +9,7 @@ import com.oryareach.core.network.auth.SupabaseAuthRepository
 import com.oryareach.core.network.workspace.SupabaseWorkspaceRepository
 import com.oryareach.core.network.workspace.WorkspaceRepository
 import com.oryareach.core.security.KeystoreBlobStore
+import com.oryareach.core.sync.DocumentBlobStore
 import com.oryareach.core.sync.RecordRemoteDataSource
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.auth.SessionManager
@@ -26,6 +28,7 @@ val networkModule = module {
 
     single<AuthRepository> { SupabaseAuthRepository(client = get(), sessionManager = get()) }
     single<WorkspaceRepository> { SupabaseWorkspaceRepository(get()) }
+    single<DocumentBlobStore> { SupabaseDocumentBlobStore(get()) }
 
     single<RecordRemoteDataSource> {
         @Suppress("UNCHECKED_CAST")

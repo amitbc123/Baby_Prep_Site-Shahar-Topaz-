@@ -43,4 +43,21 @@
     <string name="assignee_partner_two">Partner 2</string>
     <string name="assignee_both">Both</string>
     <string name="assignee_unassigned">Unassigned</string>
+    <string name="tasks_field_attachments">Attachments</string>
+    <string name="tasks_attach_document">Attach document</string>
+    <string name="tasks_scan_document">Scan document</string>
+    <string name="tasks_field_due_date">Due date</string>
+    <string name="tasks_due_date_clear">Clear due date</string>
+    <string name="tasks_due_date_confirm">Set</string>
+    <string name="tasks_due_date_cancel">Cancel</string>
+    <string name="tasks_field_recurrence">Repeat</string>
+    <string name="tasks_recurrence_none">Never</string>
+    <string name="tasks_recurrence_daily">Daily</string>
+    <string name="tasks_recurrence_weekly">Weekly</string>
+    <string name="tasks_recurrence_monthly">Monthly</string>
+    <string name="tasks_field_tags">Tags</string>
+    <string name="tasks_field_tag_input">Add a tag</string>
+    <string name="tasks_add_tag">Add</string>
+    <string name="tasks_remove_tag">Remove tag</string>
+    <string name="tasks_remove_attachment">Remove attachment</string>
 </resources>

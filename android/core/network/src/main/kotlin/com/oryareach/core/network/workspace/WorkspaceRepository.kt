@@ -17,6 +17,7 @@ data class PartnerDevice(
     val publicKey: ByteArray,
     val label: String?,
     val hasWrappedKey: Boolean,
+    val isRevoked: Boolean = false,
 ) {
     override fun equals(other: Any?): Boolean =
         this === other || (
@@ -25,7 +26,8 @@ data class PartnerDevice(
                 userId == other.userId &&
                 publicKey.contentEquals(other.publicKey) &&
                 label == other.label &&
-                hasWrappedKey == other.hasWrappedKey
+                hasWrappedKey == other.hasWrappedKey &&
+                isRevoked == other.isRevoked
             )
 
     override fun hashCode(): Int {
@@ -34,6 +36,7 @@ data class PartnerDevice(
         result = 31 * result + publicKey.contentHashCode()
         result = 31 * result + (label?.hashCode() ?: 0)
         result = 31 * result + hasWrappedKey.hashCode()
+        result = 31 * result + isRevoked.hashCode()
         return result
     }
 }
@@ -47,6 +50,13 @@ interface WorkspaceRepository {
     suspend fun devices(workspaceId: String): AppResult<List<PartnerDevice>>
     suspend fun uploadWrappedKey(workspaceId: String, deviceKeyId: String, blob: ByteArray): AppResult<Unit>
     suspend fun wrappedKeyFor(deviceKeyId: String): AppResult<ByteArray?>
+
+    /**
+     * Marks [deviceKeyId] as revoked. This stops it being offered for future key-wrap
+     * grants (see PairingViewModel's pending-device filter) — it does not end that
+     * device's ongoing Supabase Auth session or rotate the workspace key.
+     */
+    suspend fun revokeDevice(deviceKeyId: String): AppResult<Unit>
 }
 
 class SupabaseWorkspaceRepository(private val client: SupabaseClient) : WorkspaceRepository {
@@ -60,6 +70,7 @@ class SupabaseWorkspaceRepository(private val client: SupabaseClient) : Workspac
         @SerialName("user_id") val userId: String,
         @SerialName("public_key") val publicKey: String,
         val label: String? = null,
+        @SerialName("revoked_at") val revokedAt: String? = null,
     )
 
     @Serializable
@@ -139,8 +150,16 @@ class SupabaseWorkspaceRepository(private val client: SupabaseClient) : Workspac
                 publicKey = row.publicKey.fromPostgresHex(),
                 label = row.label,
                 hasWrappedKey = row.id in wrapped,
+                isRevoked = row.revokedAt != null,
             )
         }
+    }
+
+    override suspend fun revokeDevice(deviceKeyId: String): AppResult<Unit> = attempt<Unit> {
+        client.postgrest.rpc(
+            "revoke_device_key",
+            buildJsonObject { put("target_device_key_id", JsonPrimitive(deviceKeyId)) },
+        )
     }
 
     override suspend fun uploadWrappedKey(

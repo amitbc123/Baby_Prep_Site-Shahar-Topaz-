@@ -16,8 +16,10 @@ data class HomeUiState(
     // Derived from dueDate — a getter, never stored, so it can never go stale.
     val progress: PregnancyProgress? = null,
 
-    // Editable input: the due-date/name edit sheet.
-    val editingDueDate: LocalDate? = null,
+    // Editable input: the last-period/name edit sheet. The due date itself is derived from
+    // this (via `dueDateFromLastPeriod`) at submit time, not entered directly — see
+    // `PregnancyProgress.kt`'s doc comment for why that's the more accurate starting point.
+    val editingLastPeriodDate: LocalDate? = null,
     val editingBabyName: String = "",
 
     // Transient UI-only.
@@ -25,9 +27,10 @@ data class HomeUiState(
     val datePickerVisible: Boolean = false,
     val importing: Boolean = false,
     val importResult: ImportResult? = null,
+    val refreshing: Boolean = false,
 ) {
     val hasDueDate: Boolean get() = dueDate != null
-    val canSubmitForm: Boolean get() = editingDueDate != null
+    val canSubmitForm: Boolean get() = editingLastPeriodDate != null
 }
 
 sealed interface ImportResult {

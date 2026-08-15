@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="search_title">חיפוש</string>
+    <string name="search_placeholder">חיפוש בכל מקום…</string>
+    <string name="search_no_results">אין תוצאות.</string>
+
+    <string name="search_type_task">משימה</string>
+    <string name="search_type_shopping_item">קניות</string>
+    <string name="search_type_important_date">תאריך</string>
+    <string name="search_type_folder">תיקייה</string>
+    <string name="search_type_document">מסמך</string>
+    <string name="search_type_cycle">וסת</string>
+    <string name="search_type_cycle_entry">רשומת מחזור</string>
+    <string name="search_type_other">אחר</string>
+</resources>

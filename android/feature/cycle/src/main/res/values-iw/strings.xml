@@ -10,4 +10,65 @@
     <string name="cycle_history_row_ongoing">%1$s – נמשכת</string>
     <string name="cycle_history_row_range">%1$s – %2$s (%3$d ימים)</string>
     <string name="cycle_delete">מחיקה</string>
+
+    <string name="cycle_stats_title">סטטיסטיקה</string>
+    <string name="cycle_stats_count">וסתות שנרשמו: %1$d</string>
+    <string name="cycle_stats_avg_cycle">אורך מחזור ממוצע: %1$d ימים</string>
+    <string name="cycle_stats_avg_period">אורך וסת ממוצע: %1$d ימים</string>
+    <string name="cycle_stats_range">מחזור קצר–ארוך: %1$d–%2$d ימים</string>
+
+    <string name="cycle_prediction_title">תחזית</string>
+    <string name="cycle_prediction_insufficient">יש לרשום לפחות שני מחזורים כדי לראות תחזית.</string>
+    <string name="cycle_prediction_next_period">הווסת הבאה צפויה סביב %1$s</string>
+    <string name="cycle_prediction_fertile_window">חלון פוריות משוער: %1$s–%2$s</string>
+    <string name="cycle_prediction_ovulation">ביוץ משוער: %1$s</string>
+
+    <string name="cycle_calendar_title">לוח שנה</string>
+    <string name="cycle_calendar_previous_month">חודש קודם</string>
+    <string name="cycle_calendar_next_month">חודש הבא</string>
+    <string name="cycle_calendar_legend_actual">וסת רשומה</string>
+    <string name="cycle_calendar_legend_predicted">וסת צפויה</string>
+    <string name="cycle_calendar_legend_fertile">חלון פוריות</string>
+    <string name="cycle_calendar_legend_ovulation">ביוץ משוער</string>
+
+    <string name="cycle_day_sheet_title">%1$s</string>
+    <string name="cycle_day_flow">זרימה</string>
+    <string name="cycle_day_pain">כאב</string>
+    <string name="cycle_day_mood">מצב רוח</string>
+    <string name="cycle_day_symptoms">תסמינים</string>
+    <string name="cycle_day_note">הערה</string>
+    <string name="cycle_day_save">שמור</string>
+    <string name="cycle_day_delete_entry">מחיקת רשומה</string>
+
+    <string name="cycle_flow_spotting">כתמים</string>
+    <string name="cycle_flow_light">קלה</string>
+    <string name="cycle_flow_medium">בינונית</string>
+    <string name="cycle_flow_heavy">כבדה</string>
+
+    <string name="cycle_pain_none">ללא</string>
+    <string name="cycle_pain_mild">קל</string>
+    <string name="cycle_pain_moderate">בינוני</string>
+    <string name="cycle_pain_severe">חזק</string>
+
+    <string name="cycle_symptom_cramps">התכווצויות</string>
+    <string name="cycle_symptom_headache">כאב ראש</string>
+    <string name="cycle_symptom_bloating">נפיחות</string>
+    <string name="cycle_symptom_fatigue">עייפות</string>
+    <string name="cycle_symptom_nausea">בחילה</string>
+    <string name="cycle_symptom_backache">כאב גב</string>
+    <string name="cycle_symptom_tender_breasts">רגישות בחזה</string>
+    <string name="cycle_symptom_acne">אקנה</string>
+
+    <string name="cycle_mood_happy">שמחה</string>
+    <string name="cycle_mood_calm">רוגע</string>
+    <string name="cycle_mood_sad">עצב</string>
+    <string name="cycle_mood_irritable">עצבנות</string>
+    <string name="cycle_mood_anxious">חרדה</string>
+    <string name="cycle_mood_energetic">אנרגטיות</string>
+    <string name="cycle_mood_tired">עייפות</string>
+
+    <string name="cycle_attachments">קבצים מצורפים</string>
+    <string name="cycle_attach_document">צירוף מסמך</string>
+    <string name="cycle_scan_document">סריקת מסמך</string>
+    <string name="cycle_remove_attachment">הסרת קובץ מצורף</string>
 </resources>

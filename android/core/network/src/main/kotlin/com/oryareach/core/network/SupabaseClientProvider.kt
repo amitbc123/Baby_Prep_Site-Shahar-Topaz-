@@ -5,6 +5,7 @@ import io.github.jan.supabase.auth.Auth
 import io.github.jan.supabase.auth.SessionManager
 import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.postgrest.Postgrest
+import io.github.jan.supabase.storage.Storage
 
 /**
  * Builds the Supabase client from build configuration.
@@ -35,6 +36,7 @@ object SupabaseClientProvider {
                 sessionManager = sessions
             }
             install(Postgrest)
+            install(Storage)
         }
     }
 }
