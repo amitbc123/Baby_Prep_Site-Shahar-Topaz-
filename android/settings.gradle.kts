@@ -1,4 +1,5 @@
 pluginManagement {
+    includeBuild("build-logic")
     repositories {
         google {
             content {
@@ -23,3 +24,7 @@ dependencyResolutionManagement {
 rootProject.name = "or-yareach"
 
 include(":app")
+
+include(":core:model")
+include(":core:common")
+include(":core:crypto")

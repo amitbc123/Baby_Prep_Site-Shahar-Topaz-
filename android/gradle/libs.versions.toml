@@ -10,6 +10,7 @@ targetSdk = "37"
 activity = "1.13.0"
 appcompat = "1.8.0"
 biometric = "1.1.0"
+bouncycastle = "1.85.2"
 composeBom = "2026.08.00"
 coreKtx = "1.19.0"
 coroutines = "1.11.0"
@@ -19,7 +20,6 @@ junit = "4.13.2"
 koin = "4.2.2"
 kotest = "6.0.4"
 ktor = "3.5.2"
-lazysodium = "5.2.0"
 lifecycle = "2.11.0"
 navigation = "2.9.8"
 room = "2.8.4"
@@ -61,7 +61,7 @@ kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-t
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "datetime" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "serialization" }
 
-lazysodium-android = { module = "com.goterl:lazysodium-android", version.ref = "lazysodium" }
+bouncycastle = { module = "org.bouncycastle:bcprov-jdk18on", version.ref = "bouncycastle" }
 
 room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
@@ -79,10 +79,14 @@ junit = { module = "junit:junit", version.ref = "junit" }
 kotest-assertions = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest" }
 turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 
-# Referenced by build-logic convention plugins so they can apply these plugins by id.
+# Put on build-logic's compile classpath so convention plugins can apply these by id.
 plugin-agp = { module = "com.android.tools.build:gradle", version.ref = "agp" }
+# AGP 9 moved the Lint DSL here, and it is not on the compile classpath transitively.
+plugin-agp-common = { module = "com.android.tools.build:gradle-common-api", version.ref = "agp" }
 plugin-kotlin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 plugin-ksp = { module = "com.google.devtools.ksp:symbol-processing-gradle-plugin", version.ref = "ksp" }
+plugin-room = { module = "androidx.room:room-gradle-plugin", version.ref = "room" }
+plugin-compose = { module = "org.jetbrains.kotlin:compose-compiler-gradle-plugin", version.ref = "kotlin" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
