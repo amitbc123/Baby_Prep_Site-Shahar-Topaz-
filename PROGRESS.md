@@ -26,7 +26,7 @@ supersedes the private-by-default / opt-in-sharing model described in `task.md`.
 - [x] `:core:crypto` — key wrapping (HPKE) for pairing
 - [x] `:core:crypto` — recovery phrase (BIP-39, official vectors)
 - [ ] Theme ported from `src/index.css` (light + dark)
-- [ ] Supabase schema + RLS, first migration
+- [x] Supabase schema + RLS, first migration (25 access-control tests green)
 - [ ] Auth (email/password, Keystore-backed session)
 - [ ] Couple pairing end-to-end across two emulators
 - [ ] Room + SQLCipher (tasks, cycles, sync operations)
