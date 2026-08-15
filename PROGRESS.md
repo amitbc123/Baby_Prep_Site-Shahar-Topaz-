@@ -22,9 +22,9 @@ supersedes the private-by-default / opt-in-sharing model described in `task.md`.
 - [x] Convention plugins (application, library, compose, feature, room, jvm)
 - [x] Bilingual resources (en default, he) + `localeConfig`, RTL enabled
 - [x] `:core:model`, `:core:common` (AppResult / AppError, injectable dispatchers)
-- [x] `:core:crypto` — record encryption, 13 unit tests green
-- [ ] `:core:crypto` — key wrapping (HPKE) for pairing
-- [ ] `:core:crypto` — recovery phrase
+- [x] `:core:crypto` — record encryption; 32 crypto tests green
+- [x] `:core:crypto` — key wrapping (HPKE) for pairing
+- [x] `:core:crypto` — recovery phrase (BIP-39, official vectors)
 - [ ] Theme ported from `src/index.css` (light + dark)
 - [ ] Supabase schema + RLS, first migration
 - [ ] Auth (email/password, Keystore-backed session)

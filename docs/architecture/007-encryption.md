@@ -39,13 +39,24 @@ record id and version, so a ciphertext cannot be moved between records.
 |---|---|---|
 | Workspace key (32 B) | Encrypts every record and file | Device only, never sent unwrapped |
 | Device X25519 keypair | Receives the workspace key at pairing | Private half sealed by an Android Keystore AES-GCM key, blob in DataStore |
-| Recovery phrase | Last-resort unwrap of the workspace key | Written down by the user, never stored |
+| Recovery phrase | The workspace key itself, encoded | Written down by the user, never stored anywhere |
 
 The Keystore cannot hold raw X25519 material usable by HPKE, hence the wrap-the-private-key
 indirection rather than a Keystore-native key.
 
 **Pairing.** The inviting device seals the workspace key to the joining device's X25519
 public key using HPKE base mode. The server relays an opaque blob it cannot open.
+
+**Recovery phrase.** The workspace key is rendered as a 24-word BIP-39 mnemonic. The phrase
+*is* the key encoded, not a passphrase that unlocks a stored copy — a 32-byte key is exactly
+256 bits of BIP-39 entropy, which is exactly 24 words. Consequences: nothing extra is stored
+on the server, there are no KDF parameters that could drift between app versions, and there
+is no wrapped blob to lose. The BIP-39 checksum makes a mistyped phrase fail loudly rather
+than silently yielding a key that decrypts nothing. Verified against the official BIP-39
+English test vectors.
+
+The trade-off: rotating the workspace key changes the recovery phrase, so the user must be
+told to record the new one. Accepted — rotation is a rare, deliberate act.
 
 ## Consequences
 
