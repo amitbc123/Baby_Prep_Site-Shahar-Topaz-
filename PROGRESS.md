@@ -89,13 +89,26 @@ supersedes the private-by-default / opt-in-sharing model described in `task.md`.
       tests, since both need real network/PackageInstaller behavior
 
 ## Phase 3 — Port the existing app
-- [ ] Task model (full)
-- [ ] Shopping list + budget + alternatives
-- [ ] Important dates
-- [ ] Home dashboard: moon countdown, weekly fruit/animal/info
-- [ ] Hospital-bag preset
-- [ ] JSON import from the web app
-- [ ] Ported pregnancy and budget tests
+- [x] Task model — already full from Phase 1 (title/category/priority/dueDate/assignee/note/done)
+- [x] Shopping list + budget — `:feature:shopping`, `ShoppingItemRepository`, budget summary
+      (estimated/spent/bought) live on the list using `:core:domain`'s `calculateBudget`;
+      verified end-to-end on-device (create → mark bought → totals update correctly → syncs,
+      ciphertext-only confirmed). Alternatives (per-item price comparison) not yet ported —
+      the model/DB column exists (JSON list) but there's no UI to add one yet
+- [x] Important dates — `:feature:dates`, `ImportantDateRepository`, Material3 `DatePicker`;
+      verified end-to-end on-device including sync
+- [ ] Home dashboard: moon countdown, weekly fruit/animal/info — not started
+- [ ] Hospital-bag preset — not started (seed-12-tasks action)
+- [ ] JSON import from the web app — not started
+- [x] Ported pregnancy and budget tests — `:core:domain` (`PregnancyProgressTest`,
+      `BudgetTest`, `DailyMessageTest`), near line-for-line port of the Vitest suite
+
+  New this phase: `:core:domain` (pure Kotlin — `daysUntil`/`getPregnancyProgress`/
+  `isPastDate`, `calculateBudget`/`itemEffectivePrice`, `dailyMessageIndex`), Room migration
+  1→2 adding `shopping_items`/`important_dates` tables, `RoomSyncStore` generalized from a
+  hardcoded two-table `when` to check all four tables (was a latent bug waiting for a third
+  entity type). Weekly pregnancy-info/fruit/animal copy and the daily-message text are left
+  as bilingual string resources for the home-dashboard work, not ported as data here.
 
 ## Phase 4 — Folders & documents
 - [ ] Nested folders (5+ levels)

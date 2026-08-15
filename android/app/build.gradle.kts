@@ -60,6 +60,8 @@ dependencies {
     implementation(project(":feature:tasks"))
     implementation(project(":feature:cycle"))
     implementation(project(":feature:update"))
+    implementation(project(":feature:shopping"))
+    implementation(project(":feature:dates"))
 
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.appcompat)

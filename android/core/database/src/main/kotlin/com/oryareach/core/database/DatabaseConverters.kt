@@ -4,9 +4,13 @@ import androidx.room.TypeConverter
 import com.oryareach.core.model.Assignee
 import com.oryareach.core.model.EntityType
 import com.oryareach.core.model.Priority
+import com.oryareach.core.model.ShoppingAlternative
+import com.oryareach.core.model.ShoppingCategory
+import com.oryareach.core.model.ShoppingStatus
 import com.oryareach.core.model.SyncOperationType
 import com.oryareach.core.model.SyncStatus
 import com.oryareach.core.model.TaskCategory
+import kotlinx.serialization.json.Json
 
 /**
  * Enums are stored by name, not ordinal: an ordinal silently remaps every stored row if a
@@ -33,4 +37,17 @@ class DatabaseConverters {
     @TypeConverter fun operationToString(value: SyncOperationType): String = value.name
     @TypeConverter fun stringToOperation(value: String): SyncOperationType =
         SyncOperationType.valueOf(value)
+
+    @TypeConverter fun shoppingCategoryToString(value: ShoppingCategory): String = value.name
+    @TypeConverter fun stringToShoppingCategory(value: String): ShoppingCategory =
+        ShoppingCategory.valueOf(value)
+
+    @TypeConverter fun shoppingStatusToString(value: ShoppingStatus): String = value.name
+    @TypeConverter fun stringToShoppingStatus(value: String): ShoppingStatus =
+        ShoppingStatus.valueOf(value)
+
+    @TypeConverter fun alternativesToString(value: List<ShoppingAlternative>): String =
+        Json.encodeToString(value)
+    @TypeConverter fun stringToAlternatives(value: String): List<ShoppingAlternative> =
+        Json.decodeFromString(value)
 }

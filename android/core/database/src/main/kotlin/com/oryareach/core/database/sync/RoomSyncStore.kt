@@ -9,8 +9,12 @@ import com.oryareach.core.database.entity.SyncCursorEntity
 import com.oryareach.core.database.mapper.toEntity
 import com.oryareach.core.database.mapper.toTask
 import com.oryareach.core.database.mapper.toCycle
+import com.oryareach.core.database.mapper.toImportantDate
+import com.oryareach.core.database.mapper.toShoppingItem
 import com.oryareach.core.model.EntityType
+import com.oryareach.core.model.ImportantDate
 import com.oryareach.core.model.MenstrualCycle
+import com.oryareach.core.model.ShoppingItem
 import com.oryareach.core.model.SyncStatus
 import com.oryareach.core.model.Task
 import com.oryareach.core.sync.PushRequest
@@ -37,6 +41,8 @@ class RoomSyncStore(
 
     private val tasks get() = database.taskDao()
     private val cycles get() = database.menstrualCycleDao()
+    private val shoppingItems get() = database.shoppingItemDao()
+    private val importantDates get() = database.importantDateDao()
     private val operations get() = database.syncOperationDao()
     private val state get() = database.syncStateDao()
 
@@ -62,6 +68,8 @@ class RoomSyncStore(
         database.withTransaction {
             when (entityTypeOf(recordId)) {
                 EntityType.CYCLE -> cycles.markSynced(recordId, SyncStatus.SYNCED, version)
+                EntityType.SHOPPING_ITEM -> shoppingItems.markSynced(recordId, SyncStatus.SYNCED, version)
+                EntityType.IMPORTANT_DATE -> importantDates.markSynced(recordId, SyncStatus.SYNCED, version)
                 else -> tasks.markSynced(recordId, SyncStatus.SYNCED, version)
             }
             operations.removeByRecord(recordId)
@@ -83,6 +91,8 @@ class RoomSyncStore(
             )
             when (server.entityType) {
                 EntityType.CYCLE -> cycles.markSynced(recordId, SyncStatus.CONFLICT, server.version)
+                EntityType.SHOPPING_ITEM -> shoppingItems.markSynced(recordId, SyncStatus.CONFLICT, server.version)
+                EntityType.IMPORTANT_DATE -> importantDates.markSynced(recordId, SyncStatus.CONFLICT, server.version)
                 else -> tasks.markSynced(recordId, SyncStatus.CONFLICT, server.version)
             }
             // The queued operation is dropped: replaying it would just conflict again. The
@@ -122,6 +132,20 @@ class RoomSyncStore(
                         tasks.upsert(task.toEntity(workspace, record, now()))
                     }
 
+                    EntityType.SHOPPING_ITEM -> {
+                        val item = runCatching {
+                            json.decodeFromString<ShoppingItem>(decoded.data)
+                        }.getOrNull() ?: continue
+                        shoppingItems.upsert(item.toEntity(workspace, record, now()))
+                    }
+
+                    EntityType.IMPORTANT_DATE -> {
+                        val date = runCatching {
+                            json.decodeFromString<ImportantDate>(decoded.data)
+                        }.getOrNull() ?: continue
+                        importantDates.upsert(date.toEntity(workspace, record, now()))
+                    }
+
                     // Types this build does not handle yet stay on the server; the cursor is
                     // per workspace, so they arrive again once support ships.
                     else -> continue
@@ -148,9 +172,23 @@ class RoomSyncStore(
             Payload(json.encodeToString(it.toTask()), it.sync.version)
         }
 
+        EntityType.SHOPPING_ITEM -> shoppingItems.findById(recordId)?.let {
+            Payload(json.encodeToString(it.toShoppingItem()), it.sync.version)
+        }
+
+        EntityType.IMPORTANT_DATE -> importantDates.findById(recordId)?.let {
+            Payload(json.encodeToString(it.toImportantDate()), it.sync.version)
+        }
+
         else -> null
     }
 
-    private suspend fun entityTypeOf(recordId: String): EntityType =
-        if (cycles.findById(recordId) != null) EntityType.CYCLE else EntityType.TASK
+    /** Every syncable table is checked in turn; `TASK` is the fallback for a row not found
+     * anywhere, matching this store's original two-table behavior rather than crashing. */
+    private suspend fun entityTypeOf(recordId: String): EntityType = when {
+        cycles.findById(recordId) != null -> EntityType.CYCLE
+        shoppingItems.findById(recordId) != null -> EntityType.SHOPPING_ITEM
+        importantDates.findById(recordId) != null -> EntityType.IMPORTANT_DATE
+        else -> EntityType.TASK
+    }
 }

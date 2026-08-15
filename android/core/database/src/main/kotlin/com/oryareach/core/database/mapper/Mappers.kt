@@ -1,9 +1,13 @@
 package com.oryareach.core.database.mapper
 
+import com.oryareach.core.database.entity.ImportantDateEntity
 import com.oryareach.core.database.entity.MenstrualCycleEntity
+import com.oryareach.core.database.entity.ShoppingItemEntity
 import com.oryareach.core.database.entity.SyncMetaEntity
 import com.oryareach.core.database.entity.TaskEntity
+import com.oryareach.core.model.ImportantDate
 import com.oryareach.core.model.MenstrualCycle
+import com.oryareach.core.model.ShoppingItem
 import com.oryareach.core.model.SyncStatus
 import com.oryareach.core.model.Task
 import com.oryareach.core.sync.RemoteRecord
@@ -27,6 +31,28 @@ fun TaskEntity.toTask() = Task(
     note = note,
 )
 
+fun ShoppingItemEntity.toShoppingItem() = ShoppingItem(
+    id = id,
+    name = name,
+    category = category,
+    estimatedPrice = estimatedPrice,
+    actualPrice = actualPrice,
+    priority = priority,
+    status = status,
+    assignee = assignee,
+    note = note,
+    link = link,
+    alternatives = alternatives,
+    chosenAlternativeId = chosenAlternativeId,
+)
+
+fun ImportantDateEntity.toImportantDate() = ImportantDate(
+    id = id,
+    date = LocalDate.parse(date),
+    title = title,
+    wish = wish,
+)
+
 fun MenstrualCycleEntity.toCycle() = MenstrualCycle(
     id = id,
     startDate = LocalDate.parse(startDate),
@@ -44,6 +70,30 @@ fun Task.toEntity(workspaceId: String, record: RemoteRecord, now: Long) = TaskEn
     dueDate = dueDate?.toString(),
     assignee = assignee,
     note = note,
+    sync = record.toSyncMeta(workspaceId, now),
+)
+
+fun ShoppingItem.toEntity(workspaceId: String, record: RemoteRecord, now: Long) = ShoppingItemEntity(
+    id = id,
+    name = name,
+    category = category,
+    estimatedPrice = estimatedPrice,
+    actualPrice = actualPrice,
+    priority = priority,
+    status = status,
+    assignee = assignee,
+    note = note,
+    link = link,
+    alternatives = alternatives,
+    chosenAlternativeId = chosenAlternativeId,
+    sync = record.toSyncMeta(workspaceId, now),
+)
+
+fun ImportantDate.toEntity(workspaceId: String, record: RemoteRecord, now: Long) = ImportantDateEntity(
+    id = id,
+    date = date.toString(),
+    title = title,
+    wish = wish,
     sync = record.toSyncMeta(workspaceId, now),
 )
 

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dates_title">תאריכים</string>
+    <string name="dates_empty">אין עדיין תאריכים. הוסיפו את הראשון.</string>
+    <string name="dates_add">הוסף תאריך</string>
+    <string name="dates_edit_title">עריכת תאריך</string>
+    <string name="dates_add_title">תאריך חדש</string>
+    <string name="dates_field_pick_date">בחר תאריך</string>
+    <string name="dates_field_title">כותרת</string>
+    <string name="dates_field_wish">איחול (אופציונלי)</string>
+    <string name="dates_save">שמור</string>
+    <string name="dates_delete">מחק</string>
+    <string name="dates_pick_confirm">אישור</string>
+    <string name="dates_pick_cancel">ביטול</string>
+</resources>

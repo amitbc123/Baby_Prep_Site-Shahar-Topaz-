@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Event
+import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -37,6 +39,10 @@ import com.oryareach.feature.tasks.TasksViewModel
 import com.oryareach.feature.update.UpdateDialog
 import com.oryareach.feature.update.UpdateEffect
 import com.oryareach.feature.update.UpdateViewModel
+import com.oryareach.feature.shopping.ShoppingScreen
+import com.oryareach.feature.shopping.ShoppingViewModel
+import com.oryareach.feature.dates.DatesScreen
+import com.oryareach.feature.dates.DatesViewModel
 import androidx.compose.ui.platform.LocalContext
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
@@ -95,7 +101,7 @@ private fun UpdateHost(viewModel: UpdateViewModel = koinViewModel()) {
     }
 }
 
-private enum class HomeTab { Tasks, Cycle }
+private enum class HomeTab { Tasks, Shopping, Dates, Cycle }
 
 /**
  * A plain tab switch, not `navigation-compose`: two peer screens with no back-stack semantics
@@ -116,6 +122,18 @@ private fun HomeRoute() {
                     label = { Text(stringResource(com.oryareach.feature.tasks.R.string.tasks_title)) },
                 )
                 NavigationBarItem(
+                    selected = tab == HomeTab.Shopping,
+                    onClick = { tab = HomeTab.Shopping },
+                    icon = { Icon(Icons.Default.ShoppingCart, contentDescription = null) },
+                    label = { Text(stringResource(com.oryareach.feature.shopping.R.string.shopping_title)) },
+                )
+                NavigationBarItem(
+                    selected = tab == HomeTab.Dates,
+                    onClick = { tab = HomeTab.Dates },
+                    icon = { Icon(Icons.Default.Event, contentDescription = null) },
+                    label = { Text(stringResource(com.oryareach.feature.dates.R.string.dates_title)) },
+                )
+                NavigationBarItem(
                     selected = tab == HomeTab.Cycle,
                     onClick = { tab = HomeTab.Cycle },
                     icon = { Icon(Icons.Default.CalendarMonth, contentDescription = null) },
@@ -126,6 +144,8 @@ private fun HomeRoute() {
     ) { padding ->
         when (tab) {
             HomeTab.Tasks -> TasksRoute(modifier = androidx.compose.ui.Modifier.padding(padding))
+            HomeTab.Shopping -> ShoppingRoute(modifier = androidx.compose.ui.Modifier.padding(padding))
+            HomeTab.Dates -> DatesRoute(modifier = androidx.compose.ui.Modifier.padding(padding))
             HomeTab.Cycle -> CycleRoute(modifier = androidx.compose.ui.Modifier.padding(padding))
         }
     }
@@ -138,6 +158,24 @@ private fun TasksRoute(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     TasksScreen(uiState = uiState, actions = viewModel, modifier = modifier)
+}
+
+@Composable
+private fun ShoppingRoute(
+    modifier: androidx.compose.ui.Modifier = androidx.compose.ui.Modifier,
+    viewModel: ShoppingViewModel = koinViewModel(),
+) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    ShoppingScreen(uiState = uiState, actions = viewModel, modifier = modifier)
+}
+
+@Composable
+private fun DatesRoute(
+    modifier: androidx.compose.ui.Modifier = androidx.compose.ui.Modifier,
+    viewModel: DatesViewModel = koinViewModel(),
+) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    DatesScreen(uiState = uiState, actions = viewModel, modifier = modifier)
 }
 
 @Composable

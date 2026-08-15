@@ -5,6 +5,8 @@ import com.oryareach.core.database.DatabaseFactory
 import com.oryareach.core.database.DatabasePassphrase
 import com.oryareach.core.database.OrYareachDatabase
 import com.oryareach.core.database.repository.CycleRepository
+import com.oryareach.core.database.repository.ImportantDateRepository
+import com.oryareach.core.database.repository.ShoppingItemRepository
 import com.oryareach.core.database.repository.TaskRepository
 import com.oryareach.core.database.sync.RoomSyncStore
 import com.oryareach.core.network.di.workspaceIdQualifier
@@ -25,6 +27,8 @@ import com.oryareach.feature.pairing.PairingViewModel
 import com.oryareach.feature.tasks.TasksViewModel
 import com.oryareach.feature.cycle.CycleViewModel
 import com.oryareach.feature.update.UpdateViewModel
+import com.oryareach.feature.shopping.ShoppingViewModel
+import com.oryareach.feature.dates.DatesViewModel
 import org.koin.core.module.dsl.viewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
@@ -51,6 +55,8 @@ val appModule = module {
     single { DatabaseFactory.create(androidContext(), get()) }
     single { get<OrYareachDatabase>().taskDao() }
     single { get<OrYareachDatabase>().menstrualCycleDao() }
+    single { get<OrYareachDatabase>().shoppingItemDao() }
+    single { get<OrYareachDatabase>().importantDateDao() }
     single { get<OrYareachDatabase>().syncOperationDao() }
     single { get<OrYareachDatabase>().syncStateDao() }
 
@@ -79,6 +85,8 @@ val appModule = module {
     single<SyncTrigger> { WorkManagerSyncTrigger(androidContext()) }
     single { TaskRepository(database = get(), syncTrigger = get()) }
     single { CycleRepository(database = get(), syncTrigger = get()) }
+    single { ShoppingItemRepository(database = get(), syncTrigger = get()) }
+    single { ImportantDateRepository(database = get(), syncTrigger = get()) }
 
     viewModel { AuthViewModel(auth = get()) }
     viewModel {
@@ -100,6 +108,20 @@ val appModule = module {
     }
     viewModel {
         CycleViewModel(
+            repository = get(),
+            auth = get(),
+            workspaceId = { get<SessionState>().workspaceId },
+        )
+    }
+    viewModel {
+        ShoppingViewModel(
+            repository = get(),
+            auth = get(),
+            workspaceId = { get<SessionState>().workspaceId },
+        )
+    }
+    viewModel {
+        DatesViewModel(
             repository = get(),
             auth = get(),
             workspaceId = { get<SessionState>().workspaceId },
