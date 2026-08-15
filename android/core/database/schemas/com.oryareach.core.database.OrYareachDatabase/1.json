@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "ff0f6e59c0b08340d1ea67863d6d82f9",
+    "identityHash": "12013dfc0b6bda21561e7464425a991d",
     "entities": [
       {
         "tableName": "tasks",
@@ -337,11 +337,83 @@
             "createSql": "CREATE INDEX IF NOT EXISTS `index_sync_operations_entity_type_record_id` ON `${TABLE_NAME}` (`entity_type`, `record_id`)"
           }
         ]
+      },
+      {
+        "tableName": "sync_cursors",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`workspace_id` TEXT NOT NULL, `pulled_through` INTEGER NOT NULL, PRIMARY KEY(`workspace_id`))",
+        "fields": [
+          {
+            "fieldPath": "workspaceId",
+            "columnName": "workspace_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "pulledThrough",
+            "columnName": "pulled_through",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "workspace_id"
+          ]
+        }
+      },
+      {
+        "tableName": "sync_conflicts",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`record_id` TEXT NOT NULL, `entity_type` TEXT NOT NULL, `server_ciphertext` BLOB NOT NULL, `server_version` INTEGER NOT NULL, `server_updated_at` INTEGER NOT NULL, `detected_at` INTEGER NOT NULL, PRIMARY KEY(`record_id`))",
+        "fields": [
+          {
+            "fieldPath": "recordId",
+            "columnName": "record_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "entityType",
+            "columnName": "entity_type",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "serverCiphertext",
+            "columnName": "server_ciphertext",
+            "affinity": "BLOB",
+            "notNull": true
+          },
+          {
+            "fieldPath": "serverVersion",
+            "columnName": "server_version",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "serverUpdatedAt",
+            "columnName": "server_updated_at",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "detectedAt",
+            "columnName": "detected_at",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "record_id"
+          ]
+        }
       }
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'ff0f6e59c0b08340d1ea67863d6d82f9')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '12013dfc0b6bda21561e7464425a991d')"
     ]
   }
 }

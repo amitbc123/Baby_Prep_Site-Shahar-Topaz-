@@ -1,0 +1,53 @@
+package com.oryareach.app.di
+
+import com.oryareach.core.database.DatabaseFactory
+import com.oryareach.core.database.DatabasePassphrase
+import com.oryareach.core.database.OrYareachDatabase
+import com.oryareach.core.database.sync.RoomSyncStore
+import com.oryareach.core.network.di.workspaceIdQualifier
+import com.oryareach.core.security.KeystoreDatabasePassphrase
+import com.oryareach.core.sync.RecordCodec
+import com.oryareach.core.sync.SyncEngine
+import com.oryareach.core.sync.SyncStore
+import com.oryareach.core.sync.WorkspaceKeyProvider
+import org.koin.android.ext.koin.androidContext
+import org.koin.dsl.module
+
+/**
+ * Wiring for the sync stack.
+ *
+ * The workspace id and the workspace key are supplied as lambdas rather than values: neither
+ * exists until the user has signed in and the device has been paired, and the key disappears
+ * again when the app locks.
+ *
+ * Everything here is lazy. The database is not opened, and no network client is built, until
+ * something actually needs them — so the app starts even when Supabase is unconfigured.
+ */
+val appModule = module {
+
+    single { SessionState() }
+
+    // Consumed by :core:network, which must not depend on the session type.
+    single(workspaceIdQualifier) { { get<SessionState>().workspaceId } }
+
+    single<DatabasePassphrase> { KeystoreDatabasePassphrase(androidContext()) }
+
+    single { DatabaseFactory.create(androidContext(), get()) }
+    single { get<OrYareachDatabase>().taskDao() }
+    single { get<OrYareachDatabase>().menstrualCycleDao() }
+    single { get<OrYareachDatabase>().syncOperationDao() }
+    single { get<OrYareachDatabase>().syncStateDao() }
+
+    single<WorkspaceKeyProvider> { get<SessionState>().keyProvider() }
+    single { RecordCodec(keys = get()) }
+
+    single<SyncStore> {
+        RoomSyncStore(
+            database = get(),
+            codec = get(),
+            workspaceId = { get<SessionState>().workspaceId },
+        )
+    }
+
+    single { SyncEngine(store = get(), remote = get()) }
+}

@@ -1,0 +1,156 @@
+package com.oryareach.core.database.sync
+
+import androidx.room.withTransaction
+import com.oryareach.core.common.AppError
+import com.oryareach.core.common.AppResult
+import com.oryareach.core.database.OrYareachDatabase
+import com.oryareach.core.database.entity.SyncConflictEntity
+import com.oryareach.core.database.entity.SyncCursorEntity
+import com.oryareach.core.database.mapper.toEntity
+import com.oryareach.core.database.mapper.toTask
+import com.oryareach.core.database.mapper.toCycle
+import com.oryareach.core.model.EntityType
+import com.oryareach.core.model.MenstrualCycle
+import com.oryareach.core.model.SyncStatus
+import com.oryareach.core.model.Task
+import com.oryareach.core.sync.PushRequest
+import com.oryareach.core.sync.RecordCodec
+import com.oryareach.core.sync.RemoteRecord
+import com.oryareach.core.sync.SyncStore
+import kotlinx.serialization.json.Json
+
+/**
+ * The local half of sync, over Room.
+ *
+ * Serializes a record, hands it to the codec to be encrypted, and only then lets it near the
+ * network. On the way back it decrypts, deserializes and upserts. Records whose payload will
+ * not decrypt are skipped rather than dropped: they stay on the server, so a device that
+ * later gets the right key still receives them.
+ */
+class RoomSyncStore(
+    private val database: OrYareachDatabase,
+    private val codec: RecordCodec,
+    private val workspaceId: () -> String?,
+    private val now: () -> Long = System::currentTimeMillis,
+    private val json: Json = Json { ignoreUnknownKeys = true },
+) : SyncStore {
+
+    private val tasks get() = database.taskDao()
+    private val cycles get() = database.menstrualCycleDao()
+    private val operations get() = database.syncOperationDao()
+    private val state get() = database.syncStateDao()
+
+    override suspend fun pendingChanges(limit: Int): List<PushRequest> =
+        operations.peek(limit).mapNotNull { operation ->
+            val payload = serialize(operation.entityType, operation.recordId) ?: return@mapNotNull null
+            val encoded = codec.encode(operation.entityType, operation.recordId, payload.json)
+
+            when (encoded) {
+                is AppResult.Failure -> null
+                is AppResult.Success -> PushRequest(
+                    recordId = operation.recordId,
+                    entityType = operation.entityType,
+                    operation = operation.operation,
+                    ciphertext = encoded.data,
+                    baseVersion = payload.version,
+                    clientMutationId = operation.clientMutationId,
+                )
+            }
+        }
+
+    override suspend fun markSynced(recordId: String, version: Int) {
+        database.withTransaction {
+            when (entityTypeOf(recordId)) {
+                EntityType.CYCLE -> cycles.markSynced(recordId, SyncStatus.SYNCED, version)
+                else -> tasks.markSynced(recordId, SyncStatus.SYNCED, version)
+            }
+            operations.removeByRecord(recordId)
+            state.clearConflict(recordId)
+        }
+    }
+
+    override suspend fun markConflict(recordId: String, server: RemoteRecord) {
+        database.withTransaction {
+            state.saveConflict(
+                SyncConflictEntity(
+                    recordId = recordId,
+                    entityType = server.entityType,
+                    serverCiphertext = server.ciphertext,
+                    serverVersion = server.version,
+                    serverUpdatedAt = server.updatedAt,
+                    detectedAt = now(),
+                ),
+            )
+            when (server.entityType) {
+                EntityType.CYCLE -> cycles.markSynced(recordId, SyncStatus.CONFLICT, server.version)
+                else -> tasks.markSynced(recordId, SyncStatus.CONFLICT, server.version)
+            }
+            // The queued operation is dropped: replaying it would just conflict again. The
+            // local edit is still in the row, and the server's copy is parked alongside it.
+            operations.removeByRecord(recordId)
+        }
+    }
+
+    override suspend fun recordFailure(recordId: String, error: AppError) {
+        operations.recordFailureByRecord(recordId, error.toString())
+    }
+
+    override suspend fun applyRemote(records: List<RemoteRecord>) {
+        val workspace = workspaceId() ?: return
+
+        database.withTransaction {
+            for (record in records) {
+                // A record with a local edit still queued is left alone; overwriting it here
+                // would silently discard the user's unsent change.
+                if (operations.hasPending(record.id)) continue
+
+                val decoded = codec.decode(record.entityType, record.id, record.ciphertext)
+                if (decoded !is AppResult.Success) continue
+
+                when (record.entityType) {
+                    EntityType.CYCLE -> {
+                        val cycle = runCatching {
+                            json.decodeFromString<MenstrualCycle>(decoded.data)
+                        }.getOrNull() ?: continue
+                        cycles.upsert(cycle.toEntity(workspace, record, now()))
+                    }
+
+                    EntityType.TASK -> {
+                        val task = runCatching {
+                            json.decodeFromString<Task>(decoded.data)
+                        }.getOrNull() ?: continue
+                        tasks.upsert(task.toEntity(workspace, record, now()))
+                    }
+
+                    // Types this build does not handle yet stay on the server; the cursor is
+                    // per workspace, so they arrive again once support ships.
+                    else -> continue
+                }
+            }
+        }
+    }
+
+    override suspend fun pullCursor(): Long? = workspaceId()?.let { state.cursor(it) }
+
+    override suspend fun savePullCursor(cursor: Long) {
+        val workspace = workspaceId() ?: return
+        state.saveCursor(SyncCursorEntity(workspace, cursor))
+    }
+
+    private data class Payload(val json: String, val version: Int)
+
+    private suspend fun serialize(type: EntityType, recordId: String): Payload? = when (type) {
+        EntityType.CYCLE -> cycles.findById(recordId)?.let {
+            Payload(json.encodeToString(it.toCycle()), it.sync.version)
+        }
+
+        EntityType.TASK -> tasks.findById(recordId)?.let {
+            Payload(json.encodeToString(it.toTask()), it.sync.version)
+        }
+
+        else -> null
+    }
+
+    private suspend fun entityTypeOf(recordId: String): EntityType =
+        if (cycles.findById(recordId) != null) EntityType.CYCLE else EntityType.TASK
+}

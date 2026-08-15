@@ -50,6 +50,9 @@ dependencies {
     implementation(project(":core:common"))
     implementation(project(":core:crypto"))
     implementation(project(":core:database"))
+    implementation(project(":core:network"))
+    implementation(project(":core:security"))
+    implementation(project(":core:sync"))
     implementation(project(":core:ui"))
 
     implementation(libs.androidx.activity.compose)
@@ -57,4 +60,5 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.koin.android)
     implementation(libs.koin.androidx.compose)
+    implementation(libs.androidx.work.runtime)
 }

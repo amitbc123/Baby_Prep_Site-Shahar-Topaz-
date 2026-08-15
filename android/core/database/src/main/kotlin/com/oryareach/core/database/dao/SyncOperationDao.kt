@@ -30,4 +30,19 @@ interface SyncOperationDao {
      */
     @Query("DELETE FROM sync_operations WHERE record_id = :recordId AND id < :beforeId")
     suspend fun removeSuperseded(recordId: String, beforeId: Long)
+
+    @Query("DELETE FROM sync_operations WHERE record_id = :recordId")
+    suspend fun removeByRecord(recordId: String)
+
+    @Query(
+        """
+        UPDATE sync_operations
+        SET attempts = attempts + 1, last_error = :error
+        WHERE record_id = :recordId
+        """,
+    )
+    suspend fun recordFailureByRecord(recordId: String, error: String?)
+
+    @Query("SELECT EXISTS(SELECT 1 FROM sync_operations WHERE record_id = :recordId)")
+    suspend fun hasPending(recordId: String): Boolean
 }

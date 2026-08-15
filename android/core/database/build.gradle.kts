@@ -13,8 +13,11 @@ android {
 
 dependencies {
     api(project(":core:model"))
+    api(project(":core:sync"))
     implementation(project(":core:common"))
+    implementation(libs.kotlinx.serialization.json)
 
+    api(libs.room.runtime)
     implementation(libs.sqlcipher)
     implementation(libs.koin.android)
 

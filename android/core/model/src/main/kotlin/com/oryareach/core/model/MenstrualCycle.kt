@@ -1,6 +1,7 @@
 package com.oryareach.core.model
 
 import kotlinx.datetime.LocalDate
+import kotlinx.serialization.Serializable
 
 /**
  * One recorded menstrual period.
@@ -10,6 +11,7 @@ import kotlinx.datetime.LocalDate
  * persisted — a stored prediction goes stale the moment a new period is logged, and
  * presenting a stale estimate as a fact is exactly what the product must not do.
  */
+@Serializable
 data class MenstrualCycle(
     val id: String,
     val startDate: LocalDate,

@@ -1,6 +1,7 @@
 package com.oryareach.core.model
 
 import kotlinx.datetime.LocalDate
+import kotlinx.serialization.Serializable
 
 enum class TaskCategory {
     HOME_PREP,
@@ -10,6 +11,7 @@ enum class TaskCategory {
     OTHER,
 }
 
+@Serializable
 data class Task(
     val id: String,
     val title: String,
