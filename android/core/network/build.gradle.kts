@@ -1,14 +1,40 @@
+import java.util.Properties
+
 plugins {
     id("oryareach.android.library")
     alias(libs.plugins.kotlin.serialization)
 }
 
+/**
+ * Supabase connection details.
+ *
+ * Read from local.properties first, then from a Gradle property so CI can pass them with -P.
+ * `providers.gradleProperty` alone does NOT see local.properties — that file is an Android
+ * convention, not a Gradle one — so it has to be loaded explicitly. Done through
+ * `providers.fileContents` rather than a bare file read so the configuration cache tracks it
+ * and a changed value actually triggers a rebuild.
+ */
+val localProperties: Provider<Properties> =
+    providers.fileContents(rootProject.layout.projectDirectory.file("local.properties"))
+        .asText
+        .map { text ->
+            val parsed = Properties()
+            parsed.load(text.reader())
+            parsed
+        }
+
+fun connectionSetting(name: String): String =
+    localProperties.map { it.getProperty(name).orEmpty() }
+        .orElse("")
+        .get()
+        .ifBlank { providers.gradleProperty(name).getOrElse("") }
+
 android {
     namespace = "com.oryareach.core.network"
 
     defaultConfig {
-        buildConfigField("String", "SUPABASE_URL", "\"${providers.gradleProperty("supabaseUrl").getOrElse("")}\"")
-        buildConfigField("String", "SUPABASE_ANON_KEY", "\"${providers.gradleProperty("supabaseAnonKey").getOrElse("")}\"")
+        buildConfigField("String", "SUPABASE_URL", "\"${connectionSetting("supabaseUrl")}\"")
+        buildConfigField("String", "SUPABASE_ANON_KEY", "\"${connectionSetting("supabaseAnonKey")}\"")
     }
 
     buildFeatures {
