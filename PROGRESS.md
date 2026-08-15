@@ -30,7 +30,8 @@ supersedes the private-by-default / opt-in-sharing model described in `task.md`.
 - [ ] Auth (email/password, Keystore-backed session)
 - [ ] Couple pairing end-to-end across two emulators
 - [ ] Room + SQLCipher (tasks, cycles, sync operations)
-- [ ] Sync engine (push, pull, cursor, offline queue)
+- [x] Sync engine core: push/pull, cursor, conflict detection (11 tests)
+- [ ] Sync engine: Supabase wiring + WorkManager worker
 - [ ] Tasks: list / add / edit, offline
 - [ ] Cycle: log period start and end, history
 - [ ] Security acceptance tests (ciphertext-only, outsider access, tamper)
