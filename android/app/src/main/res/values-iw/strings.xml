@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">אור ירח</string>
+    <string name="app_name">סהר</string>
     <string name="foundations_title">תשתית</string>
     <string name="foundations_subtitle">האפליקציה בבנייה. שום דבר כאן עדיין לא סופי.</string>
     <string name="foundations_version">גרסה %1$s</string>
