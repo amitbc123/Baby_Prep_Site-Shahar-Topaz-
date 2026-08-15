@@ -15,9 +15,10 @@ class AndroidLibraryConventionPlugin : Plugin<Project> {
         extensions.configure<LibraryExtension> {
             configureAndroidCommon(this@with)
             // AGP 9 dropped targetSdk from library modules; it is set by the consuming app.
+            // consumerProguardFiles is left to individual modules: declaring it here would
+            // force every module to carry a file whether or not it has rules to contribute.
             defaultConfig {
                 testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-                consumerProguardFiles("consumer-rules.pro")
             }
         }
         configureKotlinAndroid()
