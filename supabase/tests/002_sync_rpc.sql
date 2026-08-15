@@ -4,7 +4,7 @@ begin;
 
 create extension if not exists pgtap with schema extensions;
 
-select plan(17);
+select plan(19);
 
 create schema if not exists tests;
 
@@ -261,6 +261,27 @@ select throws_ok(
     '42501',
     null,
     'an outsider cannot push to a workspace they do not belong to'
+);
+
+-- ---------------------------------------------------------------------------
+-- Attribution cannot be rewritten
+-- ---------------------------------------------------------------------------
+
+select tests.act_as(tests.uid('topaz'));
+
+select throws_ok(
+    $$ update public.records
+          set created_by = (select id from tests.ctx where name = 'topaz')
+        where id = '22222222-2222-2222-2222-222222222222' $$,
+    '42501',
+    null,
+    'a member cannot reassign authorship of an existing record'
+);
+
+select is(
+    (select created_by from public.records where id = '22222222-2222-2222-2222-222222222222'),
+    tests.uid('shahar'),
+    'the original author is unchanged'
 );
 
 select * from finish();
