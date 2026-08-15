@@ -20,10 +20,11 @@ val workspaceIdQualifier = named("workspaceId")
 
 val networkModule = module {
     single { KeystoreBlobStore(androidContext()) }
-    single<SessionManager> { EncryptedSessionManager(get()) }
+    single { EncryptedSessionManager(get()) }
+    single<SessionManager> { get<EncryptedSessionManager>() }
     single<SupabaseClient> { SupabaseClientProvider.create(sessions = get()) }
 
-    single<AuthRepository> { SupabaseAuthRepository(get()) }
+    single<AuthRepository> { SupabaseAuthRepository(client = get(), sessionManager = get()) }
     single<WorkspaceRepository> { SupabaseWorkspaceRepository(get()) }
 
     single<RecordRemoteDataSource> {

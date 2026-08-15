@@ -17,8 +17,21 @@ class EncryptedSessionManager(
     private val json: Json = Json { ignoreUnknownKeys = true },
 ) : SessionManager {
 
+    /**
+     * "Remember me" toggle: when false, a successful sign-in is kept in memory for this
+     * process only, so the next cold start finds no stored session. Reset to true after
+     * every save so a stale opt-out from a previous sign-in can never linger.
+     */
+    @Volatile
+    var persistNextSession: Boolean = true
+
     override suspend fun saveSession(session: UserSession) {
-        store.putString(KEY, json.encodeToString(session))
+        if (persistNextSession) {
+            store.putString(KEY, json.encodeToString(session))
+        } else {
+            store.remove(KEY)
+        }
+        persistNextSession = true
     }
 
     /**

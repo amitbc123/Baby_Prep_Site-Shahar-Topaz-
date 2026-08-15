@@ -22,11 +22,19 @@ interface AuthRepository {
     val state: Flow<AuthState>
     fun currentUserId(): String?
     suspend fun signUp(email: String, password: String): AppResult<Unit>
-    suspend fun signIn(email: String, password: String): AppResult<Unit>
+
+    /**
+     * [rememberMe] controls whether the session survives a restart. It defaults to true —
+     * this is what "remember me" being checked by default on the sign-in form maps to.
+     */
+    suspend fun signIn(email: String, password: String, rememberMe: Boolean = true): AppResult<Unit>
     suspend fun signOut(): AppResult<Unit>
 }
 
-class SupabaseAuthRepository(private val client: SupabaseClient) : AuthRepository {
+class SupabaseAuthRepository(
+    private val client: SupabaseClient,
+    private val sessionManager: EncryptedSessionManager,
+) : AuthRepository {
 
     override val state: Flow<AuthState> = client.auth.sessionStatus.map { status ->
         when (status) {
@@ -45,7 +53,8 @@ class SupabaseAuthRepository(private val client: SupabaseClient) : AuthRepositor
         }
     }
 
-    override suspend fun signIn(email: String, password: String): AppResult<Unit> = attempt {
+    override suspend fun signIn(email: String, password: String, rememberMe: Boolean): AppResult<Unit> = attempt {
+        sessionManager.persistNextSession = rememberMe
         client.auth.signInWith(Email) {
             this.email = email
             this.password = password

@@ -6,6 +6,7 @@
     <string name="auth_email">אימייל</string>
     <string name="auth_password">סיסמה</string>
     <string name="auth_password_hint">לפחות %1$d תווים</string>
+    <string name="auth_remember_me">זכור אותי</string>
     <string name="auth_show_password">הצג סיסמה</string>
     <string name="auth_hide_password">הסתר סיסמה</string>
     <string name="auth_sign_in">כניסה</string>

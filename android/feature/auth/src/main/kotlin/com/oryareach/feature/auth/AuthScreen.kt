@@ -13,7 +13,10 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Row
 import androidx.compose.material3.Button
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -125,6 +128,19 @@ fun AuthScreen(
                 modifier = Modifier.fillMaxWidth(),
             )
 
+            if (uiState.mode == AuthMode.SignIn) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.clickable { actions.onRememberMeChange(!uiState.rememberMe) },
+                ) {
+                    Checkbox(checked = uiState.rememberMe, onCheckedChange = actions::onRememberMeChange)
+                    Text(
+                        stringResource(R.string.auth_remember_me),
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                }
+            }
+
             uiState.infoMessage?.let { message ->
                 Text(
                     text = stringResource(message),
@@ -203,6 +219,7 @@ private object NoopAuthActions : AuthActions {
     override fun onEmailChange(value: String) = Unit
     override fun onPasswordChange(value: String) = Unit
     override fun onTogglePasswordVisibility() = Unit
+    override fun onRememberMeChange(value: Boolean) = Unit
     override fun onModeChange(mode: AuthMode) = Unit
     override fun onSubmit() = Unit
 }

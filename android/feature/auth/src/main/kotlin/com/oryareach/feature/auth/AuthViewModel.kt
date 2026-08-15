@@ -17,6 +17,7 @@ interface AuthActions {
     fun onEmailChange(value: String)
     fun onPasswordChange(value: String)
     fun onTogglePasswordVisibility()
+    fun onRememberMeChange(value: Boolean)
     fun onModeChange(mode: AuthMode)
     fun onSubmit()
 }
@@ -43,6 +44,10 @@ class AuthViewModel(private val auth: AuthRepository) : ViewModel(), AuthActions
         _uiState.update { it.copy(passwordVisible = !it.passwordVisible) }
     }
 
+    override fun onRememberMeChange(value: Boolean) {
+        _uiState.update { it.copy(rememberMe = value) }
+    }
+
     override fun onModeChange(mode: AuthMode) {
         _uiState.update { it.copy(mode = mode, errorMessage = null) }
     }
@@ -55,7 +60,7 @@ class AuthViewModel(private val auth: AuthRepository) : ViewModel(), AuthActions
 
         viewModelScope.launch {
             val result = when (state.mode) {
-                AuthMode.SignIn -> auth.signIn(state.email, state.password)
+                AuthMode.SignIn -> auth.signIn(state.email, state.password, state.rememberMe)
                 AuthMode.SignUp -> auth.signUp(state.email, state.password)
             }
 

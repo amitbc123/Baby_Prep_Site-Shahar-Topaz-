@@ -11,6 +11,7 @@ data class AuthUiState(
     val mode: AuthMode = AuthMode.SignIn,
     val email: String = "",
     val password: String = "",
+    val rememberMe: Boolean = true,
 
     // Transient UI-only: must not survive the screen
     val submitting: Boolean = false,
@@ -31,7 +32,7 @@ data class AuthUiState(
 
     companion object {
         /** Matches the minimum enforced by the Supabase project. */
-        const val MIN_PASSWORD_LENGTH = 12
+        const val MIN_PASSWORD_LENGTH = 8
     }
 }
 
