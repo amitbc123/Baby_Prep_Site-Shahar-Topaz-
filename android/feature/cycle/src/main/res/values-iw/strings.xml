@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cycle_title">מחזור</string>
+    <string name="cycle_no_ongoing">אין וסת רשומה כרגע.</string>
+    <string name="cycle_ongoing_started">הווסת התחילה %1$s</string>
+    <string name="cycle_start">התחלת וסת</string>
+    <string name="cycle_end">סיום וסת</string>
+    <string name="cycle_history_title">היסטוריה</string>
+    <string name="cycle_history_empty">עדיין לא נרשמו וסתות.</string>
+    <string name="cycle_history_row_ongoing">%1$s – נמשכת</string>
+    <string name="cycle_history_row_range">%1$s – %2$s (%3$d ימים)</string>
+    <string name="cycle_delete">מחיקה</string>
+</resources>

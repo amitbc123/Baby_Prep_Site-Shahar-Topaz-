@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cycle_title">Cycle</string>
+    <string name="cycle_no_ongoing">No period logged right now.</string>
+    <string name="cycle_ongoing_started">Period started %1$s</string>
+    <string name="cycle_start">Start period</string>
+    <string name="cycle_end">End period</string>
+    <string name="cycle_history_title">History</string>
+    <string name="cycle_history_empty">No periods logged yet.</string>
+    <string name="cycle_history_row_ongoing">%1$s – ongoing</string>
+    <string name="cycle_history_row_range">%1$s – %2$s (%3$d days)</string>
+    <string name="cycle_delete">Delete</string>
+</resources>

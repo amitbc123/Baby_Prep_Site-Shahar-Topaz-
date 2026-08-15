@@ -1,8 +1,21 @@
 package com.oryareach.app
 
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CalendarMonth
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material3.Icon
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -12,6 +25,8 @@ import com.oryareach.core.network.auth.AuthState
 import com.oryareach.feature.auth.AuthEffect
 import com.oryareach.feature.auth.AuthScreen
 import com.oryareach.feature.auth.AuthViewModel
+import com.oryareach.feature.cycle.CycleScreen
+import com.oryareach.feature.cycle.CycleViewModel
 import com.oryareach.feature.pairing.PairingEffect
 import com.oryareach.feature.pairing.PairingScreen
 import com.oryareach.feature.pairing.PairingViewModel
@@ -39,14 +54,62 @@ fun SaharApp(authState: AuthState) {
 
         workspaceId == null || !session.isUnlocked -> PairingRoute()
 
-        else -> TasksRoute()
+        else -> HomeRoute()
+    }
+}
+
+private enum class HomeTab { Tasks, Cycle }
+
+/**
+ * A plain tab switch, not `navigation-compose`: two peer screens with no back-stack semantics
+ * between them don't need a `NavHost`. Real navigation arrives with folders/documents in a
+ * later milestone, once there is something to navigate *into*.
+ */
+@Composable
+private fun HomeRoute() {
+    var tab by rememberSaveable { mutableStateOf(HomeTab.Tasks) }
+
+    Scaffold(
+        bottomBar = {
+            NavigationBar {
+                NavigationBarItem(
+                    selected = tab == HomeTab.Tasks,
+                    onClick = { tab = HomeTab.Tasks },
+                    icon = { Icon(Icons.Default.CheckCircle, contentDescription = null) },
+                    label = { Text(stringResource(com.oryareach.feature.tasks.R.string.tasks_title)) },
+                )
+                NavigationBarItem(
+                    selected = tab == HomeTab.Cycle,
+                    onClick = { tab = HomeTab.Cycle },
+                    icon = { Icon(Icons.Default.CalendarMonth, contentDescription = null) },
+                    label = { Text(stringResource(com.oryareach.feature.cycle.R.string.cycle_title)) },
+                )
+            }
+        },
+    ) { padding ->
+        when (tab) {
+            HomeTab.Tasks -> TasksRoute(modifier = androidx.compose.ui.Modifier.padding(padding))
+            HomeTab.Cycle -> CycleRoute(modifier = androidx.compose.ui.Modifier.padding(padding))
+        }
     }
 }
 
 @Composable
-private fun TasksRoute(viewModel: TasksViewModel = koinViewModel()) {
+private fun TasksRoute(
+    modifier: androidx.compose.ui.Modifier = androidx.compose.ui.Modifier,
+    viewModel: TasksViewModel = koinViewModel(),
+) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    TasksScreen(uiState = uiState, actions = viewModel)
+    TasksScreen(uiState = uiState, actions = viewModel, modifier = modifier)
+}
+
+@Composable
+private fun CycleRoute(
+    modifier: androidx.compose.ui.Modifier = androidx.compose.ui.Modifier,
+    viewModel: CycleViewModel = koinViewModel(),
+) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    CycleScreen(uiState = uiState, actions = viewModel, modifier = modifier)
 }
 
 @Composable

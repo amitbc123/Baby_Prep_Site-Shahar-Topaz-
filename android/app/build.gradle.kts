@@ -57,6 +57,7 @@ dependencies {
     implementation(project(":feature:auth"))
     implementation(project(":feature:pairing"))
     implementation(project(":feature:tasks"))
+    implementation(project(":feature:cycle"))
 
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.appcompat)
@@ -64,4 +65,5 @@ dependencies {
     implementation(libs.koin.android)
     implementation(libs.koin.androidx.compose)
     implementation(libs.androidx.work.runtime)
+    implementation(libs.compose.material.icons.extended)
 }

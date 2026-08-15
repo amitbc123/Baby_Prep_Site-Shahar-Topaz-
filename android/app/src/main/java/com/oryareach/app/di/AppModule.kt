@@ -4,6 +4,7 @@ import com.oryareach.app.sync.WorkManagerSyncTrigger
 import com.oryareach.core.database.DatabaseFactory
 import com.oryareach.core.database.DatabasePassphrase
 import com.oryareach.core.database.OrYareachDatabase
+import com.oryareach.core.database.repository.CycleRepository
 import com.oryareach.core.database.repository.TaskRepository
 import com.oryareach.core.database.sync.RoomSyncStore
 import com.oryareach.core.network.di.workspaceIdQualifier
@@ -17,6 +18,7 @@ import com.oryareach.core.sync.WorkspaceKeyProvider
 import com.oryareach.feature.auth.AuthViewModel
 import com.oryareach.feature.pairing.PairingViewModel
 import com.oryareach.feature.tasks.TasksViewModel
+import com.oryareach.feature.cycle.CycleViewModel
 import org.koin.core.module.dsl.viewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
@@ -63,6 +65,7 @@ val appModule = module {
 
     single<SyncTrigger> { WorkManagerSyncTrigger(androidContext()) }
     single { TaskRepository(database = get(), syncTrigger = get()) }
+    single { CycleRepository(database = get(), syncTrigger = get()) }
 
     viewModel { AuthViewModel(auth = get()) }
     viewModel {
@@ -77,6 +80,13 @@ val appModule = module {
     }
     viewModel {
         TasksViewModel(
+            repository = get(),
+            auth = get(),
+            workspaceId = { get<SessionState>().workspaceId },
+        )
+    }
+    viewModel {
+        CycleViewModel(
             repository = get(),
             auth = get(),
             workspaceId = { get<SessionState>().workspaceId },
