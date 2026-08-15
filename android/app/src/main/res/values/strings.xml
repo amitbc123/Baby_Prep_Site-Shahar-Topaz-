@@ -1,16 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Sahar</string>
-    <string name="foundations_title">Foundations</string>
-    <string name="foundations_subtitle">The app is being built. Nothing here is final yet.</string>
-    <string name="foundations_version">Version %1$s</string>
-    <string name="foundations_ready">Ready</string>
-    <string name="foundations_pending">In progress</string>
-    <string name="component_crypto">Encryption</string>
-    <string name="component_database">Encrypted local database</string>
-    <string name="component_theme">Theme and fonts</string>
-    <string name="component_backend">Backend and access control</string>
-    <string name="component_sync">Sync engine</string>
-    <string name="component_tasks">Tasks</string>
-    <string name="component_cycle">Cycle tracking</string>
 </resources>

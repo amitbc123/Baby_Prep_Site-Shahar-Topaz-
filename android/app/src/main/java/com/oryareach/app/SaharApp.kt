@@ -15,6 +15,8 @@ import com.oryareach.feature.auth.AuthViewModel
 import com.oryareach.feature.pairing.PairingEffect
 import com.oryareach.feature.pairing.PairingScreen
 import com.oryareach.feature.pairing.PairingViewModel
+import com.oryareach.feature.tasks.TasksScreen
+import com.oryareach.feature.tasks.TasksViewModel
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 
@@ -37,8 +39,14 @@ fun SaharApp(authState: AuthState) {
 
         workspaceId == null || !session.isUnlocked -> PairingRoute()
 
-        else -> FoundationsScreen(versionName = BuildConfig.VERSION_NAME)
+        else -> TasksRoute()
     }
+}
+
+@Composable
+private fun TasksRoute(viewModel: TasksViewModel = koinViewModel()) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    TasksScreen(uiState = uiState, actions = viewModel)
 }
 
 @Composable

@@ -1,18 +1,22 @@
 package com.oryareach.app.di
 
+import com.oryareach.app.sync.WorkManagerSyncTrigger
 import com.oryareach.core.database.DatabaseFactory
 import com.oryareach.core.database.DatabasePassphrase
 import com.oryareach.core.database.OrYareachDatabase
+import com.oryareach.core.database.repository.TaskRepository
 import com.oryareach.core.database.sync.RoomSyncStore
 import com.oryareach.core.network.di.workspaceIdQualifier
 import com.oryareach.core.security.KeystoreDatabasePassphrase
 import com.oryareach.core.sync.RecordCodec
 import com.oryareach.core.sync.SyncEngine
 import com.oryareach.core.sync.SyncStore
+import com.oryareach.core.sync.SyncTrigger
 import com.oryareach.core.security.DeviceIdentity
 import com.oryareach.core.sync.WorkspaceKeyProvider
 import com.oryareach.feature.auth.AuthViewModel
 import com.oryareach.feature.pairing.PairingViewModel
+import com.oryareach.feature.tasks.TasksViewModel
 import org.koin.core.module.dsl.viewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
@@ -57,12 +61,25 @@ val appModule = module {
 
     single { DeviceIdentity(get()) }
 
+    single<SyncTrigger> { WorkManagerSyncTrigger(androidContext()) }
+    single { TaskRepository(database = get(), syncTrigger = get()) }
+
     viewModel { AuthViewModel(auth = get()) }
     viewModel {
         PairingViewModel(
             workspaces = get(),
             identity = get(),
-            onWorkspaceOpened = { workspaceId, key -> get<SessionState>().open(workspaceId, key) },
+            onWorkspaceOpened = { workspaceId, key ->
+                get<SessionState>().open(workspaceId, key)
+                get<SyncTrigger>().syncNow()
+            },
+        )
+    }
+    viewModel {
+        TasksViewModel(
+            repository = get(),
+            auth = get(),
+            workspaceId = { get<SessionState>().workspaceId },
         )
     }
 }

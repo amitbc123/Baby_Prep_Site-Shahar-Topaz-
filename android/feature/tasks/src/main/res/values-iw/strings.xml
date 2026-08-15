@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="tasks_title">משימות</string>
+    <string name="tasks_empty">אין עדיין משימות. הוסיפו את הראשונה.</string>
+    <string name="tasks_add">הוספת משימה</string>
+    <string name="tasks_edit_title">עריכת משימה</string>
+    <string name="tasks_add_title">משימה חדשה</string>
+    <string name="tasks_field_title">כותרת</string>
+    <string name="tasks_field_note">הערה (לא חובה)</string>
+    <string name="tasks_field_category">קטגוריה</string>
+    <string name="tasks_field_priority">עדיפות</string>
+    <string name="tasks_field_assignee">משויך ל</string>
+    <string name="tasks_save">שמירה</string>
+    <string name="tasks_delete">מחיקה</string>
+
+    <string name="task_category_home_prep">הכנת הבית</string>
+    <string name="task_category_documents_and_insurance">מסמכים וביטוח</string>
+    <string name="task_category_medical">רפואי</string>
+    <string name="task_category_hospital_bag">תיק לבית החולים</string>
+    <string name="task_category_other">אחר</string>
+
+    <string name="priority_low">נמוכה</string>
+    <string name="priority_normal">רגילה</string>
+    <string name="priority_high">גבוהה</string>
+
+    <string name="assignee_partner_one">בן/בת זוג 1</string>
+    <string name="assignee_partner_two">בן/בת זוג 2</string>
+    <string name="assignee_both">שנינו</string>
+    <string name="assignee_unassigned">לא משויך</string>
+</resources>

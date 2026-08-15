@@ -36,3 +36,4 @@ include(":core:security")
 
 include(":feature:auth")
 include(":feature:pairing")
+include(":feature:tasks")

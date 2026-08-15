@@ -2,6 +2,7 @@ package com.oryareach.app
 
 import android.app.Application
 import com.oryareach.app.di.appModule
+import com.oryareach.app.sync.SyncWorker
 import com.oryareach.core.network.di.networkModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
@@ -17,5 +18,9 @@ class SaharApplication : Application() {
             androidContext(this@SaharApplication)
             modules(appModule, networkModule)
         }
+
+        // A safety net for changes made on the other device while this one was idle. A sync
+        // with no workspace open is a fast no-op, so scheduling this unconditionally is fine.
+        SyncWorker.schedulePeriodic(this)
     }
 }

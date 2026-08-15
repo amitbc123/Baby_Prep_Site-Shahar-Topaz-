@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="tasks_title">Tasks</string>
+    <string name="tasks_empty">No tasks yet. Add the first one.</string>
+    <string name="tasks_add">Add task</string>
+    <string name="tasks_edit_title">Edit task</string>
+    <string name="tasks_add_title">New task</string>
+    <string name="tasks_field_title">Title</string>
+    <string name="tasks_field_note">Note (optional)</string>
+    <string name="tasks_field_category">Category</string>
+    <string name="tasks_field_priority">Priority</string>
+    <string name="tasks_field_assignee">Assigned to</string>
+    <string name="tasks_save">Save</string>
+    <string name="tasks_delete">Delete</string>
+
+    <string name="task_category_home_prep">Home prep</string>
+    <string name="task_category_documents_and_insurance">Documents &amp; insurance</string>
+    <string name="task_category_medical">Medical</string>
+    <string name="task_category_hospital_bag">Hospital bag</string>
+    <string name="task_category_other">Other</string>
+
+    <string name="priority_low">Low</string>
+    <string name="priority_normal">Normal</string>
+    <string name="priority_high">High</string>
+
+    <string name="assignee_partner_one">Partner 1</string>
+    <string name="assignee_partner_two">Partner 2</string>
+    <string name="assignee_both">Both</string>
+    <string name="assignee_unassigned">Unassigned</string>
+</resources>
