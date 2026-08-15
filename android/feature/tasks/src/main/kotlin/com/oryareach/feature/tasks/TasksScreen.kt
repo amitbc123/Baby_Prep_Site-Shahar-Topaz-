@@ -58,6 +58,8 @@ fun TasksScreen(
     actions: TasksActions,
     modifier: Modifier = Modifier,
 ) {
+    val hospitalBagTitles = androidx.compose.ui.res.stringArrayResource(R.array.hospital_bag_preset).toList()
+
     Scaffold(
         modifier = modifier.fillMaxSize().safeDrawingPadding(),
         floatingActionButton = {
@@ -66,25 +68,35 @@ fun TasksScreen(
             }
         },
     ) { padding ->
-        if (uiState.tasks.isEmpty()) {
-            Column(
-                modifier = Modifier.fillMaxSize().padding(padding).padding(24.dp),
-                verticalArrangement = Arrangement.Center,
+        Column(modifier = Modifier.fillMaxSize().padding(padding)) {
+            androidx.compose.material3.TextButton(
+                onClick = { actions.onSeedHospitalBag(hospitalBagTitles) },
+                enabled = !uiState.seedingHospitalBag,
+                modifier = Modifier.fillMaxWidth(),
             ) {
-                Text(
-                    text = stringResource(R.string.tasks_empty),
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
+                Text(stringResource(R.string.tasks_seed_hospital_bag))
             }
-        } else {
-            LazyColumn(
-                modifier = Modifier.fillMaxSize().padding(padding),
-                contentPadding = androidx.compose.foundation.layout.PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                items(uiState.tasks, key = Task::id) { task ->
-                    TaskRow(task = task, actions = actions)
+
+            if (uiState.tasks.isEmpty()) {
+                Column(
+                    modifier = Modifier.fillMaxSize().padding(24.dp),
+                    verticalArrangement = Arrangement.Center,
+                ) {
+                    Text(
+                        text = stringResource(R.string.tasks_empty),
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+            } else {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = androidx.compose.foundation.layout.PaddingValues(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    items(uiState.tasks, key = Task::id) { task ->
+                        TaskRow(task = task, actions = actions)
+                    }
                 }
             }
         }
@@ -277,4 +289,5 @@ private object NoopTasksActions : TasksActions {
     override fun onSubmit() = Unit
     override fun onToggleDone(id: String) = Unit
     override fun onDelete(id: String) = Unit
+    override fun onSeedHospitalBag(titles: List<String>) = Unit
 }

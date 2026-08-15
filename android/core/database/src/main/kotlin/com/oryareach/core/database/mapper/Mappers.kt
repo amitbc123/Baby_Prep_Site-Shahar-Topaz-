@@ -1,10 +1,12 @@
 package com.oryareach.core.database.mapper
 
+import com.oryareach.core.database.entity.AppSettingsEntity
 import com.oryareach.core.database.entity.ImportantDateEntity
 import com.oryareach.core.database.entity.MenstrualCycleEntity
 import com.oryareach.core.database.entity.ShoppingItemEntity
 import com.oryareach.core.database.entity.SyncMetaEntity
 import com.oryareach.core.database.entity.TaskEntity
+import com.oryareach.core.model.AppSettings
 import com.oryareach.core.model.ImportantDate
 import com.oryareach.core.model.MenstrualCycle
 import com.oryareach.core.model.ShoppingItem
@@ -44,6 +46,12 @@ fun ShoppingItemEntity.toShoppingItem() = ShoppingItem(
     link = link,
     alternatives = alternatives,
     chosenAlternativeId = chosenAlternativeId,
+)
+
+fun AppSettingsEntity.toAppSettings() = AppSettings(
+    id = id,
+    dueDate = LocalDate.parse(dueDate),
+    babyName = babyName,
 )
 
 fun ImportantDateEntity.toImportantDate() = ImportantDate(
@@ -86,6 +94,13 @@ fun ShoppingItem.toEntity(workspaceId: String, record: RemoteRecord, now: Long) 
     link = link,
     alternatives = alternatives,
     chosenAlternativeId = chosenAlternativeId,
+    sync = record.toSyncMeta(workspaceId, now),
+)
+
+fun AppSettings.toEntity(workspaceId: String, record: RemoteRecord, now: Long) = AppSettingsEntity(
+    id = id,
+    dueDate = dueDate.toString(),
+    babyName = babyName,
     sync = record.toSyncMeta(workspaceId, now),
 )
 

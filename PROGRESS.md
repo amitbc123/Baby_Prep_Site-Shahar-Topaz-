@@ -97,18 +97,47 @@ supersedes the private-by-default / opt-in-sharing model described in `task.md`.
       the model/DB column exists (JSON list) but there's no UI to add one yet
 - [x] Important dates — `:feature:dates`, `ImportantDateRepository`, Material3 `DatePicker`;
       verified end-to-end on-device including sync
-- [ ] Home dashboard: moon countdown, weekly fruit/animal/info — not started
-- [ ] Hospital-bag preset — not started (seed-12-tasks action)
-- [ ] JSON import from the web app — not started
+- [x] Home dashboard — `:feature:home`, Home tab (now first in the bottom nav). Canvas-drawn
+      moon countdown matching the web SVG (night-sky palette from `NightPalette`, radial glow
+      rising with `moonFraction`), week/day progress, weekly fruit+animal, weekly-info card,
+      daily message, budget summary, open-tasks count, inline due-date/baby-name editor (no
+      dueDate/babyName means no Settings screen yet, so this doubles as the minimal settings
+      surface until Phase 7). Backed by a new synced `AppSettings`/`app_settings` entity
+      (`EntityType.SETTINGS`, previously declared but unused) — migration 2→3. Weekly
+      info/fruit/animal copy and the 6 daily messages are bilingual string-array resources,
+      ported verbatim from `pregnancy.ts`/`messages.ts`; verified end-to-end on-device
+      including sync and ciphertext-only for settings
+- [x] Hospital-bag preset — `TasksViewModel.onSeedHospitalBag()`, additive/re-runnable (skips
+      titles already present, same pattern as the web version); verified live, including that
+      a second tap does not duplicate
+- [x] JSON import from the web app — `:core:domain`'s `WebSnapshot`/`toImportedSnapshot`
+      (the Hebrew-literal → enum mapping table the plan called "the migration contract",
+      with tests), wired to a SAF file picker on the Home tab. Verified against a real
+      export-shaped fixture on-device: settings/tasks/shopping items/dates all land with
+      correct category/priority/assignee/status mapping, re-import is deduped, and sync
+      lands all of it server-side with no plaintext in the ciphertext. Alternatives are
+      re-keyed correctly (chosenAlternativeId follows its alternative to a fresh id). Not
+      carried over: task `dueDate` — dead everywhere (no UI, no repository support) since
+      Phase 1; a pre-existing gap, not one introduced here, and out of scope to fix now.
 - [x] Ported pregnancy and budget tests — `:core:domain` (`PregnancyProgressTest`,
-      `BudgetTest`, `DailyMessageTest`), near line-for-line port of the Vitest suite
+      `BudgetTest`, `DailyMessageTest`, `WebImportMapperTest`), near line-for-line port of
+      the Vitest suite
 
   New this phase: `:core:domain` (pure Kotlin — `daysUntil`/`getPregnancyProgress`/
-  `isPastDate`, `calculateBudget`/`itemEffectivePrice`, `dailyMessageIndex`), Room migration
-  1→2 adding `shopping_items`/`important_dates` tables, `RoomSyncStore` generalized from a
-  hardcoded two-table `when` to check all four tables (was a latent bug waiting for a third
-  entity type). Weekly pregnancy-info/fruit/animal copy and the daily-message text are left
-  as bilingual string resources for the home-dashboard work, not ported as data here.
+  `isPastDate`, `calculateBudget`/`itemEffectivePrice`, `dailyMessageIndex`, the web-import
+  mapper), Room migrations 1→2 (`shopping_items`/`important_dates`) and 2→3 (`app_settings`),
+  `RoomSyncStore` generalized from a hardcoded two-table `when` to check all five tables (was
+  a latent bug waiting for a third entity type).
+
+  **Real bug found and fixed while testing the import** (not import-specific — it affects
+  any burst of rapid local writes, including the hospital-bag preset seeding 12 tasks at
+  once): `SyncWorker.syncNow()` used `ExistingWorkPolicy.KEEP`, which silently drops a
+  sync request that arrives while one is already running, with nothing to catch up
+  afterward. A record created after the in-flight run had already read the outbox could be
+  permanently stranded — confirmed live (only 2 of 6 imported records reached the server).
+  Fixed by switching to `APPEND_OR_REPLACE`, which guarantees at least one more run after
+  the current one finishes; since each run drains the outbox until empty, the extra runs a
+  burst produces are cheap no-ops. Re-verified: all 6 records now sync.
 
 ## Phase 4 — Folders & documents
 - [ ] Nested folders (5+ levels)

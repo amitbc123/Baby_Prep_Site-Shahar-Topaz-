@@ -70,3 +70,32 @@ val MIGRATION_1_2 = object : Migration(1, 2) {
         db.execSQL("CREATE INDEX IF NOT EXISTS `index_important_dates_date` ON `important_dates` (`date`)")
     }
 }
+
+/** Adds `app_settings` — the couple's shared due date and baby name, for the home dashboard. */
+val MIGRATION_2_3 = object : Migration(2, 3) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL(
+            """
+            CREATE TABLE IF NOT EXISTS `app_settings` (
+                `id` TEXT NOT NULL,
+                `dueDate` TEXT NOT NULL,
+                `babyName` TEXT,
+                `workspace_id` TEXT NOT NULL,
+                `created_by` TEXT NOT NULL,
+                `created_at` INTEGER NOT NULL,
+                `updated_at` INTEGER NOT NULL,
+                `deleted_at` INTEGER,
+                `version` INTEGER NOT NULL,
+                `sync_status` TEXT NOT NULL,
+                `client_mutation_id` TEXT,
+                PRIMARY KEY(`id`)
+            )
+            """.trimIndent(),
+        )
+        db.execSQL("CREATE INDEX IF NOT EXISTS `index_app_settings_sync_status` ON `app_settings` (`sync_status`)")
+        db.execSQL(
+            "CREATE INDEX IF NOT EXISTS `index_app_settings_workspace_id_updated_at` " +
+                "ON `app_settings` (`workspace_id`, `updated_at`)",
+        )
+    }
+}

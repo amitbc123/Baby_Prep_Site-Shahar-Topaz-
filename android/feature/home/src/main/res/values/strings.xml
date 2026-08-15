@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="home_title">Home</string>
+    <string name="home_daily_message_intro">Message of the day</string>
+    <string name="home_weekly_info_title">This week</string>
+    <string name="home_arrived_title_named">%1$s is here!</string>
+    <string name="home_arrived_title">She\'s here!</string>
+    <string name="home_arrived_subtitle">The moon is full. Congratulations!</string>
+    <string name="home_week_progress">Week %1$d, day %2$d of 40</string>
+    <string name="home_days_left_one">One day left</string>
+    <string name="home_days_left_other">%1$d days until the due date</string>
+    <string name="home_fruit_size">the size of a %1$s</string>
+    <string name="home_animal_like">like a %1$s</string>
+    <string name="home_open_tasks">%1$d open tasks</string>
+    <string name="home_open_tasks_link">Go to the list ←</string>
+    <string name="home_no_due_date_title">Set your due date</string>
+    <string name="home_no_due_date_body">The countdown and weekly info need a due date to show anything.</string>
+    <string name="home_due_date_field">Due date</string>
+    <string name="home_baby_name_field">Baby\'s name (optional)</string>
+    <string name="home_save">Save</string>
+    <string name="home_pick_confirm">OK</string>
+    <string name="home_pick_cancel">Cancel</string>
+    <string name="home_edit_due_date">Edit due date and name</string>
+    <string name="home_import_from_web">Import from web app</string>
+    <string name="home_import_done">Import complete</string>
+    <string name="home_import_summary">Added %1$d tasks, %2$d shopping items and %3$d dates. Anything already there was skipped.</string>
+    <string name="home_import_failed">Couldn\'t read the file</string>
+    <string name="home_import_failed_body">Make sure it\'s a JSON file exported from the אור ירח website.</string>
+
+    <string-array name="home_daily_messages">
+        <item>A little longer, and you\'ll be three.</item>
+        <item>Every day that passes is a day closer to her.</item>
+        <item>Take a deep breath. You\'re more ready than you think.</item>
+        <item>She\'s already waiting to meet you.</item>
+        <item>The house is almost ready. Your hearts already were.</item>
+        <item>One more moon, and your biggest adventure begins.</item>
+    </string-array>
+
+    <string-array name="home_weekly_info">
+        <item>Pregnancy is counted from week 1 starting on the first day of the last period, before ovulation and fertilization actually happen. Still too early for symptoms — mostly a time to start tracking.</item>
+        <item>Ovulation happens around this week, and if fertilization occurs, it\'s happening right now, usually in the fallopian tube.</item>
+        <item>The fertilized egg divides repeatedly on its way to the uterus, and within a few days will implant in the uterine lining. This is still very much the beginning.</item>
+        <item>Implantation in the uterine lining is complete, and the body starts releasing the hCG hormone that home pregnancy tests detect.</item>
+        <item>The neural tube, which will become the brain and spinal cord, begins forming. The embryonic heart starts beating irregularly.</item>
+        <item>The heart beats more regularly and can sometimes be seen on ultrasound. The beginnings of arm and leg joints start to appear.</item>
+        <item>The brain develops rapidly, and early facial features begin forming — including spots that will become the eyes and nostrils.</item>
+        <item>All the vital internal organs already exist in basic form and keep developing. The fingers begin separating from each other.</item>
+        <item>The embryo starts moving, even if not yet felt. Muscles begin developing and the body gradually straightens from its curled position.</item>
+        <item>The fetal period officially begins this week — the basic organs exist and continue growing and maturing. Fingernails begin forming.</item>
+        <item>The body grows faster than the head, which until now was relatively large. Fingers and toes are no longer webbed together.</item>
+        <item>First reflexes develop — the fingers can curl. The kidneys begin producing urine that mixes into the amniotic fluid.</item>
+        <item>End of the first trimester. The whoosh of the fetal heartbeat becomes clearer on checkups. Fingerprints are starting to form.</item>
+        <item>Facial features sharpen, and the fetus starts making facial movements like frowning. The baby\'s sex can sometimes be identified.</item>
+        <item>Bones keep hardening, and the fetus starts sensing light through still-closed eyelids. The sense of hearing begins developing.</item>
+        <item>You may start feeling first fetal movements ("kicks") — still gentle and flutter-like. The skeleton keeps hardening.</item>
+        <item>The first fat tissue starts accumulating under the skin. The placenta keeps growing and strengthening to support development.</item>
+        <item>The ears are in their final position and start hearing sounds from outside — including your voice. You may feel movements more clearly.</item>
+        <item>A waxy protective coating (vernix) starts covering the skin. The senses of taste, smell, hearing, sight and touch begin differentiating in brain regions.</item>
+        <item>Halfway there! You may have a detailed anatomy scan around this week, and the baby\'s sex can often be identified clearly.</item>
+        <item>Movements become stronger and more noticeable. The digestive system starts functioning in a basic way, and eyelashes and eyelids are developed.</item>
+        <item>The fetus starts developing a sense of touch — touching its face and the umbilical cord. The skin is still thin and wrinkled, before fat forms underneath.</item>
+        <item>The lungs develop branching airways, in preparation for future breathing. Changes in air pressure or loud noise may trigger a fetal reaction.</item>
+        <item>Sometimes considered a medical "viability threshold," though continued pregnancy remains critical for lung and brain development. The sense of balance begins developing.</item>
+        <item>Fine hair (lanugo) covers parts of the body and helps regulate temperature. The placenta keeps supplying nutrition and oxygen at a growing rate.</item>
+        <item>The eyes start opening for the first time. The lungs keep producing surfactant — a substance that will later enable independent breathing.</item>
+        <item>End of the second trimester. The brain is very active and produces brain-wave patterns, and sleep-wake cycles start forming.</item>
+        <item>Eyelashes are full and eyelids can open and close. The fetus responds to light, sound and tastes in the amniotic fluid.</item>
+        <item>The brain and skeleton keep developing rapidly, so the need for calcium, protein and iron in the diet increases during this period.</item>
+        <item>The eyes can now track light. Bone marrow has fully taken over red blood cell production from the liver and spleen.</item>
+        <item>Movements may feel strong but less spacious — simply because things are getting more crowded in there. The lungs and brain keep maturing rapidly.</item>
+        <item>Fingernails already reach the fingertips. The baby\'s weight rises quickly as fat tissue accumulates under the skin.</item>
+        <item>The baby starts practicing breathing. A good time to start packing the hospital bag.</item>
+        <item>The lungs keep developing and the baby is likely already head-down. Worth making sure the car seat is installed.</item>
+        <item>Birth weight is nearly set from now on. A good time to finish the urgent items on the shopping list.</item>
+        <item>Considered almost "full term." Worth finalizing the route to the hospital and making sure important documents are ready and accessible.</item>
+        <item>The baby is officially considered "full term"! She could arrive any moment — the hospital bag should be by the door.</item>
+        <item>Most organs are fully mature. A good time to finish last errands at home and rest as much as possible.</item>
+        <item>The baby keeps gaining weight and is ready to arrive any day. Worth making sure important phone numbers are accessible to both of you.</item>
+        <item>The estimated due date has arrived. Remember: most babies aren\'t born exactly on their due date, and that\'s completely normal.</item>
+    </string-array>
+
+    <string-array name="home_weekly_fruit_names">
+        <item>poppy seed</item>
+        <item>sesame seed</item>
+        <item>lentil</item>
+        <item>blueberry</item>
+        <item>raspberry</item>
+        <item>grape</item>
+        <item>strawberry</item>
+        <item>small fig</item>
+        <item>lime</item>
+        <item>peach</item>
+        <item>lemon</item>
+        <item>apple</item>
+        <item>avocado</item>
+        <item>large pear</item>
+        <item>bell pepper</item>
+        <item>mango</item>
+        <item>banana</item>
+        <item>large carrot</item>
+        <item>cucumber</item>
+        <item>sweet potato</item>
+        <item>corn cob</item>
+        <item>cauliflower</item>
+        <item>eggplant</item>
+        <item>kohlrabi</item>
+        <item>beet</item>
+        <item>pie pumpkin</item>
+        <item>purple cabbage</item>
+        <item>coconut</item>
+        <item>small pumpkin</item>
+        <item>pineapple</item>
+        <item>cantaloupe</item>
+        <item>honeydew melon</item>
+        <item>head of lettuce</item>
+        <item>leek</item>
+        <item>mini watermelon</item>
+        <item>small watermelon</item>
+        <item>small pumpkin</item>
+    </string-array>
+
+    <string-array name="home_weekly_fruit_emoji" translatable="false">
+        <item>🌱</item>
+        <item>🌰</item>
+        <item>🫘</item>
+        <item>🫐</item>
+        <item>🍇</item>
+        <item>🍒</item>
+        <item>🍓</item>
+        <item>🍐</item>
+        <item>🍋</item>
+        <item>🍑</item>
+        <item>🍋</item>
+        <item>🍎</item>
+        <item>🥑</item>
+        <item>🍐</item>
+        <item>🫑</item>
+        <item>🥭</item>
+        <item>🍌</item>
+        <item>🥕</item>
+        <item>🥒</item>
+        <item>🍠</item>
+        <item>🌽</item>
+        <item>🥦</item>
+        <item>🍆</item>
+        <item>🥬</item>
+        <item>🥬</item>
+        <item>🎃</item>
+        <item>🥬</item>
+        <item>🥥</item>
+        <item>🎃</item>
+        <item>🍍</item>
+        <item>🍈</item>
+        <item>🍈</item>
+        <item>🥬</item>
+        <item>🥬</item>
+        <item>🍉</item>
+        <item>🍉</item>
+        <item>🎃</item>
+    </string-array>
+
+    <string-array name="home_weekly_animal_names">
+        <item>ant</item>
+        <item>bee</item>
+        <item>ladybug</item>
+        <item>butterfly</item>
+        <item>goldfish</item>
+        <item>hamster</item>
+        <item>little mouse</item>
+        <item>squirrel</item>
+        <item>little frog</item>
+        <item>chick</item>
+        <item>kitten</item>
+        <item>owlet</item>
+        <item>hedgehog</item>
+        <item>bunny</item>
+        <item>young otter</item>
+        <item>raccoon</item>
+        <item>beaver</item>
+        <item>young fox</item>
+        <item>puppy</item>
+        <item>young cat</item>
+        <item>piglet</item>
+        <item>lamb</item>
+        <item>kid goat</item>
+        <item>fawn</item>
+        <item>young sloth</item>
+        <item>young kangaroo</item>
+        <item>leopard cub</item>
+        <item>tiger cub</item>
+        <item>bear cub</item>
+        <item>wolf cub</item>
+        <item>lion cub</item>
+        <item>elephant calf</item>
+        <item>crocodile hatchling</item>
+        <item>seal pup</item>
+        <item>penguin chick</item>
+        <item>koala joey</item>
+        <item>a baby ready to meet you!</item>
+    </string-array>
+
+    <string-array name="home_weekly_animal_emoji" translatable="false">
+        <item>🐜</item>
+        <item>🐝</item>
+        <item>🐞</item>
+        <item>🦋</item>
+        <item>🐠</item>
+        <item>🐹</item>
+        <item>🐭</item>
+        <item>🐿️</item>
+        <item>🐸</item>
+        <item>🐤</item>
+        <item>🐱</item>
+        <item>🦉</item>
+        <item>🦔</item>
+        <item>🐰</item>
+        <item>🦦</item>
+        <item>🦝</item>
+        <item>🦫</item>
+        <item>🦊</item>
+        <item>🐶</item>
+        <item>🐈</item>
+        <item>🐖</item>
+        <item>🐑</item>
+        <item>🐐</item>
+        <item>🦌</item>
+        <item>🦥</item>
+        <item>🦘</item>
+        <item>🐆</item>
+        <item>🐅</item>
+        <item>🐻</item>
+        <item>🐺</item>
+        <item>🦁</item>
+        <item>🐘</item>
+        <item>🐊</item>
+        <item>🦭</item>
+        <item>🐧</item>
+        <item>🐨</item>
+        <item>👶</item>
+    </string-array>
+</resources>

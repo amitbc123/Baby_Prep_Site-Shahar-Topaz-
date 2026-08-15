@@ -29,6 +29,7 @@ interface TasksActions {
     fun onSubmit()
     fun onToggleDone(id: String)
     fun onDelete(id: String)
+    fun onSeedHospitalBag(titles: List<String>)
 }
 
 /**
@@ -126,6 +127,31 @@ class TasksViewModel(
 
     override fun onDelete(id: String) {
         viewModelScope.launch { repository.delete(id) }
+    }
+
+    /**
+     * Additive and re-runnable, like the web app's preset: only titles not already present
+     * (in any category — someone may have moved one) are created, so tapping this twice
+     * never duplicates the checklist.
+     */
+    override fun onSeedHospitalBag(titles: List<String>) {
+        val workspace = workspaceId() ?: return
+        if (_uiState.value.seedingHospitalBag) return
+        set { it.copy(seedingHospitalBag = true) }
+
+        viewModelScope.launch {
+            val existingTitles = _uiState.value.tasks.map { it.title.trim().lowercase() }.toSet()
+            val userId = auth.currentUserId().orEmpty()
+            titles.filter { it.trim().lowercase() !in existingTitles }.forEach { title ->
+                repository.create(
+                    workspaceId = workspace,
+                    userId = userId,
+                    title = title,
+                    category = TaskCategory.HOSPITAL_BAG,
+                )
+            }
+            set { it.copy(seedingHospitalBag = false) }
+        }
     }
 
     private fun set(block: (TasksUiState) -> TasksUiState) {

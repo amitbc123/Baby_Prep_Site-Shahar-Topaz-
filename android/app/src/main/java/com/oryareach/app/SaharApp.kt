@@ -7,6 +7,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Event
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -43,6 +44,8 @@ import com.oryareach.feature.shopping.ShoppingScreen
 import com.oryareach.feature.shopping.ShoppingViewModel
 import com.oryareach.feature.dates.DatesScreen
 import com.oryareach.feature.dates.DatesViewModel
+import com.oryareach.feature.home.HomeScreen
+import com.oryareach.feature.home.HomeViewModel
 import androidx.compose.ui.platform.LocalContext
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
@@ -101,7 +104,7 @@ private fun UpdateHost(viewModel: UpdateViewModel = koinViewModel()) {
     }
 }
 
-private enum class HomeTab { Tasks, Shopping, Dates, Cycle }
+private enum class HomeTab { Home, Tasks, Shopping, Dates, Cycle }
 
 /**
  * A plain tab switch, not `navigation-compose`: two peer screens with no back-stack semantics
@@ -110,11 +113,17 @@ private enum class HomeTab { Tasks, Shopping, Dates, Cycle }
  */
 @Composable
 private fun HomeRoute() {
-    var tab by rememberSaveable { mutableStateOf(HomeTab.Tasks) }
+    var tab by rememberSaveable { mutableStateOf(HomeTab.Home) }
 
     Scaffold(
         bottomBar = {
             NavigationBar {
+                NavigationBarItem(
+                    selected = tab == HomeTab.Home,
+                    onClick = { tab = HomeTab.Home },
+                    icon = { Icon(Icons.Default.Home, contentDescription = null) },
+                    label = { Text(stringResource(com.oryareach.feature.home.R.string.home_title)) },
+                )
                 NavigationBarItem(
                     selected = tab == HomeTab.Tasks,
                     onClick = { tab = HomeTab.Tasks },
@@ -143,6 +152,7 @@ private fun HomeRoute() {
         },
     ) { padding ->
         when (tab) {
+            HomeTab.Home -> HomeTabRoute(modifier = androidx.compose.ui.Modifier.padding(padding))
             HomeTab.Tasks -> TasksRoute(modifier = androidx.compose.ui.Modifier.padding(padding))
             HomeTab.Shopping -> ShoppingRoute(modifier = androidx.compose.ui.Modifier.padding(padding))
             HomeTab.Dates -> DatesRoute(modifier = androidx.compose.ui.Modifier.padding(padding))
@@ -158,6 +168,15 @@ private fun TasksRoute(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     TasksScreen(uiState = uiState, actions = viewModel, modifier = modifier)
+}
+
+@Composable
+private fun HomeTabRoute(
+    modifier: androidx.compose.ui.Modifier = androidx.compose.ui.Modifier,
+    viewModel: HomeViewModel = koinViewModel(),
+) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    HomeScreen(uiState = uiState, actions = viewModel, modifier = modifier)
 }
 
 @Composable

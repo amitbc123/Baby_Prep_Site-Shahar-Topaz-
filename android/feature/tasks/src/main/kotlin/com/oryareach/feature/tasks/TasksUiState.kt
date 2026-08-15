@@ -23,6 +23,7 @@ data class TasksUiState(
     // Transient UI-only: must not survive the screen.
     val sheetVisible: Boolean = false,
     val submitting: Boolean = false,
+    val seedingHospitalBag: Boolean = false,
     @StringRes val errorMessage: Int? = null,
 ) {
     // Derived as a getter so it can never drift from the inputs it describes.

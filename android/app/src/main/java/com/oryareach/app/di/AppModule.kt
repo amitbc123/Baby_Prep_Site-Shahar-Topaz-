@@ -4,6 +4,7 @@ import com.oryareach.app.sync.WorkManagerSyncTrigger
 import com.oryareach.core.database.DatabaseFactory
 import com.oryareach.core.database.DatabasePassphrase
 import com.oryareach.core.database.OrYareachDatabase
+import com.oryareach.core.database.repository.AppSettingsRepository
 import com.oryareach.core.database.repository.CycleRepository
 import com.oryareach.core.database.repository.ImportantDateRepository
 import com.oryareach.core.database.repository.ShoppingItemRepository
@@ -29,6 +30,7 @@ import com.oryareach.feature.cycle.CycleViewModel
 import com.oryareach.feature.update.UpdateViewModel
 import com.oryareach.feature.shopping.ShoppingViewModel
 import com.oryareach.feature.dates.DatesViewModel
+import com.oryareach.feature.home.HomeViewModel
 import org.koin.core.module.dsl.viewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
@@ -57,6 +59,7 @@ val appModule = module {
     single { get<OrYareachDatabase>().menstrualCycleDao() }
     single { get<OrYareachDatabase>().shoppingItemDao() }
     single { get<OrYareachDatabase>().importantDateDao() }
+    single { get<OrYareachDatabase>().appSettingsDao() }
     single { get<OrYareachDatabase>().syncOperationDao() }
     single { get<OrYareachDatabase>().syncStateDao() }
 
@@ -87,6 +90,7 @@ val appModule = module {
     single { CycleRepository(database = get(), syncTrigger = get()) }
     single { ShoppingItemRepository(database = get(), syncTrigger = get()) }
     single { ImportantDateRepository(database = get(), syncTrigger = get()) }
+    single { AppSettingsRepository(database = get(), syncTrigger = get()) }
 
     viewModel { AuthViewModel(auth = get()) }
     viewModel {
@@ -123,6 +127,16 @@ val appModule = module {
     viewModel {
         DatesViewModel(
             repository = get(),
+            auth = get(),
+            workspaceId = { get<SessionState>().workspaceId },
+        )
+    }
+    viewModel {
+        HomeViewModel(
+            settingsRepository = get(),
+            taskRepository = get(),
+            shoppingRepository = get(),
+            importantDateRepository = get(),
             auth = get(),
             workspaceId = { get<SessionState>().workspaceId },
         )

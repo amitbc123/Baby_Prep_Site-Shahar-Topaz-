@@ -55,9 +55,15 @@ class SyncWorker(
                 .build()
 
             WorkManager.getInstance(context)
-                // KEEP, not REPLACE: a burst of edits should coalesce into one run rather
-                // than each edit cancelling the upload the previous one just scheduled.
-                .enqueueUniqueWork(ONE_SHOT, ExistingWorkPolicy.KEEP, request)
+                // APPEND_OR_REPLACE, not KEEP: KEEP silently drops a syncNow() call that
+                // arrives while a run is already in flight, with nothing to catch up
+                // afterward — a burst of local writes (e.g. importing a snapshot, seeding
+                // the hospital-bag preset) would then permanently strand whatever was
+                // created after the in-flight run had already read the outbox. APPEND
+                // guarantees at least one more run after the current one finishes; since
+                // each run drains the outbox until empty, the extra runs a burst produces
+                // are cheap no-ops rather than duplicate work.
+                .enqueueUniqueWork(ONE_SHOT, ExistingWorkPolicy.APPEND_OR_REPLACE, request)
         }
 
         /** Safety net for changes made on the other device while this one was idle. */

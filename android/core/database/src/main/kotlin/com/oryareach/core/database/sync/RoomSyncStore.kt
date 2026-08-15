@@ -11,6 +11,8 @@ import com.oryareach.core.database.mapper.toTask
 import com.oryareach.core.database.mapper.toCycle
 import com.oryareach.core.database.mapper.toImportantDate
 import com.oryareach.core.database.mapper.toShoppingItem
+import com.oryareach.core.database.mapper.toAppSettings
+import com.oryareach.core.model.AppSettings
 import com.oryareach.core.model.EntityType
 import com.oryareach.core.model.ImportantDate
 import com.oryareach.core.model.MenstrualCycle
@@ -43,6 +45,7 @@ class RoomSyncStore(
     private val cycles get() = database.menstrualCycleDao()
     private val shoppingItems get() = database.shoppingItemDao()
     private val importantDates get() = database.importantDateDao()
+    private val appSettings get() = database.appSettingsDao()
     private val operations get() = database.syncOperationDao()
     private val state get() = database.syncStateDao()
 
@@ -70,6 +73,7 @@ class RoomSyncStore(
                 EntityType.CYCLE -> cycles.markSynced(recordId, SyncStatus.SYNCED, version)
                 EntityType.SHOPPING_ITEM -> shoppingItems.markSynced(recordId, SyncStatus.SYNCED, version)
                 EntityType.IMPORTANT_DATE -> importantDates.markSynced(recordId, SyncStatus.SYNCED, version)
+                EntityType.SETTINGS -> appSettings.markSynced(recordId, SyncStatus.SYNCED, version)
                 else -> tasks.markSynced(recordId, SyncStatus.SYNCED, version)
             }
             operations.removeByRecord(recordId)
@@ -93,6 +97,7 @@ class RoomSyncStore(
                 EntityType.CYCLE -> cycles.markSynced(recordId, SyncStatus.CONFLICT, server.version)
                 EntityType.SHOPPING_ITEM -> shoppingItems.markSynced(recordId, SyncStatus.CONFLICT, server.version)
                 EntityType.IMPORTANT_DATE -> importantDates.markSynced(recordId, SyncStatus.CONFLICT, server.version)
+                EntityType.SETTINGS -> appSettings.markSynced(recordId, SyncStatus.CONFLICT, server.version)
                 else -> tasks.markSynced(recordId, SyncStatus.CONFLICT, server.version)
             }
             // The queued operation is dropped: replaying it would just conflict again. The
@@ -146,6 +151,13 @@ class RoomSyncStore(
                         importantDates.upsert(date.toEntity(workspace, record, now()))
                     }
 
+                    EntityType.SETTINGS -> {
+                        val settings = runCatching {
+                            json.decodeFromString<AppSettings>(decoded.data)
+                        }.getOrNull() ?: continue
+                        appSettings.upsert(settings.toEntity(workspace, record, now()))
+                    }
+
                     // Types this build does not handle yet stay on the server; the cursor is
                     // per workspace, so they arrive again once support ships.
                     else -> continue
@@ -180,6 +192,10 @@ class RoomSyncStore(
             Payload(json.encodeToString(it.toImportantDate()), it.sync.version)
         }
 
+        EntityType.SETTINGS -> appSettings.findById(recordId)?.let {
+            Payload(json.encodeToString(it.toAppSettings()), it.sync.version)
+        }
+
         else -> null
     }
 
@@ -189,6 +205,7 @@ class RoomSyncStore(
         cycles.findById(recordId) != null -> EntityType.CYCLE
         shoppingItems.findById(recordId) != null -> EntityType.SHOPPING_ITEM
         importantDates.findById(recordId) != null -> EntityType.IMPORTANT_DATE
+        appSettings.findById(recordId) != null -> EntityType.SETTINGS
         else -> EntityType.TASK
     }
 }

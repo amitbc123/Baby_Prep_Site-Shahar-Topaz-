@@ -42,6 +42,7 @@ class TaskRepository(
         priority: Priority = Priority.NORMAL,
         assignee: Assignee? = null,
         note: String? = null,
+        done: Boolean = false,
     ) {
         val timestamp = now()
         val entity = TaskEntity(
@@ -49,7 +50,7 @@ class TaskRepository(
             title = title,
             category = category,
             priority = priority,
-            done = false,
+            done = done,
             dueDate = null,
             assignee = assignee,
             note = note,

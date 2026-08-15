@@ -12,6 +12,22 @@
     <string name="tasks_field_assignee">משויך ל</string>
     <string name="tasks_save">שמירה</string>
     <string name="tasks_delete">מחיקה</string>
+    <string name="tasks_seed_hospital_bag">הוספת רשימת תיק ליולדת</string>
+
+    <string-array name="hospital_bag_preset">
+        <item>תעודת זהות ותיק ביטוח לאומי</item>
+        <item>בגדי לידה וגרביים חמות</item>
+        <item>מטענים לטלפון</item>
+        <item>חטיפים ובקבוק מים</item>
+        <item>בגד יציאה לתינוקת + כובע</item>
+        <item>מושב בטיחות מותקן ברכב</item>
+        <item>טיטולים ומגבונים לחות</item>
+        <item>חיתולת ובגדי החלפה לתינוקת</item>
+        <item>ערכת טיפוח אישית</item>
+        <item>תחתונים חד פעמיים ותחבושות לאחר לידה</item>
+        <item>חזייה להנקה ורפידות הנקה</item>
+        <item>כרית הנקה</item>
+    </string-array>
 
     <string name="task_category_home_prep">הכנת הבית</string>
     <string name="task_category_documents_and_insurance">מסמכים וביטוח</string>

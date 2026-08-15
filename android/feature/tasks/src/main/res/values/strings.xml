@@ -12,6 +12,22 @@
     <string name="tasks_field_assignee">Assigned to</string>
     <string name="tasks_save">Save</string>
     <string name="tasks_delete">Delete</string>
+    <string name="tasks_seed_hospital_bag">Add hospital bag checklist</string>
+
+    <string-array name="hospital_bag_preset">
+        <item>ID card and National Insurance file</item>
+        <item>Labor clothes and warm socks</item>
+        <item>Phone chargers</item>
+        <item>Snacks and a water bottle</item>
+        <item>Going-home outfit for the baby + hat</item>
+        <item>Car seat installed in the car</item>
+        <item>Diapers and wet wipes</item>
+        <item>Swaddle and a change of clothes for the baby</item>
+        <item>Personal toiletries kit</item>
+        <item>Disposable underwear and postpartum pads</item>
+        <item>Nursing bra and nursing pads</item>
+        <item>Nursing pillow</item>
+    </string-array>
 
     <string name="task_category_home_prep">Home prep</string>
     <string name="task_category_documents_and_insurance">Documents &amp; insurance</string>
