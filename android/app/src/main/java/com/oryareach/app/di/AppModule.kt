@@ -15,10 +15,16 @@ import com.oryareach.core.sync.SyncStore
 import com.oryareach.core.sync.SyncTrigger
 import com.oryareach.core.security.DeviceIdentity
 import com.oryareach.core.sync.WorkspaceKeyProvider
+import com.oryareach.core.update.ReleaseChecker
+import com.oryareach.core.update.UpdateDownloader
+import com.oryareach.core.update.UpdateInstaller
+import com.oryareach.core.update.UpdateState
+import com.oryareach.core.update.VersionManager
 import com.oryareach.feature.auth.AuthViewModel
 import com.oryareach.feature.pairing.PairingViewModel
 import com.oryareach.feature.tasks.TasksViewModel
 import com.oryareach.feature.cycle.CycleViewModel
+import com.oryareach.feature.update.UpdateViewModel
 import org.koin.core.module.dsl.viewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
@@ -62,6 +68,13 @@ val appModule = module {
     single { SyncEngine(store = get(), remote = get()) }
 
     single { DeviceIdentity(get()) }
+
+    single { VersionManager(androidContext()) }
+    single { ReleaseChecker(versionManager = get()) }
+    single { UpdateDownloader(androidContext()) }
+    single { UpdateInstaller(androidContext()) }
+    single { UpdateState(androidContext()) }
+    viewModel { UpdateViewModel(checker = get(), downloader = get(), installer = get(), state = get()) }
 
     single<SyncTrigger> { WorkManagerSyncTrigger(androidContext()) }
     single { TaskRepository(database = get(), syncTrigger = get()) }

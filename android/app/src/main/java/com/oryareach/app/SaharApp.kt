@@ -1,5 +1,7 @@
 package com.oryareach.app
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarMonth
@@ -32,6 +34,10 @@ import com.oryareach.feature.pairing.PairingScreen
 import com.oryareach.feature.pairing.PairingViewModel
 import com.oryareach.feature.tasks.TasksScreen
 import com.oryareach.feature.tasks.TasksViewModel
+import com.oryareach.feature.update.UpdateDialog
+import com.oryareach.feature.update.UpdateEffect
+import com.oryareach.feature.update.UpdateViewModel
+import androidx.compose.ui.platform.LocalContext
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 
@@ -55,6 +61,37 @@ fun SaharApp(authState: AuthState) {
         workspaceId == null || !session.isUnlocked -> PairingRoute()
 
         else -> HomeRoute()
+    }
+
+    UpdateHost()
+}
+
+/**
+ * Hosted at the app root, not per-screen: a mandatory update must be able to interrupt the
+ * user regardless of which tab or auth state they are in.
+ */
+@Composable
+private fun UpdateHost(viewModel: UpdateViewModel = koinViewModel()) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+    val lifecycle = LocalLifecycleOwner.current.lifecycle
+
+    LaunchedEffect(Unit) {
+        lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+            viewModel.effects.collect { effect ->
+                when (effect) {
+                    is UpdateEffect.OpenRelease ->
+                        context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(effect.url)))
+
+                    is UpdateEffect.LaunchInstallConfirmation ->
+                        context.startActivity(effect.intent)
+                }
+            }
+        }
+    }
+
+    if (uiState.visible) {
+        UpdateDialog(uiState = uiState, actions = viewModel)
     }
 }
 

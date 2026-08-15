@@ -61,16 +61,32 @@ supersedes the private-by-default / opt-in-sharing model described in `task.md`.
 - [x] Release workflow: signed APK + SHA-256 + manifest on `v*` tags
 
 ## Phase 2 — In-app updater
-- [ ] `:core:update` — VersionManager, ReleaseChecker, VersionComparator
-- [ ] Semantic version comparison (incl. `1.9.0 < 1.10.0`, prereleases)
-- [ ] Async startup check, non-blocking, offline-tolerant
-- [ ] Update notification with release notes, Install / View Release / Later
-- [ ] Download with progress + SHA-256 verification before install
-- [ ] `PackageInstaller` install flow
-- [ ] Mandatory-update support
-- [ ] Persisted update state (last check, last notified, skipped)
-- [ ] Manual "Check for updates" in Settings
-- [ ] Updater tests (comparison, checker, download, checksum mismatch, UI)
+- [x] `:core:update` — VersionManager (reads installed versionName via PackageManager, no
+      dependency on `:app`), ReleaseChecker, VersionComparator
+- [x] Semantic version comparison (incl. `1.9.0 < 1.10.0`, prereleases; 5 tests green)
+- [x] Async startup check, non-blocking, offline-tolerant — `UpdateViewModel.init` fires the
+      check on a coroutine; a failed/offline check just clears `checking`, no crash, no dialog
+      (verified live: repo has no GitHub release yet, checker gets 404, app launches clean)
+- [x] Update notification with release notes, Install / View Release / Later — `UpdateDialog`
+      in `:feature:update`, hosted at the app root (`SaharApp`'s `UpdateHost`) so it can
+      interrupt any screen
+- [x] Download with progress + SHA-256 verification before install — `UpdateDownloader`
+      (Ktor `onDownload` progress callback) + `IntegrityVerifier`; a checksum mismatch deletes
+      the file and surfaces as a failure, never installs
+- [x] `PackageInstaller` install flow — `UpdateInstaller`, session-based, dynamically
+      registered receiver for the commit result, handles `STATUS_PENDING_USER_ACTION` by
+      handing the confirmation `Intent` back through an effect
+- [x] Mandatory-update support — manifest's `mandatory` flag, or installed version below
+      `minSupportedVersion`, both force `UpdateAvailability.Mandatory`; the dialog then has no
+      dismiss/later/skip
+- [x] Persisted update state (last check, last notified, skipped) — `UpdateState`, DataStore
+      Preferences, deliberately outside the encrypted workspace so it's readable pre-unlock
+- [ ] Manual "Check for updates" in Settings — `UpdateViewModel.onCheckNow()` exists and is
+      wired for reuse, but there is no Settings screen yet to put the button on (Settings
+      itself is Phase 7); tracked there, not a gap in the updater
+- [x] Updater tests — `VersionComparatorTest` (5 cases incl. `1.9.0 < 1.10.0` and prerelease
+      precedence); download/install/UI verified live on-device rather than with instrumented
+      tests, since both need real network/PackageInstaller behavior
 
 ## Phase 3 — Port the existing app
 - [ ] Task model (full)
