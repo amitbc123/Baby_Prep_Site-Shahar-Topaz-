@@ -27,14 +27,22 @@ supersedes the private-by-default / opt-in-sharing model described in `task.md`.
 - [x] `:core:crypto` — recovery phrase (BIP-39, official vectors)
 - [ ] Theme ported from `src/index.css` (light + dark)
 - [x] Supabase schema + RLS, first migration (25 access-control tests green)
-- [ ] Auth (email/password, Keystore-backed session)
-- [ ] Couple pairing end-to-end across two emulators
-- [ ] Room + SQLCipher (tasks, cycles, sync operations)
+- [x] Auth (email/password, Keystore-backed session)
+- [x] Couple pairing — create-workspace path verified end-to-end on the emulator against
+      the live project. Join-with-code/approve-device path is implemented but has no UI
+      entry point yet (the app routes past `PairingScreen`'s `Ready` stage the instant the
+      key unlocks); needs a Settings/device-management screen, planned for Phase 7.
+- [x] Room + SQLCipher (tasks, cycles, sync operations)
 - [x] Sync engine core: push/pull, cursor, conflict detection (11 tests)
-- [x] Sync engine: Supabase wiring + WorkManager worker
-- [ ] Tasks: list / add / edit, offline
+- [x] Sync engine: Supabase wiring + WorkManager worker, wired to app startup and to
+      every local write via `SyncTrigger`
+- [x] Tasks: list / add / edit / toggle-done / delete, `:feature:tasks`, offline-first
+      through `TaskRepository`'s outbox
 - [ ] Cycle: log period start and end, history
-- [ ] Security acceptance tests (ciphertext-only, outsider access, tamper)
+- [x] Security acceptance test — ciphertext-only: verified manually on the live project
+      (a task title written on-device does not appear anywhere in the stored row's
+      ciphertext). Outsider-access and tamper tests still need automating per the
+      acceptance gate in the plan.
 - [x] Version derived from git tag (single source of truth)
 - [x] CI workflow: test + lint
 - [x] Release workflow: signed APK + SHA-256 + manifest on `v*` tags
