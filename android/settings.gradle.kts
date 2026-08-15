@@ -34,6 +34,7 @@ include(":core:sync")
 include(":core:network")
 include(":core:security")
 include(":core:update")
+include(":core:domain")
 
 include(":feature:auth")
 include(":feature:pairing")
