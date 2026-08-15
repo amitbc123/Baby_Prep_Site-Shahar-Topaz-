@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="auth_title_sign_in">ברוכים השבים</string>
+    <string name="auth_title_sign_up">יצירת חשבון</string>
+    <string name="auth_subtitle">מרחב פרטי לשניכם.</string>
+    <string name="auth_email">אימייל</string>
+    <string name="auth_password">סיסמה</string>
+    <string name="auth_password_hint">לפחות %1$d תווים</string>
+    <string name="auth_show_password">הצג סיסמה</string>
+    <string name="auth_hide_password">הסתר סיסמה</string>
+    <string name="auth_sign_in">כניסה</string>
+    <string name="auth_sign_up">יצירת חשבון</string>
+    <string name="auth_switch_to_sign_up">אין עדיין חשבון? צרו אחד</string>
+    <string name="auth_switch_to_sign_in">יש כבר חשבון? כניסה</string>
+    <string name="auth_confirmation_sent">בדקו את האימייל כדי לאשר את החשבון.</string>
+
+    <string name="auth_error_credentials">האימייל או הסיסמה אינם נכונים.</string>
+    <string name="auth_error_offline">אין חיבור. בדקו את האינטרנט ונסו שוב.</string>
+    <string name="auth_error_timeout">השרת לא הגיב בזמן. נסו שוב.</string>
+    <string name="auth_error_already_registered">לאימייל הזה כבר יש חשבון.</string>
+    <string name="auth_error_generic">משהו השתבש. נסו שוב.</string>
+</resources>

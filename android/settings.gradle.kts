@@ -33,3 +33,6 @@ include(":core:ui")
 include(":core:sync")
 include(":core:network")
 include(":core:security")
+
+include(":feature:auth")
+include(":feature:pairing")

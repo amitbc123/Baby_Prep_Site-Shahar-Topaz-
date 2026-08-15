@@ -2,19 +2,29 @@ package com.oryareach.core.network.di
 
 import com.oryareach.core.network.SupabaseClientProvider
 import com.oryareach.core.network.SupabaseRecordRemoteDataSource
+import com.oryareach.core.network.auth.AuthRepository
+import com.oryareach.core.network.auth.EncryptedSessionManager
+import com.oryareach.core.network.auth.SupabaseAuthRepository
+import com.oryareach.core.network.workspace.SupabaseWorkspaceRepository
+import com.oryareach.core.network.workspace.WorkspaceRepository
+import com.oryareach.core.security.KeystoreBlobStore
 import com.oryareach.core.sync.RecordRemoteDataSource
 import io.github.jan.supabase.SupabaseClient
+import io.github.jan.supabase.auth.SessionManager
+import org.koin.android.ext.koin.androidContext
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
-/**
- * Supplies the current workspace id. Declared here so `:app` can bind it without this module
- * depending on the session type, and so `SupabaseClient` never leaks out of `:core:network`.
- */
+/** Supplies the current workspace id without this module depending on the session type. */
 val workspaceIdQualifier = named("workspaceId")
 
 val networkModule = module {
-    single<SupabaseClient> { SupabaseClientProvider.create() }
+    single { KeystoreBlobStore(androidContext()) }
+    single<SessionManager> { EncryptedSessionManager(get()) }
+    single<SupabaseClient> { SupabaseClientProvider.create(sessions = get()) }
+
+    single<AuthRepository> { SupabaseAuthRepository(get()) }
+    single<WorkspaceRepository> { SupabaseWorkspaceRepository(get()) }
 
     single<RecordRemoteDataSource> {
         @Suppress("UNCHECKED_CAST")

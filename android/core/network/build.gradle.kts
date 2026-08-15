@@ -45,6 +45,7 @@ android {
 dependencies {
     api(project(":core:sync"))
     implementation(project(":core:common"))
+    implementation(project(":core:security"))
 
     implementation(platform(libs.supabase.bom))
     implementation(libs.supabase.auth)

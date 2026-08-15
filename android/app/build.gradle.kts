@@ -54,6 +54,8 @@ dependencies {
     implementation(project(":core:security"))
     implementation(project(":core:sync"))
     implementation(project(":core:ui"))
+    implementation(project(":feature:auth"))
+    implementation(project(":feature:pairing"))
 
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.appcompat)

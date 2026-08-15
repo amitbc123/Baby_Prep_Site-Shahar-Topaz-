@@ -9,7 +9,11 @@ import com.oryareach.core.security.KeystoreDatabasePassphrase
 import com.oryareach.core.sync.RecordCodec
 import com.oryareach.core.sync.SyncEngine
 import com.oryareach.core.sync.SyncStore
+import com.oryareach.core.security.DeviceIdentity
 import com.oryareach.core.sync.WorkspaceKeyProvider
+import com.oryareach.feature.auth.AuthViewModel
+import com.oryareach.feature.pairing.PairingViewModel
+import org.koin.core.module.dsl.viewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 
@@ -50,4 +54,15 @@ val appModule = module {
     }
 
     single { SyncEngine(store = get(), remote = get()) }
+
+    single { DeviceIdentity(get()) }
+
+    viewModel { AuthViewModel(auth = get()) }
+    viewModel {
+        PairingViewModel(
+            workspaces = get(),
+            identity = get(),
+            onWorkspaceOpened = { workspaceId, key -> get<SessionState>().open(workspaceId, key) },
+        )
+    }
 }
