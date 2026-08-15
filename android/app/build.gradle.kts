@@ -3,19 +3,44 @@ plugins {
     id("oryareach.android.compose")
 }
 
+/**
+ * Release signing comes from the environment so the keystore never enters the repository.
+ * CI decodes ANDROID_KEYSTORE_BASE64 into this path before building.
+ *
+ * The key must stay the same for the life of the app: Android refuses to install an update
+ * signed by a different key, and a reinstall wipes local data. See
+ * docs/architecture/011-release-signing-and-updates.md.
+ */
+val keystorePath: String? = System.getenv("ANDROID_KEYSTORE_PATH")
+val hasReleaseSigning = !keystorePath.isNullOrBlank() && file(keystorePath).exists()
+
 android {
     namespace = "com.oryareach.app"
 
+    // versionName / versionCode come from the newest v* git tag, set by the convention plugin.
     defaultConfig {
         applicationId = "com.oryareach.app"
-        versionCode = 1
-        versionName = "0.1.0"
+    }
+
+    signingConfigs {
+        if (hasReleaseSigning) {
+            create("release") {
+                storeFile = file(keystorePath!!)
+                storePassword = System.getenv("ANDROID_KEYSTORE_PASSWORD")
+                keyAlias = System.getenv("ANDROID_KEY_ALIAS")
+                keyPassword = System.getenv("ANDROID_KEY_PASSWORD")
+            }
+        }
     }
 
     buildTypes {
         release {
             isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            // Without the secrets present (local builds, forks) this stays unsigned rather than
+            // silently falling back to the debug key, which would produce an uninstallable update.
+            signingConfig = if (hasReleaseSigning) signingConfigs.getByName("release") else null
         }
     }
 }

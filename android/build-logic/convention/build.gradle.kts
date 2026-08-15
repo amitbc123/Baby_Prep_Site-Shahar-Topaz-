@@ -9,6 +9,8 @@ kotlin {
 }
 
 dependencies {
+    testImplementation(libs.junit)
+
     compileOnly(libs.plugin.agp)
     compileOnly(libs.plugin.agp.common)
     compileOnly(libs.plugin.kotlin)
