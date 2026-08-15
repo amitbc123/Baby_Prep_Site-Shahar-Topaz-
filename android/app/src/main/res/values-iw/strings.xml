@@ -1,4 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">אור ירח</string>
+    <string name="foundations_title">תשתית</string>
+    <string name="foundations_subtitle">האפליקציה בבנייה. שום דבר כאן עדיין לא סופי.</string>
+    <string name="foundations_version">גרסה %1$s</string>
+    <string name="foundations_ready">מוכן</string>
+    <string name="foundations_pending">בעבודה</string>
+    <string name="component_crypto">הצפנה</string>
+    <string name="component_database">מסד נתונים מקומי מוצפן</string>
+    <string name="component_theme">עיצוב וגופנים</string>
+    <string name="component_backend">שרת והרשאות גישה</string>
+    <string name="component_sync">מנוע סנכרון</string>
+    <string name="component_tasks">משימות</string>
+    <string name="component_cycle">מעקב מחזור</string>
 </resources>
