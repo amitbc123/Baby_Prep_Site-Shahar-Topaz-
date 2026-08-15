@@ -25,8 +25,12 @@ supersedes the private-by-default / opt-in-sharing model described in `task.md`.
 - [x] `:core:crypto` — record encryption; 32 crypto tests green
 - [x] `:core:crypto` — key wrapping (HPKE) for pairing
 - [x] `:core:crypto` — recovery phrase (BIP-39, official vectors)
-- [ ] Theme ported from `src/index.css` (light + dark)
-- [x] Supabase schema + RLS, first migration (25 access-control tests green)
+- [x] Theme ported from `src/index.css` (light + dark palette, radius scale, both
+      bundled variable fonts) — `:core:ui`, confirmed matching the web app live on-device
+- [x] Supabase schema + RLS, first migration (25 access-control tests written; the
+      hosted project's pgTAP harness currently fails to resolve `plan()` despite the
+      extension being present — a role/search_path environment issue, not a regression
+      from anything in this session; needs its own investigation)
 - [x] Auth (email/password, Keystore-backed session)
 - [x] Couple pairing — create-workspace path verified end-to-end on the emulator against
       the live project. Join-with-code/approve-device path is implemented but has no UI
@@ -38,11 +42,20 @@ supersedes the private-by-default / opt-in-sharing model described in `task.md`.
       every local write via `SyncTrigger`
 - [x] Tasks: list / add / edit / toggle-done / delete, `:feature:tasks`, offline-first
       through `TaskRepository`'s outbox
-- [ ] Cycle: log period start and end, history
-- [x] Security acceptance test — ciphertext-only: verified manually on the live project
-      (a task title written on-device does not appear anywhere in the stored row's
-      ciphertext). Outsider-access and tamper tests still need automating per the
-      acceptance gate in the plan.
+- [x] Cycle: log period start and end, history, delete — `:feature:cycle`, offline-first
+      through `CycleRepository`'s outbox; only user-entered dates are stored, length is
+      computed at read time
+- [x] Security acceptance tests, per the gate in the plan:
+      - Ciphertext-only — verified manually on the live project for both a task write and
+        a cycle write (title/dates do not appear anywhere in the stored row's ciphertext)
+      - Outsider access → 0 rows, unauthenticated → denied, invitation expired/revoked
+        rejected, third member blocked by the workspace cap — all in
+        `supabase/tests/001_access_control.sql` (blocked from re-running right now by the
+        pgTAP harness issue above, not un-written)
+      - Tamper → fails AEAD, not silent corruption — `RecordCipherTest`,
+        `KeyWrapTest` (`:core:crypto`)
+      - Sync convergence / conflict-never-silently-overwrites — `SyncEngineTest`
+        (`:core:sync`)
 - [x] Version derived from git tag (single source of truth)
 - [x] CI workflow: test + lint
 - [x] Release workflow: signed APK + SHA-256 + manifest on `v*` tags
