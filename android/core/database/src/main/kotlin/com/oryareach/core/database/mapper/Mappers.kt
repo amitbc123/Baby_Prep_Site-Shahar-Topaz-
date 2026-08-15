@@ -1,12 +1,14 @@
 package com.oryareach.core.database.mapper
 
 import com.oryareach.core.database.entity.AppSettingsEntity
+import com.oryareach.core.database.entity.FolderEntity
 import com.oryareach.core.database.entity.ImportantDateEntity
 import com.oryareach.core.database.entity.MenstrualCycleEntity
 import com.oryareach.core.database.entity.ShoppingItemEntity
 import com.oryareach.core.database.entity.SyncMetaEntity
 import com.oryareach.core.database.entity.TaskEntity
 import com.oryareach.core.model.AppSettings
+import com.oryareach.core.model.Folder
 import com.oryareach.core.model.ImportantDate
 import com.oryareach.core.model.MenstrualCycle
 import com.oryareach.core.model.ShoppingItem
@@ -53,6 +55,8 @@ fun AppSettingsEntity.toAppSettings() = AppSettings(
     dueDate = LocalDate.parse(dueDate),
     babyName = babyName,
 )
+
+fun FolderEntity.toFolder() = Folder(id = id, name = name, parentId = parentId, path = path)
 
 fun ImportantDateEntity.toImportantDate() = ImportantDate(
     id = id,
@@ -101,6 +105,14 @@ fun AppSettings.toEntity(workspaceId: String, record: RemoteRecord, now: Long) =
     id = id,
     dueDate = dueDate.toString(),
     babyName = babyName,
+    sync = record.toSyncMeta(workspaceId, now),
+)
+
+fun Folder.toEntity(workspaceId: String, record: RemoteRecord, now: Long) = FolderEntity(
+    id = id,
+    name = name,
+    parentId = parentId,
+    path = path,
     sync = record.toSyncMeta(workspaceId, now),
 )
 

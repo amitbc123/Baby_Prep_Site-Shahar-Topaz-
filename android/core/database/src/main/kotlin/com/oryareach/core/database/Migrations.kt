@@ -99,3 +99,41 @@ val MIGRATION_2_3 = object : Migration(2, 3) {
         )
     }
 }
+
+/** Adds `folders` — the shared document tree (Phase 4). */
+val MIGRATION_3_4 = object : Migration(3, 4) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL(
+            """
+            CREATE TABLE IF NOT EXISTS `folders` (
+                `id` TEXT NOT NULL,
+                `name` TEXT NOT NULL,
+                `parent_id` TEXT,
+                `path` TEXT NOT NULL,
+                `workspace_id` TEXT NOT NULL,
+                `created_by` TEXT NOT NULL,
+                `created_at` INTEGER NOT NULL,
+                `updated_at` INTEGER NOT NULL,
+                `deleted_at` INTEGER,
+                `version` INTEGER NOT NULL,
+                `sync_status` TEXT NOT NULL,
+                `client_mutation_id` TEXT,
+                PRIMARY KEY(`id`)
+            )
+            """.trimIndent(),
+        )
+        db.execSQL("CREATE INDEX IF NOT EXISTS `index_folders_sync_status` ON `folders` (`sync_status`)")
+        db.execSQL(
+            "CREATE INDEX IF NOT EXISTS `index_folders_workspace_id_updated_at` " +
+                "ON `folders` (`workspace_id`, `updated_at`)",
+        )
+        db.execSQL(
+            "CREATE INDEX IF NOT EXISTS `index_folders_workspace_id_parent_id` " +
+                "ON `folders` (`workspace_id`, `parent_id`)",
+        )
+        db.execSQL(
+            "CREATE INDEX IF NOT EXISTS `index_folders_workspace_id_path` " +
+                "ON `folders` (`workspace_id`, `path`)",
+        )
+    }
+}

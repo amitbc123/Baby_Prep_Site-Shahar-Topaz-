@@ -140,11 +140,21 @@ supersedes the private-by-default / opt-in-sharing model described in `task.md`.
   burst produces are cheap no-ops. Re-verified: all 6 records now sync.
 
 ## Phase 4 — Folders & documents
-- [ ] Nested folders (5+ levels)
-- [ ] SAF import
-- [ ] Encrypted upload pipeline with checksums
-- [ ] Preview (PDF, image, text, JSON, CSV)
-- [ ] Attachments to tasks and folders
+- [x] Nested folders (arbitrary depth) — `:feature:folders`, `FolderRepository`, materialized
+      `path` (e.g. `/<ancestor>/.../<id>/`) derived server-independently at write time so a
+      subtree is a `LIKE 'path%'` query, never a recursive one. Breadcrumb navigation, rename,
+      cascading delete (deletes the folder and everything under it as one soft-delete
+      transaction). Verified end-to-end on-device: create → nest → rename → delete parent
+      confirms the child is gone and an unrelated sibling survives; synced; ciphertext-only
+      confirmed. New `EntityType.FOLDER` sync branch in `RoomSyncStore` (was already declared,
+      unused until now) — migration 3→4 adds `folders`.
+- [ ] SAF import — not started (document content, not folders — depends on the item below)
+- [ ] Encrypted upload pipeline with checksums — not started. The schema already has
+      `document_blobs` (`storage_path`/`sha256`/`size_bytes`) from Phase 1's migration, but no
+      Supabase Storage bucket exists yet and no RLS policies on `storage.objects` — that's real
+      infra work beyond a client-side change, on top of the upload/download/encryption code
+- [ ] Preview (PDF, image, text, JSON, CSV) — not started
+- [ ] Attachments to tasks and folders — not started (documents don't exist yet to attach)
 
 ## Phase 5 — Scanner
 - [ ] ML Kit document scanner, multi-page, PDF output

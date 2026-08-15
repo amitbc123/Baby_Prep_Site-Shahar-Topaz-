@@ -4,6 +4,7 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.oryareach.core.database.dao.AppSettingsDao
+import com.oryareach.core.database.dao.FolderDao
 import com.oryareach.core.database.dao.ImportantDateDao
 import com.oryareach.core.database.dao.MenstrualCycleDao
 import com.oryareach.core.database.dao.ShoppingItemDao
@@ -11,6 +12,7 @@ import com.oryareach.core.database.dao.SyncOperationDao
 import com.oryareach.core.database.dao.SyncStateDao
 import com.oryareach.core.database.dao.TaskDao
 import com.oryareach.core.database.entity.AppSettingsEntity
+import com.oryareach.core.database.entity.FolderEntity
 import com.oryareach.core.database.entity.ImportantDateEntity
 import com.oryareach.core.database.entity.MenstrualCycleEntity
 import com.oryareach.core.database.entity.ShoppingItemEntity
@@ -26,11 +28,12 @@ import com.oryareach.core.database.entity.TaskEntity
         ShoppingItemEntity::class,
         ImportantDateEntity::class,
         AppSettingsEntity::class,
+        FolderEntity::class,
         SyncOperationEntity::class,
         SyncCursorEntity::class,
         SyncConflictEntity::class,
     ],
-    version = 3,
+    version = 4,
     exportSchema = true,
 )
 @TypeConverters(DatabaseConverters::class)
@@ -40,6 +43,7 @@ abstract class OrYareachDatabase : RoomDatabase() {
     abstract fun shoppingItemDao(): ShoppingItemDao
     abstract fun importantDateDao(): ImportantDateDao
     abstract fun appSettingsDao(): AppSettingsDao
+    abstract fun folderDao(): FolderDao
     abstract fun syncOperationDao(): SyncOperationDao
     abstract fun syncStateDao(): SyncStateDao
 

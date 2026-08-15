@@ -7,6 +7,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Event
+import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Icon
@@ -46,6 +47,8 @@ import com.oryareach.feature.dates.DatesScreen
 import com.oryareach.feature.dates.DatesViewModel
 import com.oryareach.feature.home.HomeScreen
 import com.oryareach.feature.home.HomeViewModel
+import com.oryareach.feature.folders.FoldersScreen
+import com.oryareach.feature.folders.FoldersViewModel
 import androidx.compose.ui.platform.LocalContext
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
@@ -104,7 +107,7 @@ private fun UpdateHost(viewModel: UpdateViewModel = koinViewModel()) {
     }
 }
 
-private enum class HomeTab { Home, Tasks, Shopping, Dates, Cycle }
+private enum class HomeTab { Home, Tasks, Shopping, Dates, Folders, Cycle }
 
 /**
  * A plain tab switch, not `navigation-compose`: two peer screens with no back-stack semantics
@@ -143,6 +146,12 @@ private fun HomeRoute() {
                     label = { Text(stringResource(com.oryareach.feature.dates.R.string.dates_title)) },
                 )
                 NavigationBarItem(
+                    selected = tab == HomeTab.Folders,
+                    onClick = { tab = HomeTab.Folders },
+                    icon = { Icon(Icons.Default.Folder, contentDescription = null) },
+                    label = { Text(stringResource(com.oryareach.feature.folders.R.string.folders_title)) },
+                )
+                NavigationBarItem(
                     selected = tab == HomeTab.Cycle,
                     onClick = { tab = HomeTab.Cycle },
                     icon = { Icon(Icons.Default.CalendarMonth, contentDescription = null) },
@@ -156,6 +165,7 @@ private fun HomeRoute() {
             HomeTab.Tasks -> TasksRoute(modifier = androidx.compose.ui.Modifier.padding(padding))
             HomeTab.Shopping -> ShoppingRoute(modifier = androidx.compose.ui.Modifier.padding(padding))
             HomeTab.Dates -> DatesRoute(modifier = androidx.compose.ui.Modifier.padding(padding))
+            HomeTab.Folders -> FoldersRoute(modifier = androidx.compose.ui.Modifier.padding(padding))
             HomeTab.Cycle -> CycleRoute(modifier = androidx.compose.ui.Modifier.padding(padding))
         }
     }
@@ -195,6 +205,15 @@ private fun DatesRoute(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     DatesScreen(uiState = uiState, actions = viewModel, modifier = modifier)
+}
+
+@Composable
+private fun FoldersRoute(
+    modifier: androidx.compose.ui.Modifier = androidx.compose.ui.Modifier,
+    viewModel: FoldersViewModel = koinViewModel(),
+) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    FoldersScreen(uiState = uiState, actions = viewModel, modifier = modifier)
 }
 
 @Composable

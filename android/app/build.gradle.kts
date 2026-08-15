@@ -63,6 +63,7 @@ dependencies {
     implementation(project(":feature:shopping"))
     implementation(project(":feature:dates"))
     implementation(project(":feature:home"))
+    implementation(project(":feature:folders"))
 
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.appcompat)

@@ -25,7 +25,7 @@ object DatabaseFactory {
             .openHelperFactory(factory)
             // No fallbackToDestructiveMigration: losing local data on a schema change would
             // discard anything not yet synced. A missing migration must fail loudly instead.
-            .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
+            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
             .build()
     }
 }

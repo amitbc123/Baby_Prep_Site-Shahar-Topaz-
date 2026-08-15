@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="folders_title">Documents</string>
+    <string name="folders_root">Documents</string>
+    <string name="folders_empty">No folders yet. Add the first one.</string>
+    <string name="folders_add">New folder</string>
+    <string name="folders_new_title">New folder</string>
+    <string name="folders_rename_title">Rename folder</string>
+    <string name="folders_field_name">Name</string>
+    <string name="folders_save">Save</string>
+    <string name="folders_cancel">Cancel</string>
+    <string name="folders_delete">Delete</string>
+    <string name="folders_delete_title">Delete folder?</string>
+    <string name="folders_delete_body">"%1$s and everything inside it will be deleted."</string>
+</resources>
