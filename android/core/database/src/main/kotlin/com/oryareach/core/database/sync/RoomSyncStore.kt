@@ -133,8 +133,15 @@ class RoomSyncStore(
         database.withTransaction {
             for (record in records) {
                 // A record with a local edit still queued is left alone; overwriting it here
-                // would silently discard the user's unsent change.
+                // would silently discard the user's unsent change. A record already flagged as
+                // conflicted needs the same guard: markConflict() drops the queued operation
+                // (replaying it would just conflict again), so hasPending() alone stops
+                // protecting it — without this check, the pull() that runs right after push()
+                // in the same sync() cycle would immediately overwrite the local side with the
+                // server's, destroying the very copy the conflict-resolution UI needs to offer
+                // as "keep this device's version" before the user ever sees it.
                 if (operations.hasPending(record.id)) continue
+                if (state.conflict(record.id) != null) continue
 
                 val decoded = codec.decode(record.entityType, record.id, record.ciphertext)
                 if (decoded !is AppResult.Success) continue

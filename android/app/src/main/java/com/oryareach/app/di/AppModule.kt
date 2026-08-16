@@ -134,6 +134,7 @@ val appModule = module {
             repository = get(),
             documents = get(),
             auth = get(),
+            syncEngine = get(),
             workspaceId = { get<SessionState>().workspaceId },
         )
     }

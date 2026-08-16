@@ -807,26 +807,67 @@ before called done-done):**
   dismissed via back rather than tapping Save) — still needs one more pass to
   confirm actual save.
 - Dates add-form retested to completion: title, date picker, Save all worked, saved row
-  ("Ultrasound" / 2026-08-16) confirmed on the list. Dates item closed out.
-- **Real bug found and fixed live: `TaskForm`'s bottom sheet had no scroll, so Save became
-  unreachable once Repeat + Tags (Phase 8 additions) pushed content past sheet height.**
-  `TaskForm`'s root `Column` (`feature/tasks/TasksScreen.kt`) had `.fillMaxWidth().imePadding()
-  .padding(24.dp)` and no scroll modifier — fine when the form was shorter, but with a due
-  date set (which reveals the Repeat row) plus a tag chip added, the Save button's node had
-  bounds clipped to a sliver at the very edge of the sheet and no swipe could bring it into a
-  tappable position. First reproduced live tapping through the full add-task flow (title →
-  due date → Weekly repeat → `#medical` tag), confirmed by checking `TaskForm`'s source (no
-  `verticalScroll`), fixed by adding `.verticalScroll(rememberScrollState())` to the Column.
-  Rebuilt, reinstalled, redid the identical flow live: Save now sits fully on-screen after one
-  scroll, tapping it saves correctly, and reopening the task for edit confirms due date
-  (2026-08-23), Weekly recurrence, and the `#medical` tag all persisted. `./gradlew
-  :app:assembleDebug test lint` all green after the fix. Tasks manual add/recurring/tags item
-  closed out. Where: `feature/tasks/TasksScreen.kt`'s `TaskForm`.
-- **Accessibility gap found, not yet fixed:** the tag-entry `OutlinedTextField` in `TaskForm`
-  showed `NAF="true"` in the accessibility tree (empty `text`/`content-desc`) even though it
-  visually shows an "Add a tag" label — same class of issue as the Folders FAB bug fixed
-  earlier this session, but this one wasn't root-caused or fixed this pass; flagged for the
-  Phase 12 UI/UX pass rather than fixed reflexively mid-live-test.
+  ("Ultrasound" / 2026-08-16) confirmed on list. Dates item closed out.
+- **Real bug found + fixed live: `TaskForm`'s bottom sheet had no scroll, Save unreachable
+  once Repeat + Tags (Phase 8 additions) pushed content past sheet height.** `TaskForm`'s
+  root `Column` (`feature/tasks/TasksScreen.kt`) had `.fillMaxWidth().imePadding()
+  .padding(24.dp)`, no scroll modifier — fine when form shorter, but due date set (reveals
+  Repeat row) + tag chip added clipped Save's bounds to sliver at sheet edge, no swipe could
+  reach it. Reproduced live via full add-task flow (title → due date → Weekly repeat →
+  `#medical` tag), confirmed via source (no `verticalScroll`), fixed with
+  `.verticalScroll(rememberScrollState())` on Column. Rebuilt, reinstalled, redid flow live:
+  Save reachable after one scroll, saves correctly, reopening for edit confirms due date
+  (2026-08-23), Weekly recurrence, `#medical` tag all persisted. `./gradlew
+  :app:assembleDebug test lint` green after fix. Tasks add/recurring/tags item closed.
+  Where: `feature/tasks/TasksScreen.kt`'s `TaskForm`.
+- **False alarm, resolved:** tag-entry field's earlier `NAF="true"` (flagged as accessibility
+  gap) retested after scroll fix, gone — same clipped-sheet symptom as Save-button bug, not
+  separate defect. Field fully in view (188px vs earlier 48px sliver) carries no `NAF`. No
+  fix needed.
+- Settings toggles verified live (MIUI): biometric-unlock turns on "Auto-lock after 5
+  minutes" row (only shown once biometric enabled, matches Phase 7 gating); "Lock now"
+  drives real `BiometricPrompt` ("Touch the fingerprint sensor"/"USE PIN"), completing it
+  re-unlocks session. "Block screenshots" confirmed via `adb exec-out screencap`: empty
+  output while on, real 179KB PNG the moment toggled off, empty again once back on —
+  `FLAG_SECURE` applies live, no restart needed. All three toggles read `NAF="true"` in
+  accessibility tree (no label reaches TalkBack) — flagged for Phase 12, not fixed this pass.
+- **Real bug found live with two devices (Pixel + MIUI), fixed: a detected sync conflict was
+  destroyed by the very sync cycle that detected it, before user ever saw it.** Reproduced:
+  edited same task differently on both devices while both offline (`svc wifi disable` +
+  `svc data disable`, since `AIRPLANE_MODE` broadcast needs root, denied), brought both back
+  online. Expected: conflict banner both sides. Actual (pre-fix): no banner, both devices
+  silently converged on whichever push landed first — other device's edit vanished with no
+  trace, exactly what `SyncEngine`'s own doc comment says must never happen ("silently
+  picking last-write-wins is how shared edits get lost"). Root cause: `RoomSyncStore.markConflict`
+  calls `operations.removeByRecord(recordId)` after saving `SyncConflictEntity` (so replay
+  of same stale write doesn't just conflict again) — but `applyRemote`'s only guard against
+  overwriting a record with unsent local edits was `operations.hasPending`. Since `push()`
+  + `pull()` run back-to-back inside same `sync()` call, pull right after the
+  conflict-producing push had its guard already removed, immediately upserted server's copy
+  over local row — clobbering "mine" side conflict UI needs before resolution ever ran, and
+  (upsert also resets sync status to SYNCED) cleared conflict count back to zero same
+  transaction cycle, so `ConflictHost` never rendered. First surfaced live: an actual stale
+  `SyncConflictEntity` from pre-fix run showed "This device" and "Partner's device" both
+  displaying *identical* (already-clobbered) text — visible proof, not theoretical. Fixed:
+  second guard on `applyRemote`, skip record if `state.conflict(record.id) != null`, added
+  to existing `hasPending` check (`SyncStateDao.conflict(recordId)` already existed for
+  this). Rebuilt, reinstalled both devices, redid identical two-device offline-edit
+  scenario: conflict banner now shows correctly distinct sides ("This device: Pack hospital
+  bag -MIUI 3" vs "Partner's device: Pack hospital bag -MIUI 2"), resolving via "Keep this
+  device's version" converges both devices to kept text on next sync — verified by
+  relaunching both apps, confirming title matches on each. Was the one Phase 8 conflicts
+  item flagged "never exercised even indirectly" — now exercised, found broken, fixed.
+  `./gradlew :app:assembleDebug test lint` green after fix. Where:
+  `core/database/sync/RoomSyncStore.kt`'s `applyRemote`.
+- **Pull-to-refresh rollout started for other tabs** — Home had it since earlier this
+  session; Tasks is first of rest to get it (`TasksUiState.refreshing`,
+  `TasksActions.onRefresh`, `TasksViewModel` now takes `SyncEngine`, calls `.sync()` same
+  way `HomeViewModel` does, `TasksScreen` wraps content in `PullToRefreshBox`, `AppModule`
+  passes `syncEngine = get()`). Compiles, full `./gradlew test`/`lint` green, installed +
+  launched no crash. **Shopping, Dates, Documents, Cycle, Calendar still don't have it** —
+  stopped here on explicit instruction to wrap up session rather than leave five more
+  modules half-wired; same copy-pasteable pattern as Tasks/Home, next session repeats it
+  across remaining five.
 
 ## Phase 12 — UI/UX polish pass (queued, not started)
 

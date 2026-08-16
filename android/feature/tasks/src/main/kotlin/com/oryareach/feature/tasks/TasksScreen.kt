@@ -95,7 +95,12 @@ fun TasksScreen(
             }
         },
     ) { padding ->
-        Column(modifier = Modifier.fillMaxSize().padding(padding)) {
+        androidx.compose.material3.pulltorefresh.PullToRefreshBox(
+            isRefreshing = uiState.refreshing,
+            onRefresh = actions::onRefresh,
+            modifier = Modifier.fillMaxSize().padding(padding),
+        ) {
+        Column(modifier = Modifier.fillMaxSize()) {
             androidx.compose.material3.TextButton(
                 onClick = { actions.onSeedHospitalBag(hospitalBagTitles) },
                 enabled = !uiState.seedingHospitalBag,
@@ -141,6 +146,7 @@ fun TasksScreen(
                     }
                 }
             }
+        }
         }
     }
 
@@ -531,4 +537,5 @@ private object NoopTasksActions : TasksActions {
     override fun onSeedHospitalBag(titles: List<String>) = Unit
     override fun onAttachDocument(name: String, mimeType: String, bytes: ByteArray) = Unit
     override fun onDeleteAttachment(document: Document) = Unit
+    override fun onRefresh() = Unit
 }

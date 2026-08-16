@@ -46,6 +46,7 @@ interface TasksActions {
     fun onSeedHospitalBag(titles: List<String>)
     fun onAttachDocument(name: String, mimeType: String, bytes: ByteArray)
     fun onDeleteAttachment(document: Document)
+    fun onRefresh()
 }
 
 /**
@@ -58,6 +59,7 @@ class TasksViewModel(
     private val repository: TaskRepository,
     private val documents: DocumentRepository,
     private val auth: AuthRepository,
+    private val syncEngine: com.oryareach.core.sync.SyncEngine,
     private val workspaceId: () -> String?,
 ) : ViewModel(), TasksActions {
 
@@ -228,6 +230,16 @@ class TasksViewModel(
                 )
             }
             set { it.copy(seedingHospitalBag = false) }
+        }
+    }
+
+    override fun onRefresh() {
+        if (_uiState.value.refreshing) return
+        set { it.copy(refreshing = true) }
+
+        viewModelScope.launch {
+            syncEngine.sync()
+            set { it.copy(refreshing = false) }
         }
     }
 

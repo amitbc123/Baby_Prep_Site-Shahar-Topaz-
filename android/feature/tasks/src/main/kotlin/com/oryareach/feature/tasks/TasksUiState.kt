@@ -39,6 +39,7 @@ data class TasksUiState(
     val sheetVisible: Boolean = false,
     val submitting: Boolean = false,
     val seedingHospitalBag: Boolean = false,
+    val refreshing: Boolean = false,
     @StringRes val errorMessage: Int? = null,
 ) {
     // Derived as a getter so it can never drift from the inputs it describes.
