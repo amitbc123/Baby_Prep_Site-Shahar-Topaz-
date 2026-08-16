@@ -17,6 +17,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -36,6 +37,7 @@ import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -45,6 +47,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -62,6 +66,8 @@ fun ShoppingScreen(
     actions: ShoppingActions,
     modifier: Modifier = Modifier,
 ) {
+    var deleteConfirmItem by remember { mutableStateOf<ShoppingItem?>(null) }
+
     Scaffold(
         modifier = modifier.fillMaxSize().safeDrawingPadding(),
         floatingActionButton = {
@@ -76,6 +82,13 @@ fun ShoppingScreen(
             modifier = Modifier.fillMaxSize().padding(padding),
         ) {
         Column(modifier = Modifier.fillMaxSize()) {
+            Text(
+                text = stringResource(R.string.shopping_title),
+                style = MaterialTheme.typography.headlineMedium,
+                color = MaterialTheme.colorScheme.onBackground,
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                    .semantics { heading() },
+            )
             BudgetSummary(uiState = uiState)
 
             if (uiState.items.isEmpty()) {
@@ -96,7 +109,11 @@ fun ShoppingScreen(
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     items(uiState.items, key = ShoppingItem::id) { item ->
-                        ShoppingRow(item = item, actions = actions)
+                        ShoppingRow(
+                            item = item,
+                            actions = actions,
+                            onDeleteClick = { deleteConfirmItem = item },
+                        )
                     }
                 }
             }
@@ -109,6 +126,23 @@ fun ShoppingScreen(
         ModalBottomSheet(onDismissRequest = actions::onDismissSheet, sheetState = sheetState) {
             ShoppingForm(uiState = uiState, actions = actions)
         }
+    }
+
+    deleteConfirmItem?.let { item ->
+        AlertDialog(
+            onDismissRequest = { deleteConfirmItem = null },
+            title = { Text(stringResource(R.string.shopping_delete_title)) },
+            text = { Text(stringResource(R.string.shopping_delete_body, item.name)) },
+            confirmButton = {
+                TextButton(onClick = {
+                    actions.onDelete(item.id)
+                    deleteConfirmItem = null
+                }) { Text(stringResource(R.string.shopping_delete)) }
+            },
+            dismissButton = {
+                TextButton(onClick = { deleteConfirmItem = null }) { Text(stringResource(R.string.shopping_cancel)) }
+            },
+        )
     }
 }
 
@@ -147,7 +181,7 @@ private fun BudgetSummary(uiState: ShoppingUiState) {
 }
 
 @Composable
-private fun ShoppingRow(item: ShoppingItem, actions: ShoppingActions) {
+private fun ShoppingRow(item: ShoppingItem, actions: ShoppingActions, onDeleteClick: () -> Unit) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
@@ -165,7 +199,7 @@ private fun ShoppingRow(item: ShoppingItem, actions: ShoppingActions) {
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
-                IconButton(onClick = { actions.onDelete(item.id) }) {
+                IconButton(onClick = onDeleteClick) {
                     Icon(Icons.Default.Delete, contentDescription = stringResource(R.string.shopping_delete))
                 }
             }

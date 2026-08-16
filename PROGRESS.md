@@ -888,7 +888,7 @@ before called done-done):**
   so still belongs on Phase 11's live-testing backlog, narrower than before: five taps
   to confirm, not five features to wire.
 
-## Phase 12 — UI/UX polish pass (queued, not started)
+## Phase 12 — UI/UX polish pass (started)
 
 `UIUX.md` (repo root) is generic senior-Android-designer audit brief — not project-specific
 findings, a prompt to follow: audit every screen for spacing/typography/hierarchy/nav/
@@ -896,9 +896,86 @@ accessibility/dark-mode/states against Material Design conventions, prioritize P
 P0/P1 first, then report before/after per change. Scope explicitly says *review and improve*,
 not redesign — "do not blindly redesign everything," reuse existing components/tokens, don't
 change functionality unless usability clearly demands it. Full checklist lives in `UIUX.md`
-itself; not duplicated here. Not started this session — flagged as next major phase after
-Phase 11's live-testing backlog closes out (Documents non-text preview, Tasks manual
-add/recurring/tags, Settings toggles, sign-out DB-wipe gap, two-device conflict resolution).
+itself; not duplicated here.
+
+Ran `android-skills:android-ux`'s M3 compliance audit (grep checks for hardcoded colors/radii,
+M2 imports, missing headings) across every screen rather than freehand review — same method
+Phase 7's accessibility pass used. Findings and fixes, this pass:
+
+- **P1, fixed — destructive delete had no confirmation on four screens.** Tasks, Shopping,
+  Dates, and both of Cycle's delete points (period-history row, day-entry "Delete this day's
+  log") called `actions.onDelete(id)` directly off a single tap on the row's trash icon — no
+  dialog, no undo. Folders/Documents already got this right back in Phase 4
+  (`deleteConfirmFolder`/`deleteConfirmDocument` + `AlertDialog`, "X and everything inside it
+  will be deleted" copy) — this pass brings the other four in line with that existing
+  precedent rather than inventing a new pattern. Deliberately **UI-only state** (`remember {
+  mutableStateOf<T?>(null) }` in each `Screen` composable, not threaded through the
+  `ViewModel`/`UiState`): which row is pending confirmation is exactly the kind of transient,
+  screen-local state UIUX.md's "keep business logic separate from UI changes" rule is
+  about — no repository call happens until the dialog's confirm button fires. Cycle's
+  period-history delete gets sharper copy than a generic "delete?" — "will no longer count
+  toward predictions" — since that row feeds `predictNextCycle`/`calculateCycleStatistics`,
+  not just display. New bilingual `*_delete_title`/`*_delete_body`/`*_cancel` strings per
+  feature module (`tasks`/`shopping`/`dates`/`cycle`), English + Hebrew both added together
+  per `CLAUDE.md`'s rule. Where: `TasksScreen.kt`, `ShoppingScreen.kt`, `DatesScreen.kt`,
+  `CycleScreen.kt` (`HistoryRow` and `DayForm`).
+- **P1, fixed — five screens had no in-page heading, relying entirely on the bottom-nav tab
+  label.** This was Phase 8's accessibility pass finding, explicitly flagged there as "not
+  fixed" because adding page titles is new UI surface, not a semantics-only change, and out
+  of scope for that pass. Fixed now: Tasks, Shopping, Dates, Folders, Home, and Search
+  (found while auditing, same gap, not on Phase 8's original list since `:feature:search`
+  didn't exist yet when that pass ran) all gained a `headlineMedium` title Text with
+  `Modifier.semantics { heading() }` as the first element — exact same pattern already used
+  by Settings/Auth/Cycle/Calendar (verified by grep before copying it, not invented fresh).
+  Home's got it too despite the moon countdown already dominating the screen visually — a
+  screen-reader user landing directly on the tab still needs an announced heading, visual
+  redundancy for sighted users is an acceptable tradeoff for that.
+- **P1, fixed — Settings' three toggle rows (biometric/screenshot-block/notifications) were
+  `NAF="true"` in the accessibility tree**, flagged live in Phase 11 but not fixed there.
+  Root cause: `SwitchRow`'s `Switch` alone carried the click handler and the semantics node;
+  the adjacent label `Text` was a separate, unmerged sibling, so TalkBack read nothing
+  useful and the tappable area was Switch-sized (borderline on 48dp), not full-row. Fixed
+  with the standard M3 list-item-with-switch pattern: `Row.toggleable(role = Role.Switch)`
+  owns the click and merges the row into one semantics node (announced as "label, switch,
+  on/off"), `Switch`'s own `onCheckedChange` set to `null` so it stops double-handling the
+  tap. Also widens the effective touch target to the full row width. Where:
+  `SettingsScreen.kt`'s `SwitchRow`.
+- **P2, fixed — Search's "no query yet" state was a blank screen** (`!uiState.hasQuery ->
+  Unit`), violating UIUX.md's "no blank screens when data unavailable" / first-use-state
+  rule — user opens the tab, sees only the empty text field, no indication of what's
+  searchable. Added `search_hint` string ("Search across tasks, shopping, dates, folders,
+  documents, and cycle history.") shown centered in that state, same visual treatment as
+  the existing no-results state.
+- **P3, fixed — Documents' thumbnail corner radius (`RoundedCornerShape(6.dp)`) didn't match
+  the M3 shape scale** (`extraSmall`=4dp / `small`=8dp / …). Swapped for
+  `MaterialTheme.shapes.extraSmall`, closest token; dropped the now-unused
+  `RoundedCornerShape` import. Grep audit's other two hardcoded-radius hits were
+  `core/ui/theme/Shape.kt` (the token *definitions*, correct place for literal `.dp` values)
+  and `HomeScreen.kt`'s moon-countdown night-sky palette (`CLAUDE.md`-documented deliberate
+  exception, left alone). No hardcoded-color hits outside `Color.kt`/moon-countdown either,
+  and the M2-import grep hits were all `androidx.compose.material.icons.*` (icon pack, not
+  the M2 component library) — false positives, not real M2/M3 mixing.
+- `:app:compileDebugKotlin`, full `./gradlew test lint`, `:app:assembleDebug` all green.
+  Installed on the connected MIUI device via `adb install -r`, launched via `monkey`,
+  confirmed resumed with no `FATAL`/`AndroidRuntime` exceptions in `logcat` —
+  **launch-only smoke check**, none of this pass's specific changes (delete-confirm
+  dialogs, toggle merge semantics, search hint) were tapped through live this session.
+  Belongs on the live-testing backlog alongside Phase 11's leftovers.
+
+**Not done this pass, still open from `UIUX.md`'s full checklist:** typography/spacing/color
+audit beyond the grep checks above (no systematic per-screen 8dp-grid or type-scale review
+done yet), responsive/foldable-posture handling (app has never been tested on anything but
+phone-width), motion/microinteractions (no deliberate M3 duration-token pass), dark-mode
+deliberate-design check (light/dark both compile and use theme tokens throughout, but no
+side-by-side visual comparison done), and Cycle/Calendar's non-`Scaffold` root shape
+(`Surface` + bare `Column`/`LazyColumn`) noted while wiring pull-to-refresh last session —
+works, but is one more inconsistency with the `Scaffold`-based screens worth a deliberate
+look rather than leaving as an accident of implementation order.
+
+Still blocking Phase 11's live-testing backlog too (Documents non-text preview, Tasks manual
+add/recurring/tags — actually already closed out live in Phase 11 — Settings toggles, sign-out
+DB-wipe gap, two-device conflict resolution): unchanged by this pass, listed here so the two
+backlogs don't get confused with each other.
 
 **Test-environment notes, not app issues:** MIUI device's `uiautomator dump` throws
 `ThemeCompatibilityLoader` `FileNotFoundException` on every invocation (known Xiaomi/MIUI

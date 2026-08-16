@@ -61,6 +61,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -86,6 +88,7 @@ fun TasksScreen(
     modifier: Modifier = Modifier,
 ) {
     val hospitalBagTitles = androidx.compose.ui.res.stringArrayResource(R.array.hospital_bag_preset).toList()
+    var deleteConfirmTask by remember { mutableStateOf<Task?>(null) }
 
     Scaffold(
         modifier = modifier.fillMaxSize().safeDrawingPadding(),
@@ -101,6 +104,13 @@ fun TasksScreen(
             modifier = Modifier.fillMaxSize().padding(padding),
         ) {
         Column(modifier = Modifier.fillMaxSize()) {
+            Text(
+                text = stringResource(R.string.tasks_title),
+                style = MaterialTheme.typography.headlineMedium,
+                color = MaterialTheme.colorScheme.onBackground,
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                    .semantics { heading() },
+            )
             androidx.compose.material3.TextButton(
                 onClick = { actions.onSeedHospitalBag(hospitalBagTitles) },
                 enabled = !uiState.seedingHospitalBag,
@@ -142,7 +152,7 @@ fun TasksScreen(
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     items(uiState.visibleTasks, key = Task::id) { task ->
-                        TaskRow(task = task, actions = actions)
+                        TaskRow(task = task, actions = actions, onDeleteClick = { deleteConfirmTask = task })
                     }
                 }
             }
@@ -156,10 +166,27 @@ fun TasksScreen(
             TaskForm(uiState = uiState, actions = actions)
         }
     }
+
+    deleteConfirmTask?.let { task ->
+        androidx.compose.material3.AlertDialog(
+            onDismissRequest = { deleteConfirmTask = null },
+            title = { Text(stringResource(R.string.tasks_delete_title)) },
+            text = { Text(stringResource(R.string.tasks_delete_body, task.title)) },
+            confirmButton = {
+                TextButton(onClick = {
+                    actions.onDelete(task.id)
+                    deleteConfirmTask = null
+                }) { Text(stringResource(R.string.tasks_delete)) }
+            },
+            dismissButton = {
+                TextButton(onClick = { deleteConfirmTask = null }) { Text(stringResource(R.string.tasks_cancel)) }
+            },
+        )
+    }
 }
 
 @Composable
-private fun TaskRow(task: Task, actions: TasksActions) {
+private fun TaskRow(task: Task, actions: TasksActions, onDeleteClick: () -> Unit) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
@@ -199,7 +226,7 @@ private fun TaskRow(task: Task, actions: TasksActions) {
                     }
                 }
             }
-            IconButton(onClick = { actions.onDelete(task.id) }) {
+            IconButton(onClick = onDeleteClick) {
                 Icon(
                     Icons.Default.Delete,
                     contentDescription = stringResource(R.string.tasks_delete),

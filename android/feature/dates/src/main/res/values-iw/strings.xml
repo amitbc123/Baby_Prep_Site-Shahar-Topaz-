@@ -10,6 +10,9 @@
     <string name="dates_field_wish">איחול (אופציונלי)</string>
     <string name="dates_save">שמור</string>
     <string name="dates_delete">מחק</string>
+    <string name="dates_delete_title">למחוק את התאריך?</string>
+    <string name="dates_delete_body">"%1$s יימחק."</string>
+    <string name="dates_cancel">ביטול</string>
     <string name="dates_pick_confirm">אישור</string>
     <string name="dates_pick_cancel">ביטול</string>
 </resources>

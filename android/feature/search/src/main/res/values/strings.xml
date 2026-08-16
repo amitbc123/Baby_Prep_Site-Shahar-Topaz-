@@ -3,6 +3,7 @@
     <string name="search_title">Search</string>
     <string name="search_placeholder">Search everything…</string>
     <string name="search_no_results">No results.</string>
+    <string name="search_hint">Search across tasks, shopping, dates, folders, documents, and cycle history.</string>
 
     <string name="search_type_task">Task</string>
     <string name="search_type_shopping_item">Shopping</string>

@@ -12,6 +12,9 @@
     <string name="tasks_field_assignee">Assigned to</string>
     <string name="tasks_save">Save</string>
     <string name="tasks_delete">Delete</string>
+    <string name="tasks_delete_title">Delete task?</string>
+    <string name="tasks_delete_body">"%1$s will be deleted."</string>
+    <string name="tasks_cancel">Cancel</string>
     <string name="tasks_seed_hospital_bag">Add hospital bag checklist</string>
 
     <string-array name="hospital_bag_preset">

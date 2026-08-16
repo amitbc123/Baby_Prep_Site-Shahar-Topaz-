@@ -10,6 +10,10 @@
     <string name="cycle_history_row_ongoing">%1$s – ongoing</string>
     <string name="cycle_history_row_range">%1$s – %2$s (%3$d days)</string>
     <string name="cycle_delete">Delete</string>
+    <string name="cycle_delete_title">Delete this period record?</string>
+    <string name="cycle_delete_body">This record will be deleted and no longer count toward predictions.</string>
+    <string name="cycle_delete_entry_title">Delete this day\'s log?</string>
+    <string name="cycle_cancel">Cancel</string>
 
     <string name="cycle_stats_title">Statistics</string>
     <string name="cycle_stats_count">Periods logged: %1$d</string>

@@ -3,6 +3,7 @@
     <string name="search_title">חיפוש</string>
     <string name="search_placeholder">חיפוש בכל מקום…</string>
     <string name="search_no_results">אין תוצאות.</string>
+    <string name="search_hint">חיפוש במשימות, קניות, תאריכים, תיקיות, מסמכים והיסטוריית מחזור.</string>
 
     <string name="search_type_task">משימה</string>
     <string name="search_type_shopping_item">קניות</string>

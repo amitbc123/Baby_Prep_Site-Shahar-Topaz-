@@ -48,7 +48,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -82,6 +85,9 @@ fun CycleScreen(
     actions: CycleActions,
     modifier: Modifier = Modifier,
 ) {
+    var deleteConfirmCycle by remember { mutableStateOf<MenstrualCycle?>(null) }
+    var deleteConfirmEntry by remember { mutableStateOf(false) }
+
     Surface(modifier = modifier.fillMaxSize().safeDrawingPadding(), color = MaterialTheme.colorScheme.background) {
       androidx.compose.material3.pulltorefresh.PullToRefreshBox(
         isRefreshing = uiState.refreshing,
@@ -125,7 +131,12 @@ fun CycleScreen(
                 }
             } else {
                 items(uiState.history, key = MenstrualCycle::id) { cycle ->
-                    HistoryRow(cycle = cycle, uiState = uiState, actions = actions)
+                    HistoryRow(
+                        cycle = cycle,
+                        uiState = uiState,
+                        actions = actions,
+                        onDeleteClick = { deleteConfirmCycle = cycle },
+                    )
                 }
             }
         }
@@ -135,8 +146,41 @@ fun CycleScreen(
     if (uiState.daySheetVisible) {
         val sheetState = rememberModalBottomSheetState()
         ModalBottomSheet(onDismissRequest = actions::onDismissDaySheet, sheetState = sheetState) {
-            DayForm(uiState = uiState, actions = actions)
+            DayForm(uiState = uiState, actions = actions, onDeleteClick = { deleteConfirmEntry = true })
         }
+    }
+
+    deleteConfirmCycle?.let { cycle ->
+        AlertDialog(
+            onDismissRequest = { deleteConfirmCycle = null },
+            title = { Text(stringResource(R.string.cycle_delete_title)) },
+            text = { Text(stringResource(R.string.cycle_delete_body)) },
+            confirmButton = {
+                TextButton(onClick = {
+                    actions.onDelete(cycle.id)
+                    deleteConfirmCycle = null
+                }) { Text(stringResource(R.string.cycle_delete)) }
+            },
+            dismissButton = {
+                TextButton(onClick = { deleteConfirmCycle = null }) { Text(stringResource(R.string.cycle_cancel)) }
+            },
+        )
+    }
+
+    if (deleteConfirmEntry) {
+        AlertDialog(
+            onDismissRequest = { deleteConfirmEntry = false },
+            title = { Text(stringResource(R.string.cycle_delete_entry_title)) },
+            confirmButton = {
+                TextButton(onClick = {
+                    actions.onDeleteEntry()
+                    deleteConfirmEntry = false
+                }) { Text(stringResource(R.string.cycle_delete)) }
+            },
+            dismissButton = {
+                TextButton(onClick = { deleteConfirmEntry = false }) { Text(stringResource(R.string.cycle_cancel)) }
+            },
+        )
     }
 }
 
@@ -402,7 +446,7 @@ private fun DayCell(
 }
 
 @Composable
-private fun HistoryRow(cycle: MenstrualCycle, uiState: CycleUiState, actions: CycleActions) {
+private fun HistoryRow(cycle: MenstrualCycle, uiState: CycleUiState, actions: CycleActions, onDeleteClick: () -> Unit) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
@@ -424,7 +468,7 @@ private fun HistoryRow(cycle: MenstrualCycle, uiState: CycleUiState, actions: Cy
                     color = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.weight(1f).clickable { actions.onToggleAttachments(cycle.id) },
                 )
-                IconButton(onClick = { actions.onDelete(cycle.id) }) {
+                IconButton(onClick = onDeleteClick) {
                     Icon(Icons.Default.Delete, contentDescription = stringResource(R.string.cycle_delete))
                 }
             }
@@ -490,7 +534,7 @@ private fun AttachmentsSection(uiState: CycleUiState, actions: CycleActions) {
 }
 
 @Composable
-private fun DayForm(uiState: CycleUiState, actions: CycleActions) {
+private fun DayForm(uiState: CycleUiState, actions: CycleActions, onDeleteClick: () -> Unit) {
     val date = uiState.selectedDate ?: return
 
     Column(
@@ -556,7 +600,7 @@ private fun DayForm(uiState: CycleUiState, actions: CycleActions) {
         Button(onClick = actions::onSaveEntry, modifier = Modifier.fillMaxWidth()) {
             Text(stringResource(R.string.cycle_day_save))
         }
-        OutlinedButton(onClick = actions::onDeleteEntry, modifier = Modifier.fillMaxWidth()) {
+        OutlinedButton(onClick = onDeleteClick, modifier = Modifier.fillMaxWidth()) {
             Text(stringResource(R.string.cycle_day_delete_entry))
         }
     }
