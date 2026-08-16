@@ -724,34 +724,40 @@ two separate real Supabase accounts. Session state as of 2026-08-16:
 - Search confirmed working live: a shopping item created during this session was found via
   full-text search.
 
-**Bugs found live, not yet fixed:**
-- **Invite-code entry field scrambles input when typed programmatically** (`adb shell input
-  text`, one character at a time or all at once) — characters land in the wrong positions
-  after the live dash-formatting kicks in (e.g. typing `E6XJ9PW6Z5ZK29SXN38P` produced
-  `E6XJ9-W6Z5Z-29SXN-8P3KP`). Real manual typing on-device via the phone's own keyboard
-  worked fine, so this may be specific to how `adb input text` delivers characters (no real
-  per-key IME events, no natural inter-key delay) interacting with the field's
-  `VisualTransformation`/cursor-position logic rather than a bug a real user would ever hit —
-  but it points at a fragile cursor-offset assumption in that transformation that's worth a
-  closer read, since paste-from-clipboard or fast IME autocomplete could plausibly trigger
-  the same code path. Not yet root-caused. Where: the code-entry field in
-  `feature/pairing`'s `EnterCodeStage`.
-- **Folders screen's expanded FAB actions ("Scan", "Import", "Add folder") expose no
-  accessible text or content-description** — confirmed via `uiautomator dump`: the three
-  `ExtendedFloatingActionButton`s render visible text on screen but the accessibility tree
-  shows empty `text`/`content-desc` on every node (`NAF="true"`, Android's own
-  not-accessible-friendly marker) for all three. This is on top of the M3 accessibility pass
-  done in Phase 8, which didn't cover this screen. TalkBack users get nothing for three
-  primary actions on this screen. Where: `feature/folders/FoldersScreen.kt`'s
-  `floatingActionButton` block (~line 92-119). Not yet root-caused or fixed.
-- **Duplicate `device_keys` registrations accumulate** across repeated sign-out/clear-data
-  cycles on the same physical device, all sharing the identical label (manufacturer + model,
-  e.g. "Google Pixel 9" three times over from one phone) — makes the "Manage devices" /
-  revoke UI impossible to tell apart when this happens. Not a security bug (each row is a
-  genuinely distinct keypair, revoking the wrong one just means re-approving), but a real
-  UX gap. Likely worth including something instance-distinguishing in the label (an install
-  ID suffix, or a "first seen" timestamp) rather than relying on manufacturer+model alone.
-  Not yet fixed.
+**Bugs found live, fixed this pass (2026-08-16, no live device access this session — fixed
+from the root-cause analysis below, all three compile clean, full `./gradlew test` and
+`./gradlew lint` green after each; still need re-verification on the actual two devices
+before being called done-done):**
+- **Invite-code entry field scrambled input when typed programmatically.** Root cause found:
+  `EnterCodeStage`'s `OutlinedTextField` fed the *dashed display string* back out through
+  `onValueChange` on every keystroke — `value = InvitationToken.forDisplay(uiState.enteredCode)`,
+  `onValueChange = actions::onCodeChange`. Each keystroke's dash-insertion changes the string
+  length by more than one character relative to the raw typed text, which breaks Compose's own
+  cursor-position diffing between the old and new `String` value — a real bug, not an artifact
+  of `adb input text`'s lack of real per-key IME timing (that just made it easy to trigger
+  reliably; paste and fast IME autocomplete could hit the same path). Fixed by keeping the field's
+  actual value as the *raw* undashed code and moving the dash formatting into a
+  `VisualTransformation` (`inviteCodeDashTransformation` in `PairingScreen.kt`) with an explicit
+  `OffsetMapping`, so the underlying text/cursor state Compose tracks always matches what was
+  actually typed — the display-only dashes never touch it. `onCodeChange` (still normalizes
+  through `InvitationToken.normalize`) is unchanged. Where:
+  `feature/pairing/PairingScreen.kt`'s `EnterCodeStage`.
+- **Folders screen's expanded FAB actions exposed no accessible text.** Each
+  `ExtendedFloatingActionButton`'s icon had `contentDescription = null` (correct, since the
+  adjacent `text` slot is supposed to cover it) but nothing forced that visible text into the
+  button's own merged semantics node, so TalkBack found nothing (`NAF="true"` on all three).
+  Fixed by adding `Modifier.semantics { contentDescription = <same string as the visible label> }`
+  to each of the three buttons — belt-and-suspenders over relying on the text slot's own
+  semantics merging. Where: `feature/folders/FoldersScreen.kt`'s `floatingActionButton` block.
+- **Duplicate `device_keys` registrations were indistinguishable.** Root cause: sign-out wipes
+  `DeviceIdentity` (a fresh keypair every time, per the known Phase 7 gap) but
+  `registerDevice()`'s label was just `"${Build.MANUFACTURER} ${Build.MODEL}"` — identical
+  across every re-registration from the same physical device, since ANDROID_ID would've stayed
+  constant anyway and doesn't vary per-keypair. Fixed by appending a 4-hex-char suffix derived
+  from a SHA-256 of *that registration's own public key* (`keySuffix()` in
+  `PairingViewModel.registerDevice`) — stable for the lifetime of one registration, distinct
+  across registrations, and needs no new state to track since the keypair itself already changes
+  each cycle. Where: `feature/pairing/PairingViewModel.kt`'s `registerDevice`.
 - One UI navigation got the Android device itself stuck with `NotificationShade` holding
   window focus above the app (no crash, no exception, unclear trigger — happened once, not
   reproduced deliberately) — recovered via a normal device lock/unlock cycle, not an app fix.

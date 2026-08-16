@@ -59,6 +59,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.oryareach.core.model.Document
@@ -94,22 +96,28 @@ fun FoldersScreen(
         floatingActionButton = {
             Column(horizontalAlignment = Alignment.End) {
                 if (fabExpanded) {
+                    val scanLabel = stringResource(R.string.folders_scan)
                     ExtendedFloatingActionButton(
                         onClick = { fabExpanded = false; startScan() },
                         icon = { Icon(Icons.Default.DocumentScanner, contentDescription = null) },
-                        text = { Text(stringResource(R.string.folders_scan)) },
+                        text = { Text(scanLabel) },
+                        modifier = Modifier.semantics { contentDescription = scanLabel },
                     )
                     Spacer(modifier = Modifier.height(8.dp))
+                    val importLabel = stringResource(R.string.folders_import)
                     ExtendedFloatingActionButton(
                         onClick = { fabExpanded = false; importLauncher.launch(arrayOf("*/*")) },
                         icon = { Icon(Icons.Default.UploadFile, contentDescription = null) },
-                        text = { Text(stringResource(R.string.folders_import)) },
+                        text = { Text(importLabel) },
+                        modifier = Modifier.semantics { contentDescription = importLabel },
                     )
                     Spacer(modifier = Modifier.height(8.dp))
+                    val addLabel = stringResource(R.string.folders_add)
                     ExtendedFloatingActionButton(
                         onClick = { fabExpanded = false; actions.onAddClick() },
                         icon = { Icon(Icons.Default.Folder, contentDescription = null) },
-                        text = { Text(stringResource(R.string.folders_add)) },
+                        text = { Text(addLabel) },
+                        modifier = Modifier.semantics { contentDescription = addLabel },
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                 }

@@ -27,6 +27,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.input.OffsetMapping
+import androidx.compose.ui.text.input.TransformedText
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -146,15 +150,43 @@ private fun RecoveryPhraseStage(
     ) { Text(stringResource(R.string.pairing_phrase_continue)) }
 }
 
+/**
+ * Groups the raw code into dashed chunks for display without touching the field's underlying
+ * text/cursor state — keeping [OutlinedTextField]'s value as the raw (undashed) code and
+ * transforming only what's shown avoids the cursor-jump bugs that come from feeding a
+ * pre-formatted string back through onValueChange (each keystroke's length delta from dash
+ * insertion made Compose's own cursor-position diffing land in the wrong place, especially
+ * under fast/programmatic input).
+ */
+private const val INVITE_CODE_GROUP = 5
+
+private val inviteCodeDashTransformation = VisualTransformation { text ->
+    val raw = text.text
+    val transformed = InvitationToken.forDisplay(raw)
+    val offsetMapping = object : OffsetMapping {
+        override fun originalToTransformed(offset: Int): Int {
+            val dashes = if (offset <= 0) 0 else (offset - 1) / INVITE_CODE_GROUP
+            return (offset + dashes).coerceIn(0, transformed.length)
+        }
+
+        override fun transformedToOriginal(offset: Int): Int {
+            val dashes = transformed.take(offset.coerceIn(0, transformed.length)).count { it == '-' }
+            return (offset - dashes).coerceIn(0, raw.length)
+        }
+    }
+    TransformedText(AnnotatedString(transformed), offsetMapping)
+}
+
 @Composable
 private fun EnterCodeStage(uiState: PairingUiState, actions: PairingActions) {
     Heading(R.string.pairing_code_title, R.string.pairing_code_body)
 
     OutlinedTextField(
-        value = InvitationToken.forDisplay(uiState.enteredCode),
+        value = uiState.enteredCode,
         onValueChange = actions::onCodeChange,
         label = { Text(stringResource(R.string.pairing_code_label)) },
         singleLine = true,
+        visualTransformation = inviteCodeDashTransformation,
         modifier = Modifier.fillMaxWidth(),
     )
 

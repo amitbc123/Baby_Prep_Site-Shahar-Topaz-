@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
+import java.security.MessageDigest
 
 @Stable
 interface PairingActions {
@@ -323,14 +324,25 @@ class PairingViewModel(
     private suspend fun registerDevice(workspaceId: String): AppResult<String> {
         identity.registeredKeyId?.let { return AppResult.Success(it) }
 
+        val publicKey = identity.keyPair().publicKey
         val result = workspaces.publishDeviceKey(
             workspaceId = workspaceId,
-            publicKey = identity.keyPair().publicKey,
-            label = "${Build.MANUFACTURER} ${Build.MODEL}",
+            publicKey = publicKey,
+            label = "${Build.MANUFACTURER} ${Build.MODEL} · ${keySuffix(publicKey)}",
         )
         if (result is AppResult.Success) identity.registeredKeyId = result.data
         return result
     }
+
+    /**
+     * Repeated sign-out/re-register cycles on the same physical device mint a fresh keypair
+     * each time (sign-out doesn't wipe the identity), so every registration otherwise shares the
+     * exact same manufacturer+model label and is indistinguishable in "Manage devices". A short
+     * hash of this registration's own public key is stable per-registration and distinct across
+     * them, without needing any new state to track.
+     */
+    private fun keySuffix(publicKey: ByteArray): String =
+        MessageDigest.getInstance("SHA-256").digest(publicKey).joinToString("") { "%02X".format(it) }.take(4)
 
     private fun showReady(workspaceId: String) {
         viewModelScope.launch {
