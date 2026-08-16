@@ -43,7 +43,6 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -88,11 +87,13 @@ fun CycleScreen(
     var deleteConfirmCycle by remember { mutableStateOf<MenstrualCycle?>(null) }
     var deleteConfirmEntry by remember { mutableStateOf(false) }
 
-    Surface(modifier = modifier.fillMaxSize().safeDrawingPadding(), color = MaterialTheme.colorScheme.background) {
+    androidx.compose.material3.Scaffold(
+        modifier = modifier.fillMaxSize().safeDrawingPadding(),
+    ) { padding ->
       androidx.compose.material3.pulltorefresh.PullToRefreshBox(
         isRefreshing = uiState.refreshing,
         onRefresh = actions::onRefresh,
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize().padding(padding),
       ) {
         LazyColumn(
             modifier = Modifier.fillMaxSize(),

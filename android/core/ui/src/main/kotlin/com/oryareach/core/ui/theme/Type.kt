@@ -45,7 +45,15 @@ val OrYareachTypography = Typography(
     displayMedium = default.displayMedium.heading(),
     displaySmall = default.displaySmall.heading(),
     headlineLarge = default.headlineLarge.heading(),
-    headlineMedium = default.headlineMedium.heading(),
+    // The page-title style every screen uses (added Phase 12) — tightened letter spacing and
+    // bumped size/weight slightly past the stock M3 default so it reads as an intentional
+    // typographic choice rather than an unmodified Material default sitting above the content.
+    headlineMedium = default.headlineMedium.heading().copy(
+        fontSize = 26.sp,
+        lineHeight = 32.sp,
+        letterSpacing = (-0.3).sp,
+        fontWeight = FontWeight.Bold,
+    ),
     headlineSmall = default.headlineSmall.heading(),
     titleLarge = default.titleLarge.heading(),
     titleMedium = default.titleMedium.heading(),

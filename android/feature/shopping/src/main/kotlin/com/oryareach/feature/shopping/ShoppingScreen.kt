@@ -149,6 +149,10 @@ fun ShoppingScreen(
 @Composable
 private fun BudgetSummary(uiState: ShoppingUiState) {
     val budget = uiState.budget
+    Card(
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+    ) {
     Row(
         modifier = Modifier.fillMaxWidth().padding(16.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -177,6 +181,7 @@ private fun BudgetSummary(uiState: ShoppingUiState) {
             )
             Text("${budget.boughtCount}/${budget.totalCount}", style = MaterialTheme.typography.titleMedium)
         }
+    }
     }
 }
 

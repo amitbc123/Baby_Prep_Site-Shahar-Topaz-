@@ -28,7 +28,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -55,11 +54,13 @@ fun CalendarScreen(
     actions: CalendarActions,
     modifier: Modifier = Modifier,
 ) {
-    Surface(modifier = modifier.fillMaxSize().safeDrawingPadding(), color = MaterialTheme.colorScheme.background) {
+    androidx.compose.material3.Scaffold(
+        modifier = modifier.fillMaxSize().safeDrawingPadding(),
+    ) { padding ->
       androidx.compose.material3.pulltorefresh.PullToRefreshBox(
         isRefreshing = uiState.refreshing,
         onRefresh = actions::onRefresh,
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize().padding(padding),
       ) {
         Column(modifier = Modifier.fillMaxSize().padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             Text(

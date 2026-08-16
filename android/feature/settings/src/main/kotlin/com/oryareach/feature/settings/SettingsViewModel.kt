@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.oryareach.core.crypto.RecoveryPhrase
 import com.oryareach.core.network.auth.AuthRepository
 import com.oryareach.core.security.DeviceIdentity
+import com.oryareach.core.security.LocalDataWiper
 import com.oryareach.core.security.SessionController
 import com.oryareach.core.settings.ReminderScheduler
 import com.oryareach.core.settings.SettingsPreferences
@@ -37,6 +38,7 @@ class SettingsViewModel(
     private val identity: DeviceIdentity,
     private val session: SessionController,
     private val auth: AuthRepository,
+    private val localDataWiper: LocalDataWiper,
 ) : ViewModel(), SettingsActions {
 
     private val _uiState = MutableStateFlow(SettingsUiState())
@@ -118,7 +120,9 @@ class SettingsViewModel(
             auth.signOut()
             identity.forget()
             session.signOut()
-            set { it.copy(busy = false) }
+            // Restarts the process — nothing after this point runs; see LocalDataWiper's
+            // doc comment for why the database can't just be swapped out in place.
+            localDataWiper.wipeAndRestart()
         }
     }
 

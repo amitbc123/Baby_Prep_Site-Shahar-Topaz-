@@ -40,6 +40,16 @@ class SupabaseAuthRepository(
         when (status) {
             is SessionStatus.Authenticated -> AuthState.SignedIn
             is SessionStatus.NotAuthenticated -> AuthState.SignedOut
+            // A failed background token refresh does not mean the cached session is gone —
+            // the SDK keeps it in place and will retry. Treating this the same as
+            // `Initializing` (mapped to Unknown below) would unmount the entire signed-in UI
+            // tree — see `SaharApp`'s routing `when`, which renders nothing for `Unknown` —
+            // on a transient network hiccup, e.g. right as the app resumes from backgrounding
+            // for a system file/document picker. That contradicts this app's offline-first
+            // design (Room-first reads, background sync) and was the leading suspect for a
+            // live-tested bug where returning from the SAF import picker reset the bottom-nav
+            // tab and silently dropped the in-flight `ActivityResultLauncher` callback.
+            is SessionStatus.RefreshFailure -> AuthState.SignedIn
             else -> AuthState.Unknown
         }
     }

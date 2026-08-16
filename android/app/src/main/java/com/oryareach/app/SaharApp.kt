@@ -19,10 +19,19 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material.icons.filled.WaterDrop
+import androidx.compose.material.icons.outlined.CalendarMonth
+import androidx.compose.material.icons.outlined.CheckCircle
+import androidx.compose.material.icons.outlined.DateRange
+import androidx.compose.material.icons.outlined.Event
+import androidx.compose.material.icons.outlined.Folder
+import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.Search
+import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material.icons.outlined.ShoppingCart
+import androidx.compose.material.icons.outlined.WaterDrop
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -39,6 +48,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.repeatOnLifecycle
 import com.oryareach.app.di.SessionState
 import com.oryareach.app.lock.LockRoute
+import com.oryareach.core.ui.nav.MoonNavItem
+import com.oryareach.core.ui.nav.MoonNavigationDrawer
+import com.oryareach.core.ui.nav.MoonTopBar
+import kotlinx.coroutines.launch
 import com.oryareach.feature.calendar.CalendarEffect
 import com.oryareach.feature.calendar.CalendarScreen
 import com.oryareach.feature.calendar.CalendarViewModel
@@ -166,65 +179,90 @@ private enum class HomeTab { Home, Tasks, Shopping, Dates, Folders, Cycle, Calen
 private fun HomeRoute() {
     var tab by rememberSaveable { mutableStateOf(HomeTab.Home) }
     var showDeviceManagement by rememberSaveable { mutableStateOf(false) }
+    val drawerState = androidx.compose.material3.rememberDrawerState(androidx.compose.material3.DrawerValue.Closed)
+    val drawerScope = androidx.compose.runtime.rememberCoroutineScope()
 
+    androidx.compose.material3.ModalNavigationDrawer(
+        drawerState = drawerState,
+        drawerContent = {
+            MoonNavigationDrawer(
+                headerTitle = stringResource(com.oryareach.core.ui.R.string.app_drawer_title),
+                headerSubtitle = stringResource(com.oryareach.core.ui.R.string.app_drawer_subtitle),
+                items = listOf(
+                    MoonNavItem(
+                        label = stringResource(com.oryareach.feature.home.R.string.home_title),
+                        selectedIcon = Icons.Filled.Home,
+                        unselectedIcon = Icons.Outlined.Home,
+                        selected = tab == HomeTab.Home,
+                        onClick = { tab = HomeTab.Home; drawerScope.launch { drawerState.close() } },
+                    ),
+                    MoonNavItem(
+                        label = stringResource(com.oryareach.feature.tasks.R.string.tasks_title),
+                        selectedIcon = Icons.Filled.CheckCircle,
+                        unselectedIcon = Icons.Outlined.CheckCircle,
+                        selected = tab == HomeTab.Tasks,
+                        onClick = { tab = HomeTab.Tasks; drawerScope.launch { drawerState.close() } },
+                    ),
+                    MoonNavItem(
+                        label = stringResource(com.oryareach.feature.shopping.R.string.shopping_title),
+                        selectedIcon = Icons.Filled.ShoppingCart,
+                        unselectedIcon = Icons.Outlined.ShoppingCart,
+                        selected = tab == HomeTab.Shopping,
+                        onClick = { tab = HomeTab.Shopping; drawerScope.launch { drawerState.close() } },
+                    ),
+                    MoonNavItem(
+                        label = stringResource(com.oryareach.feature.dates.R.string.dates_title),
+                        selectedIcon = Icons.Filled.Event,
+                        unselectedIcon = Icons.Outlined.Event,
+                        selected = tab == HomeTab.Dates,
+                        onClick = { tab = HomeTab.Dates; drawerScope.launch { drawerState.close() } },
+                    ),
+                    MoonNavItem(
+                        label = stringResource(com.oryareach.feature.folders.R.string.folders_title),
+                        selectedIcon = Icons.Filled.Folder,
+                        unselectedIcon = Icons.Outlined.Folder,
+                        selected = tab == HomeTab.Folders,
+                        onClick = { tab = HomeTab.Folders; drawerScope.launch { drawerState.close() } },
+                    ),
+                    MoonNavItem(
+                        label = stringResource(com.oryareach.feature.cycle.R.string.cycle_title),
+                        selectedIcon = Icons.Filled.WaterDrop,
+                        unselectedIcon = Icons.Outlined.WaterDrop,
+                        selected = tab == HomeTab.Cycle,
+                        onClick = { tab = HomeTab.Cycle; drawerScope.launch { drawerState.close() } },
+                    ),
+                    MoonNavItem(
+                        label = stringResource(com.oryareach.feature.calendar.R.string.calendar_title),
+                        selectedIcon = Icons.Filled.DateRange,
+                        unselectedIcon = Icons.Outlined.DateRange,
+                        selected = tab == HomeTab.Calendar,
+                        onClick = { tab = HomeTab.Calendar; drawerScope.launch { drawerState.close() } },
+                    ),
+                    MoonNavItem(
+                        label = stringResource(com.oryareach.feature.search.R.string.search_title),
+                        selectedIcon = Icons.Filled.Search,
+                        unselectedIcon = Icons.Outlined.Search,
+                        selected = tab == HomeTab.Search,
+                        onClick = { tab = HomeTab.Search; drawerScope.launch { drawerState.close() } },
+                    ),
+                    MoonNavItem(
+                        label = stringResource(com.oryareach.feature.settings.R.string.settings_title),
+                        selectedIcon = Icons.Filled.Settings,
+                        unselectedIcon = Icons.Outlined.Settings,
+                        selected = tab == HomeTab.Settings,
+                        onClick = { tab = HomeTab.Settings; drawerScope.launch { drawerState.close() } },
+                    ),
+                ),
+            )
+        },
+    ) {
     Scaffold(
-        bottomBar = {
-            NavigationBar {
-                NavigationBarItem(
-                    selected = tab == HomeTab.Home,
-                    onClick = { tab = HomeTab.Home },
-                    icon = { Icon(Icons.Default.Home, contentDescription = null) },
-                    label = { Text(stringResource(com.oryareach.feature.home.R.string.home_title)) },
-                )
-                NavigationBarItem(
-                    selected = tab == HomeTab.Tasks,
-                    onClick = { tab = HomeTab.Tasks },
-                    icon = { Icon(Icons.Default.CheckCircle, contentDescription = null) },
-                    label = { Text(stringResource(com.oryareach.feature.tasks.R.string.tasks_title)) },
-                )
-                NavigationBarItem(
-                    selected = tab == HomeTab.Shopping,
-                    onClick = { tab = HomeTab.Shopping },
-                    icon = { Icon(Icons.Default.ShoppingCart, contentDescription = null) },
-                    label = { Text(stringResource(com.oryareach.feature.shopping.R.string.shopping_title)) },
-                )
-                NavigationBarItem(
-                    selected = tab == HomeTab.Dates,
-                    onClick = { tab = HomeTab.Dates },
-                    icon = { Icon(Icons.Default.Event, contentDescription = null) },
-                    label = { Text(stringResource(com.oryareach.feature.dates.R.string.dates_title)) },
-                )
-                NavigationBarItem(
-                    selected = tab == HomeTab.Folders,
-                    onClick = { tab = HomeTab.Folders },
-                    icon = { Icon(Icons.Default.Folder, contentDescription = null) },
-                    label = { Text(stringResource(com.oryareach.feature.folders.R.string.folders_title)) },
-                )
-                NavigationBarItem(
-                    selected = tab == HomeTab.Cycle,
-                    onClick = { tab = HomeTab.Cycle },
-                    icon = { Icon(Icons.Default.CalendarMonth, contentDescription = null) },
-                    label = { Text(stringResource(com.oryareach.feature.cycle.R.string.cycle_title)) },
-                )
-                NavigationBarItem(
-                    selected = tab == HomeTab.Calendar,
-                    onClick = { tab = HomeTab.Calendar },
-                    icon = { Icon(Icons.Default.DateRange, contentDescription = null) },
-                    label = { Text(stringResource(com.oryareach.feature.calendar.R.string.calendar_title)) },
-                )
-                NavigationBarItem(
-                    selected = tab == HomeTab.Search,
-                    onClick = { tab = HomeTab.Search },
-                    icon = { Icon(Icons.Default.Search, contentDescription = null) },
-                    label = { Text(stringResource(com.oryareach.feature.search.R.string.search_title)) },
-                )
-                NavigationBarItem(
-                    selected = tab == HomeTab.Settings,
-                    onClick = { tab = HomeTab.Settings },
-                    icon = { Icon(Icons.Default.Settings, contentDescription = null) },
-                    label = { Text(stringResource(com.oryareach.feature.settings.R.string.settings_title)) },
-                )
-            }
+        topBar = {
+            MoonTopBar(
+                title = stringResource(com.oryareach.core.ui.R.string.app_drawer_title),
+                onMenuClick = { drawerScope.launch { drawerState.open() } },
+                menuContentDescription = stringResource(com.oryareach.core.ui.R.string.app_drawer_open),
+            )
         },
     ) { padding ->
         when (tab) {
@@ -254,6 +292,7 @@ private fun HomeRoute() {
                 )
             }
         }
+    }
     }
 }
 

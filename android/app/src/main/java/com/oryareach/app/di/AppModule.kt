@@ -21,6 +21,7 @@ import com.oryareach.core.database.repository.TaskRepository
 import com.oryareach.core.database.sync.RoomSyncStore
 import com.oryareach.core.network.di.workspaceIdQualifier
 import com.oryareach.core.security.KeystoreDatabasePassphrase
+import com.oryareach.core.security.LocalDataWiper
 import com.oryareach.core.sync.RecordCodec
 import com.oryareach.core.sync.SyncEngine
 import com.oryareach.core.sync.SyncStore
@@ -73,6 +74,7 @@ val appModule = module {
     single<DatabasePassphrase> { KeystoreDatabasePassphrase(androidContext()) }
 
     single { DatabaseFactory.create(androidContext(), get()) }
+    single<LocalDataWiper> { RoomLocalDataWiper(androidContext(), get()) }
     single { get<OrYareachDatabase>().taskDao() }
     single { get<OrYareachDatabase>().menstrualCycleDao() }
     single { get<OrYareachDatabase>().cycleEntryDao() }
@@ -191,6 +193,7 @@ val appModule = module {
             identity = get(),
             session = get(),
             auth = get(),
+            localDataWiper = get(),
         )
     }
     viewModel {

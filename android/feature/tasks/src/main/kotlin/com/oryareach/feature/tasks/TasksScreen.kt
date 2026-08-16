@@ -111,13 +111,15 @@ fun TasksScreen(
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                     .semantics { heading() },
             )
-            androidx.compose.material3.TextButton(
+            OutlinedButton(
                 onClick = { actions.onSeedHospitalBag(hospitalBagTitles) },
                 enabled = !uiState.seedingHospitalBag,
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
             ) {
                 Text(stringResource(R.string.tasks_seed_hospital_bag))
             }
+
+            Spacer(modifier = Modifier.height(4.dp))
 
             if (uiState.allTags.isNotEmpty()) {
                 androidx.compose.foundation.lazy.LazyRow(
