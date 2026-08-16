@@ -4,43 +4,22 @@
 
 ## Context
 
-The existing product is a Vite + React 19 PWA storing everything in `localStorage`. It has
-no backend, no API, no authentication and no network code. The conversion spec asks for a
-real native Android app — explicitly not a WebView wrapper — extended with folders,
-documents, scanning, menstrual cycle tracking and offline-first sync for two users.
+Existing product: Vite + React 19 PWA, everything in `localStorage`. No backend, no API, no auth, no network code. Conversion spec wants real native Android app — explicitly not WebView wrapper — extended with folders, documents, scanning, menstrual cycle tracking, offline-first sync for two users.
 
 ## Decision
 
-**Multi-module, feature-vertical.** `:core:*` holds shared infrastructure, `:feature:*` holds
-screens. Feature modules never depend on each other; navigation between them is wired in
-`:app`. `:core:model`, `:core:common`, `:core:domain` and `:core:crypto` are pure Kotlin JVM
-modules with zero Android dependencies, which keeps the domain and crypto logic testable
-without an emulator.
+**Multi-module, feature-vertical.** `:core:*` holds shared infrastructure, `:feature:*` holds screens. Feature modules never depend on each other; navigation between them wired in `:app`. `:core:model`, `:core:common`, `:core:domain`, `:core:crypto` — pure Kotlin JVM modules, zero Android deps. Keeps domain/crypto logic testable without emulator.
 
-**UI layer.** Compose + Material 3, MVVM with an MVI-style state/effect split: one immutable
-`UiState` per screen exposed as `StateFlow`, and a `Channel`-backed effects stream for
-fire-once imperatives (navigation, snackbars) so an effect emitted while backgrounded
-buffers instead of being dropped. Business logic stays out of composables.
+**UI layer.** Compose + Material 3, MVVM with MVI-style state/effect split: one immutable `UiState` per screen exposed as `StateFlow`, plus `Channel`-backed effects stream for fire-once imperatives (navigation, snackbars) — effect emitted while backgrounded buffers instead of drops. Business logic stays out of composables.
 
-**Data layer.** Room (SQLCipher-encrypted) is the single source of truth for the UI. The
-network is never on the render path — the UI reads local data and a background sync engine
-updates it. Errors are mapped to `AppError` at the repository boundary; platform exceptions
-never leak past it.
+**Data layer.** Room (SQLCipher-encrypted) = single source of truth for UI. Network never on render path — UI reads local data, background sync engine updates it. Errors mapped to `AppError` at repository boundary; platform exceptions never leak past it.
 
-**DI: Koin**, not Hilt. The conversion spec names Koin explicitly (§5). Hilt would otherwise
-be the default for a pure-Android project, but pure-JVM modules integrate more simply with
-Koin, which suits the module layout above.
+**DI: Koin**, not Hilt. Conversion spec names Koin explicitly (§5). Hilt would otherwise be default for pure-Android project, but pure-JVM modules integrate more simply with Koin — suits module layout above.
 
-**Build.** Gradle convention plugins in `build-logic` (application, library, compose,
-feature, room, jvm) so ~15 modules do not each restate the same configuration. Versions live
-in a single catalog, all pinned to stable releases; JDK 21 (LTS) is the toolchain anchor.
+**Build.** Gradle convention plugins in `build-logic` (application, library, compose, feature, room, jvm) so ~15 modules don't each restate same config. Versions live in single catalog, all pinned to stable releases; JDK 21 (LTS) = toolchain anchor.
 
 ## Consequences
 
-- AGP 9 has built-in Kotlin support, so the `kotlin-android` plugin does not exist and
-  library modules no longer accept `targetSdk`. The conventions are written against the real
-  AGP 9 API.
-- `allWarningsAsErrors` is on for Kotlin; lint aborts on error. Dependency-freshness checks
-  are disabled because upgrades are a reviewed decision, not a build failure.
-- Pure-JVM core modules mean crypto and domain tests run in seconds on the JVM, which is what
-  makes the security acceptance tests practical to run on every change.
+- AGP 9 has built-in Kotlin support, so `kotlin-android` plugin doesn't exist and library modules no longer accept `targetSdk`. Conventions written against real AGP 9 API.
+- `allWarningsAsErrors` on for Kotlin; lint aborts on error. Dependency-freshness checks disabled — upgrades reviewed decision, not build failure.
+- Pure-JVM core modules mean crypto/domain tests run in seconds on JVM — makes security acceptance tests practical to run on every change.

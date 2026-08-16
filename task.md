@@ -2,17 +2,17 @@
 
 ## Goal
 
-Add an automatic **version control and update notification system** to the application.
+Add auto **version control + update notification system** to app.
 
-Whenever a new application version is committed/released to the Git repository, users should be notified when they open the app and offered the option to install the latest version.
+New app version commit/release to Git repo → users notified on open, offered install latest.
 
-The system must be designed to be reliable, secure, easy to maintain, and avoid forcing updates unless explicitly configured as mandatory.
+System must: reliable, secure, easy maintain, no forced update unless configured mandatory.
 
 ---
 
 ## 1. Version Management
 
-The application must have a single source of truth for its current version.
+App need single source of truth for current version.
 
 Example:
 
@@ -35,13 +35,13 @@ Examples:
 2.0.0
 ```
 
-The version should be automatically updated as part of the release process rather than manually changing it in multiple files.
+Version auto-update as part release process, not manual multi-file edit.
 
 ### Requirements
 
-* Store the application version in one central location.
-* The running application must be able to expose its current version.
-* Git tags should be used for releases.
+* Store app version one central location.
+* Running app must expose current version.
+* Git tags used for releases.
 * Recommended tag format:
 
 ```text
@@ -54,11 +54,11 @@ v1.2.0
 
 ## 2. Git Repository as Update Source
 
-Use the Git repository/release system as the source for update information.
+Use Git repo/release system as update info source.
 
-Prefer **GitHub Releases** if the project is hosted on GitHub.
+Prefer **GitHub Releases** if project hosted GitHub.
 
-Each release should contain:
+Each release contain:
 
 ```text
 Version
@@ -78,17 +78,17 @@ Release notes:
 - Improved performance
 ```
 
-The application should query the repository's release information when it starts.
+App should query repo release info on start.
 
-Do NOT depend on scraping normal Git commits or HTML pages.
+Do NOT scrape normal Git commits or HTML pages.
 
-Use a proper release/API mechanism.
+Use proper release/API mechanism.
 
 ---
 
 ## 3. Startup Update Check
 
-When the user launches the application:
+On user launch app:
 
 ```text
 Application starts
@@ -106,9 +106,9 @@ Is newer version available?
 Continue    Show update notification
 ```
 
-The update check should happen asynchronously so it does not block application startup.
+Update check async — no block startup.
 
-The application must remain usable if the update server/Git repository is unavailable.
+App must stay usable if update server/Git repo unavailable.
 
 ---
 
@@ -134,28 +134,28 @@ Result:
 NO UPDATE
 ```
 
-Do not compare versions as strings.
+Don't compare versions as strings.
 
-Correctly handle:
+Handle correctly:
 
 ```text
 1.9.0 < 1.10.0
 ```
 
-The system should also support pre-release versions if appropriate:
+System should support pre-release versions if appropriate:
 
 ```text
 1.3.0-beta.1
 1.3.0-rc.1
 ```
 
-By default, stable releases should be compared against stable releases.
+Default: stable releases compared against stable releases only.
 
 ---
 
 ## 5. Update Notification
 
-When a newer version exists, display a clear notification.
+Newer version exists → show clear notification.
 
 Example:
 
@@ -179,35 +179,35 @@ What's new:
 
 #### Install Update
 
-Starts the update process.
+Starts update process.
 
 #### View Release
 
-Opens the GitHub release page in the user's browser.
+Opens GitHub release page in user browser.
 
 #### Later
 
-Closes the notification.
+Closes notification.
 
-The application should remember that the user dismissed the notification and avoid repeatedly showing the same notification during every startup.
+App remember user dismissed notification, avoid repeat-show same notification every startup.
 
 ---
 
 ## 6. Update Download
 
-When the user selects:
+User selects:
 
 ```text
 Install Update
 ```
 
-the application should:
+app should:
 
-1. Determine the correct release asset for the user's platform.
-2. Download the update.
-3. Validate the downloaded file.
-4. Install/update the application.
-5. Restart the application if required.
+1. Determine correct release asset for user platform.
+2. Download update.
+3. Validate downloaded file.
+4. Install/update application.
+5. Restart application if required.
 
 Show download progress:
 
@@ -219,15 +219,15 @@ Downloading update...
 Version 1.3.0
 ```
 
-The UI must clearly communicate errors if the download fails.
+UI must clearly show errors if download fail.
 
 ---
 
 ## 7. Security
 
-Do not blindly execute arbitrary files downloaded from Git.
+Don't blindly execute arbitrary files downloaded from Git.
 
-The update system should support integrity verification.
+Update system should support integrity verification.
 
 Preferred approach:
 
@@ -247,20 +247,20 @@ Compare checksum
 Only install if checksum matches
 ```
 
-For stronger security, support signed releases/artifacts where practical.
+Stronger security: support signed releases/artifacts where practical.
 
-Never install an update if:
+Never install update if:
 
-* The download is corrupted.
-* The checksum does not match.
-* The release metadata is invalid.
-* The downloaded file is not the expected platform/package.
+* Download corrupted.
+* Checksum mismatch.
+* Release metadata invalid.
+* Downloaded file not expected platform/package.
 
 ---
 
 ## 8. Release Manifest
 
-Create a machine-readable release manifest.
+Create machine-readable release manifest.
 
 Example:
 
@@ -292,13 +292,13 @@ Example:
 }
 ```
 
-The manifest should only contain information required by the application.
+Manifest should only contain info app needs.
 
 ---
 
 ## 9. Release Automation
 
-Create a release workflow in GitHub Actions.
+Create release workflow in GitHub Actions.
 
 Recommended flow:
 
@@ -326,7 +326,7 @@ Create release assets
 Publish version
 ```
 
-A release should only be created after the application passes the required CI checks.
+Release only created after app passes required CI checks.
 
 ---
 
@@ -341,31 +341,31 @@ git tag v1.4.0
 git push origin v1.4.0
 ```
 
-The CI pipeline should:
+CI pipeline should:
 
-1. Detect the tag.
+1. Detect tag.
 2. Extract `1.4.0`.
-3. Build the application using that version.
-4. Package the application.
+3. Build application using that version.
+4. Package application.
 5. Generate checksums.
-6. Create the GitHub Release.
-7. Upload the application artifacts.
+6. Create GitHub Release.
+7. Upload application artifacts.
 
-Avoid having to manually edit the version in multiple source files.
+Avoid manual version edit across multiple source files.
 
 ---
 
 ## 11. Update Check Frequency
 
-Do not query GitHub repeatedly during application usage.
+Don't query GitHub repeatedly during app usage.
 
 Recommended:
 
-* Check once on application startup.
-* Cache the result.
-* Do not check more than once every few hours unless the user manually selects "Check for Updates".
+* Check once on app startup.
+* Cache result.
+* No check more than once few hours unless user manually selects "Check for Updates".
 
-Add a menu item:
+Add menu item:
 
 ```text
 Help
@@ -384,25 +384,25 @@ Version 1.3.0
 
 ## 12. Offline Behavior
 
-The application must work normally without Internet access.
+App must work normally without Internet.
 
-If the update check fails:
+Update check fails:
 
 ```text
 Unable to check for updates.
 ```
 
-Do not prevent the application from starting.
+Don't prevent app starting.
 
-Do not display a scary error for a normal network failure.
+Don't show scary error for normal network failure.
 
-Log the failure for diagnostics.
+Log failure for diagnostics.
 
 ---
 
 ## 13. Mandatory Updates
 
-Support an optional mandatory-update flag.
+Support optional mandatory-update flag.
 
 Example:
 
@@ -423,7 +423,7 @@ Version 2.0.0 is required to continue using this application.
 [Update Now]
 ```
 
-The `Later` button should not be available for mandatory updates.
+`Later` button unavailable for mandatory updates.
 
 Use mandatory updates only when necessary.
 
@@ -431,7 +431,7 @@ Use mandatory updates only when necessary.
 
 ## 14. Skipping Versions
 
-The updater must support users upgrading directly from older versions.
+Updater must support users upgrading direct from older versions.
 
 Example:
 
@@ -440,25 +440,25 @@ Installed: 1.0.0
 Latest:    1.5.0
 ```
 
-The application should offer:
+App should offer:
 
 ```text
 1.0.0 → 1.5.0
 ```
 
-rather than requiring:
+not require:
 
 ```text
 1.0.0 → 1.1.0 → 1.2.0 → 1.3.0 → 1.4.0 → 1.5.0
 ```
 
-Unless the application has a specific migration requirement.
+Unless app has specific migration requirement.
 
 ---
 
 ## 15. Database/Data Migration
 
-If a new version changes the application's data format, add migration support.
+New version changes app data format → add migration support.
 
 Example:
 
@@ -472,14 +472,14 @@ Migration
 Application 1.3.0
 ```
 
-Never allow an update to silently destroy or invalidate existing user data.
+Never let update silently destroy/invalidate existing user data.
 
 Before migrations:
 
 * Create backups when appropriate.
-* Validate the existing data.
+* Validate existing data.
 * Run migrations.
-* Verify the result.
+* Verify result.
 * Report failures clearly.
 
 ---
@@ -498,7 +498,7 @@ Example:
 }
 ```
 
-This prevents repeatedly notifying the user about the same release.
+Prevents repeat-notify user same release.
 
 ---
 
@@ -519,7 +519,7 @@ Handle at least:
 * Installation failure.
 * Restart failure.
 
-Errors should never leave the application in a broken state.
+Errors should never leave app broken state.
 
 ---
 
@@ -540,15 +540,15 @@ Installation completed
 Update failed
 ```
 
-Do not log sensitive information such as tokens or credentials.
+Don't log sensitive info like tokens/credentials.
 
 ---
 
 ## 19. UI/UX Requirements
 
-The updater should feel like a native part of the application.
+Updater should feel native part of app.
 
-Do not show technical GitHub/API information to normal users.
+Don't show technical GitHub/API info to normal users.
 
 Use friendly messages:
 
@@ -562,7 +562,7 @@ instead of:
 GET /repos/xxx/releases/latest returned 200.
 ```
 
-The notification should clearly show:
+Notification should clearly show:
 
 * Current version.
 * New version.
@@ -575,7 +575,7 @@ The notification should clearly show:
 
 ## 20. Architecture
 
-Create a dedicated update service/module.
+Create dedicated update service/module.
 
 Recommended structure:
 
@@ -596,19 +596,19 @@ Responsibilities:
 
 ### VersionManager
 
-Returns the currently installed version.
+Returns currently installed version.
 
 ### ReleaseChecker
 
-Checks the GitHub release/manifest.
+Checks GitHub release/manifest.
 
 ### VersionComparator
 
-Determines whether the remote version is newer.
+Determines if remote version newer.
 
 ### DownloadManager
 
-Downloads the correct update package.
+Downloads correct update package.
 
 ### IntegrityVerifier
 
@@ -616,23 +616,23 @@ Validates SHA-256/signature.
 
 ### UpdateInstaller
 
-Performs the actual installation.
+Performs actual installation.
 
 ### UpdateState
 
-Stores update-check and notification state.
+Stores update-check + notification state.
 
 ### UpdateNotification
 
-Displays the update UI.
+Displays update UI.
 
-Keep these components separated so the updater can be tested independently.
+Keep components separated so updater testable independently.
 
 ---
 
 ## 21. Configuration
 
-Keep repository information configurable rather than hard-coded throughout the application.
+Keep repo info configurable, not hard-coded throughout app.
 
 Example:
 
@@ -651,7 +651,7 @@ beta
 nightly
 ```
 
-The default channel should be:
+Default channel:
 
 ```text
 stable
@@ -706,7 +706,7 @@ Test:
 
 ## 23. Developer Workflow
 
-The intended developer workflow should be as simple as:
+Intended dev workflow simple as:
 
 ```bash
 git checkout main
@@ -722,7 +722,7 @@ git push origin main
 git push origin v1.3.0
 ```
 
-GitHub Actions should handle the rest:
+GitHub Actions handles rest:
 
 ```text
 Build
@@ -744,13 +744,13 @@ Users then receive:
 New version available: 1.3.0
 ```
 
-the next time they open the application.
+next time they open app.
 
 ---
 
 ## 24. Important Implementation Rule
 
-Do **not** implement this as:
+Do **not** implement as:
 
 ```text
 Git commit detected
@@ -784,7 +784,7 @@ Verify
 Install
 ```
 
-This provides a much safer and more predictable update mechanism.
+Gives much safer, predictable update mechanism.
 
 ---
 
@@ -815,7 +815,7 @@ This provides a much safer and more predictable update mechanism.
 
 ## Expected Result
 
-After implementation, the complete experience should be:
+After implementation, complete experience:
 
 ```text
 Developer

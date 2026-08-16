@@ -4,68 +4,40 @@
 
 ## Context
 
-`docs/specs/02-auto-update.md` asks for git-tag-driven releases with an in-app update
-prompt. The spec is written platform-generically — its manifest example lists Windows,
-Linux and macOS assets — so it needs translating to Android, where self-updating has
-constraints the spec does not mention.
+`docs/specs/02-auto-update.md` want git-tag-driven releases plus in-app update prompt. Spec written platform-generic — manifest example list Windows, Linux, macOS assets — needs translate to Android, where self-updating hit constraints spec don't mention.
 
-The app is distributed privately to two phones. It is not going through Google Play.
+App distribute privately to two phones. Not through Google Play.
 
 ## Decision
 
-**Version = the newest `v*` git tag.** `versionName` and `versionCode` are derived at build
-time by the `oryareach.android.application` convention plugin; no build file contains a
-hand-written version. `versionCode = major*10000 + minor*100 + patch` (1.4.0 → 10400),
-which stays ordered as long as minor and patch remain below 100 — enforced by a
-`require` that fails the build rather than silently producing a lower code.
+**Version = newest `v*` git tag.** `versionName` and `versionCode` derive at build time by `oryareach.android.application` convention plugin; no build file hand-write version. `versionCode = major*10000 + minor*100 + patch` (1.4.0 → 10400), stays ordered while minor and patch below 100 — enforced by `require` that fail build instead of silent lower code.
 
-Git is read through a Gradle `ValueSource`, not by shelling out at configuration time, so
-the configuration cache stays valid and git output is tracked as a build input.
+Git read through Gradle `ValueSource`, not shell-out at configuration time, so configuration cache stay valid and git output tracked as build input.
 
-Untagged builds report `0.0.0-dev` / versionCode 1, which sorts below every real release.
+Untagged builds report `0.0.0-dev` / versionCode 1, sorts below every real release.
 
-**Release pipeline.** `.github/workflows/android-release.yml` triggers on `v*` tags: run
-tests and lint, build a signed release APK, compute SHA-256, generate `manifest.json` with
-release notes taken from commit subjects since the previous tag, and publish a GitHub
-Release with the APK, manifest and checksum file attached. Tests and lint run *before* the
-build, so a failing tag produces no release.
+**Release pipeline.** `.github/workflows/android-release.yml` trigger on `v*` tags: run tests and lint, build signed release APK, compute SHA-256, generate `manifest.json` with release notes from commit subjects since previous tag, publish GitHub Release with APK, manifest, checksum file attached. Tests and lint run *before* build, so failing tag produce no release.
 
-**Signing key is permanent and secret.** Android refuses to install an update signed by a
-different key than the installed app. Recovering from a lost signing key means uninstall and
-reinstall, which **wipes all local data on that device** — for an end-to-end encrypted app
-that also means losing whatever had not yet synced.
+**Signing key permanent and secret.** Android refuse install update signed by different key than installed app. Recover from lost signing key means uninstall and reinstall, which **wipes all local data on that device** — for end-to-end encrypted app also mean losing whatever not yet synced.
 
 Therefore:
 
-- The keystore is generated once and stored only as GitHub secrets
+- Keystore generated once, stored only as GitHub secrets
   (`ANDROID_KEYSTORE_BASE64`, `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS`,
-  `ANDROID_KEY_PASSWORD`), plus an offline backup the user keeps.
-- It is never committed. `android/.gitignore` excludes `*.jks` and `*.keystore`.
-- The release build reads it from the environment. When the secrets are absent, the release
-  build stays **unsigned** rather than falling back to the debug key — a debug-signed APK
-  would install fine on a clean device and then be permanently un-updatable.
-- The release workflow fails loudly if `ANDROID_KEYSTORE_BASE64` is missing.
+  `ANDROID_KEY_PASSWORD`), plus offline backup user keeps.
+- Never committed. `android/.gitignore` exclude `*.jks` and `*.keystore`.
+- Release build reads it from environment. Secrets absent → release build stays **unsigned** rather than fall back to debug key — debug-signed APK would install fine on clean device then permanently un-updatable.
+- Release workflow fails loudly if `ANDROID_KEYSTORE_BASE64` missing.
 
-**Install flow.** Android cannot silently self-install. The updater uses the modern
-`PackageInstaller` session API and requires `REQUEST_INSTALL_PACKAGES` plus a one-time user
-grant of "Install unknown apps". Every install shows a system confirmation. "Restart the
-application" in the spec means: session commits → system replaces the APK → app relaunches.
+**Install flow.** Android can't silently self-install. Updater uses modern `PackageInstaller` session API, requires `REQUEST_INSTALL_PACKAGES` plus one-time user grant of "Install unknown apps". Every install shows system confirmation. "Restart the application" in spec means: session commits → system replaces APK → app relaunches.
 
-**Update checking.** Once per app start, cached, with a multi-hour floor before rechecking,
-plus a manual "Check for updates" in Settings. The GitHub API allows 60 unauthenticated
-requests per hour per IP, which this sits far below, so **no token is embedded in the app**.
-A failed check is logged and otherwise ignored — it never blocks startup or shows an alarming
-error.
+**Update checking.** Once per app start, cached, multi-hour floor before recheck, plus manual "Check for updates" in Settings. GitHub API allows 60 unauthenticated requests per hour per IP, sits far below that, so **no token embedded in app**. Failed check logged and otherwise ignored — never blocks startup or shows alarming error.
 
-**Update state** (`lastUpdateCheck`, `lastNotifiedVersion`, `skippedVersion`) lives in plain
-DataStore, deliberately outside the encrypted workspace: it must be readable before the user
-unlocks anything, and it contains nothing sensitive.
+**Update state** (`lastUpdateCheck`, `lastNotifiedVersion`, `skippedVersion`) lives in plain DataStore, deliberately outside encrypted workspace: must be readable before user unlocks anything, contains nothing sensitive.
 
 ## Consequences
 
-- Releasing is `git tag v1.3.0 && git push origin v1.3.0`. Nothing else is manual.
-- Self-updating APKs violate Google Play policy. Irrelevant for private distribution, but
-  recorded so a future decision to publish is not made in ignorance.
-- The web PWA already has an equivalent mechanism (`vite-plugin-pwa` with
-  `registerType: 'prompt'`, surfaced by `src/app/pwa-update-prompt.tsx`). This ADR covers
-  Android only; no work is needed on the web side.
+- Releasing is `git tag v1.3.0 && git push origin v1.3.0`. Nothing else manual.
+- Self-updating APKs violate Google Play policy. Irrelevant for private distribution, but recorded so future decision to publish not made in ignorance.
+- Web PWA already has equivalent mechanism (`vite-plugin-pwa` with
+  `registerType: 'prompt'`, surfaced by `src/app/pwa-update-prompt.tsx`). This ADR covers Android only; no work needed on web side.

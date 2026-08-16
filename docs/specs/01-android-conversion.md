@@ -2,13 +2,13 @@
 
 ## 1. Goal
 
-Take the existing website/application in this repository and convert it into a **native Android application**, while preserving the existing functionality and extending it into a private, secure application for two people.
+Take existing website/app in repo, convert to **native Android application**. Preserve existing functionality, extend into private, secure app for two people.
 
-Use the following Android skills as the baseline:
+Use these Android skills as baseline:
 
 https://github.com/rcosteira79/android-skills
 
-Use the relevant skills from this repository for:
+Use relevant skills from this repo for:
 
 * Android architecture
 * Kotlin
@@ -26,9 +26,9 @@ Use the relevant skills from this repository for:
 * Modularization
 * Android UX
 
-Do not ignore these skills and reinvent the architecture.
+Don't ignore these skills, don't reinvent architecture.
 
-The application should ultimately combine:
+App should combine:
 
 ```text
 Tasks
@@ -46,21 +46,21 @@ Private Couple Sharing
 Offline-First Synchronization
 ```
 
-The application is intended for **two private users: me and my wife**.
+App meant for **two private users: me and wife**.
 
-Privacy is a first-class requirement.
+Privacy first-class requirement.
 
 ---
 
 # 2. Important Clarification — "Period"
 
-The term **Period** in this project means:
+Term **Period** here means:
 
 > **Menstrual period / menstrual cycle tracking**
 
-It does NOT mean task time tracking, work periods, timers, or time-management periods.
+NOT task time tracking, work periods, timers, time-management.
 
-Do not implement task timers as the "period" functionality.
+Don't implement task timers as "period" functionality.
 
 Tasks can still have:
 
@@ -69,7 +69,7 @@ Tasks can still have:
 * reminders
 * recurring schedules
 
-but menstrual cycle tracking is a completely separate feature/module.
+but menstrual cycle tracking completely separate feature/module.
 
 ---
 
@@ -77,7 +77,7 @@ but menstrual cycle tracking is a completely separate feature/module.
 
 Before changing code:
 
-1. Inspect the entire existing project.
+1. Inspect entire existing project.
 2. Identify:
 
    * frontend framework
@@ -91,23 +91,23 @@ Before changing code:
    * existing document functionality
    * APIs
    * authentication/session mechanism
-3. Run the existing website locally.
-4. Understand the current UX.
-5. Understand the current data model.
-6. Identify what can be reused.
-7. Create a migration/implementation plan.
+3. Run existing website locally.
+4. Understand current UX.
+5. Understand current data model.
+6. Identify what reusable.
+7. Create migration/implementation plan.
 
-Do NOT blindly rewrite the existing application.
+Don't blindly rewrite existing app.
 
-Preserve existing functionality unless there is a good reason to change it.
+Preserve existing functionality unless good reason to change.
 
 ---
 
 # 4. Android Application
 
-Create a **real native Android application**.
+Create **real native Android application**.
 
-Do NOT simply wrap the website in a WebView.
+Don't just wrap website in WebView.
 
 Preferred stack:
 
@@ -128,7 +128,7 @@ Preferred stack:
 * Android Keystore
 * BiometricPrompt where appropriate
 
-Follow the architecture recommended by the Android skills.
+Follow architecture recommended by Android skills.
 
 Preferred architecture:
 
@@ -150,7 +150,7 @@ Keep business logic out of Composables.
 
 # 5. Application Modules
 
-Structure the application around clear feature modules.
+Structure app around clear feature modules.
 
 Suggested:
 
@@ -179,13 +179,13 @@ feature/
     settings/
 ```
 
-Do not over-engineer tiny features into unnecessary modules.
+Don't over-engineer tiny features into unnecessary modules.
 
 ---
 
 # 6. Main Application Concept
 
-The application should become a private personal/couple organizer.
+App becomes private personal/couple organizer.
 
 High-level model:
 
@@ -210,13 +210,13 @@ Private Couple Workspace
 └── Shared Activity
 ```
 
-The menstrual cycle module must have its own privacy model.
+Menstrual cycle module needs own privacy model.
 
 ---
 
 # 7. Privacy Classification
 
-Every piece of data should have an explicit visibility level.
+Every data piece needs explicit visibility level.
 
 At minimum:
 
@@ -241,15 +241,15 @@ Cycle data  → Private
 Notes       → Private
 ```
 
-The user can explicitly choose to share supported items.
+User can explicitly choose to share supported items.
 
-Never assume that being members of the same couple workspace means every item is automatically visible.
+Never assume same couple workspace membership means every item auto-visible.
 
 ---
 
 # 8. Two-User Couple Workspace
 
-The application must support exactly two users in the initial implementation.
+App must support exactly two users in initial implementation.
 
 Example:
 
@@ -261,7 +261,7 @@ User B
 Wife
 ```
 
-Create a private couple workspace:
+Create private couple workspace:
 
 ```text
 Couple Workspace
@@ -269,11 +269,11 @@ Couple Workspace
 └── User B
 ```
 
-Only these two accounts can access it.
+Only these two accounts access it.
 
-The backend must enforce membership.
+Backend must enforce membership.
 
-Do not use a predictable workspace ID as a security mechanism.
+Don't use predictable workspace ID as security mechanism.
 
 Every request must verify:
 
@@ -295,15 +295,15 @@ Permission
 
 Implement secure authentication.
 
-If the existing website already has authentication, evaluate whether it can safely be reused.
+If existing website already has auth, evaluate if safely reusable.
 
-Otherwise support a secure authentication system such as:
+Otherwise support secure auth system such as:
 
 * Email/password
 * Magic link
 * OAuth/OIDC
 
-Users must have unique IDs.
+Users need unique IDs.
 
 Example:
 
@@ -315,7 +315,7 @@ User
 └── updatedAt
 ```
 
-Never store authentication tokens in plain SharedPreferences.
+Never store auth tokens in plain SharedPreferences.
 
 Use secure storage / Android Keystore as appropriate.
 
@@ -323,7 +323,7 @@ Use secure storage / Android Keystore as appropriate.
 
 # 10. Couple Pairing
 
-Provide an easy way to connect the two accounts.
+Provide easy way to connect two accounts.
 
 Example:
 
@@ -341,7 +341,7 @@ Wife accepts
 Couple workspace created
 ```
 
-Do not use a simple predictable numeric pairing code as the sole security mechanism.
+Don't use simple predictable numeric pairing code as sole security mechanism.
 
 Invitation tokens should:
 
@@ -349,13 +349,13 @@ Invitation tokens should:
 * be single-use
 * be random
 * be revocable
-* be tied to the initiating account
+* be tied to initiating account
 
 ---
 
 # 11. Tasks
 
-Tasks remain an important part of the application.
+Tasks remain important part of app.
 
 Each task should support:
 
@@ -434,13 +434,13 @@ Visibility:
 PRIVATE
 ```
 
-The wife must not be able to retrieve private tasks through the API.
+Wife must not retrieve private tasks through API.
 
 ---
 
 # 13. Folders
 
-Add a folder system.
+Add folder system.
 
 Users should be able to:
 
@@ -474,7 +474,7 @@ Support nested folders.
 
 At minimum support 5 nesting levels.
 
-Unlimited nesting can be supported if it does not create UX/performance problems.
+Unlimited nesting OK if no UX/performance problems.
 
 ---
 
@@ -518,7 +518,7 @@ WEBP
 HEIC
 ```
 
-Design the system so additional formats can be added later.
+Design system so more formats addable later.
 
 ---
 
@@ -526,7 +526,7 @@ Design the system so additional formats can be added later.
 
 Use Android Storage Access Framework.
 
-The user should see:
+User should see:
 
 ```text
 + Add
@@ -537,7 +537,7 @@ The user should see:
 └── Create Folder
 ```
 
-Avoid broad filesystem permissions when scoped storage APIs are sufficient.
+Avoid broad filesystem permissions when scoped storage APIs suffice.
 
 Use modern Android APIs.
 
@@ -615,11 +615,11 @@ Store searchable text
 
 Prefer offline OCR when practical.
 
-OCR should be optional.
+OCR optional.
 
-Do not send private documents to third-party OCR services without explicit user consent.
+Don't send private documents to third-party OCR services without explicit user consent.
 
-OCR text is private data and must follow the same visibility rules as the document.
+OCR text is private data, follows same visibility rules as document.
 
 ---
 
@@ -636,7 +636,7 @@ CSV      → Table
 Office   → System/external viewer where appropriate
 ```
 
-Do not implement full Office editing unless required.
+Don't implement full Office editing unless required.
 
 ---
 
@@ -653,7 +653,7 @@ Search:
 * Tags
 * File names
 * OCR text
-* Menstrual cycle notes where the user has permission
+* Menstrual cycle notes where user has permission
 
 Example:
 
@@ -670,15 +670,15 @@ Results:
 
 Search results must respect visibility.
 
-If User A searches for something, private User B data must never appear.
+If User A searches, private User B data must never appear.
 
 ---
 
 # 20. Menstrual Cycle Tracking
 
-Create a dedicated **Cycle Tracking** feature.
+Create dedicated **Cycle Tracking** feature.
 
-This is one of the primary application modules.
+One of primary app modules.
 
 Suggested navigation:
 
@@ -692,13 +692,13 @@ Shared
 Settings
 ```
 
-The Cycle screen should clearly communicate that this is menstrual-cycle tracking.
+Cycle screen should clearly communicate this is menstrual-cycle tracking.
 
 ---
 
 # 21. Cycle Data Model
 
-A menstrual cycle should be modeled separately from tasks.
+Menstrual cycle should be modeled separately from tasks.
 
 Potential model:
 
@@ -722,15 +722,15 @@ MenstrualCycle
 └── version
 ```
 
-Do not store all calculated values as authoritative if they can be derived.
+Don't store all calculated values as authoritative if derivable.
 
-Prefer storing actual user-entered events and calculating predictions from historical data.
+Prefer storing actual user-entered events, calculating predictions from historical data.
 
 ---
 
 # 22. Period Logging
 
-Allow the wife to easily record:
+Allow wife to easily record:
 
 ```text
 Period started
@@ -760,13 +760,13 @@ Period ended:
 17 Aug 2026
 ```
 
-The user must be able to edit historical records.
+User must be able to edit historical records.
 
 ---
 
 # 23. Cycle Calendar
 
-Create a dedicated menstrual-cycle calendar.
+Create dedicated menstrual-cycle calendar.
 
 Display:
 
@@ -790,7 +790,7 @@ Clearly distinguish:
 * Estimated ovulation
 * Current day
 
-Do not make predictions look like confirmed events.
+Don't make predictions look like confirmed events.
 
 Use labels such as:
 
@@ -818,14 +818,14 @@ Important:
 
 Predictions are estimates, not medical facts.
 
-Do not claim that the prediction can guarantee:
+Don't claim prediction guarantees:
 
 * ovulation
 * fertility
 * pregnancy prevention
 * pregnancy detection
 
-The UI should make this distinction clear.
+UI should make distinction clear.
 
 Example:
 
@@ -841,7 +841,7 @@ Based on your previous cycles.
 
 # 25. Irregular Cycles
 
-Do NOT assume every cycle is exactly the same length.
+Don't assume every cycle exactly same length.
 
 Support:
 
@@ -854,7 +854,7 @@ Cycle 4 → 29 days
 
 Calculate predictions using historical data.
 
-If insufficient historical data exists:
+If insufficient historical data:
 
 ```text
 Not enough cycle history yet.
@@ -862,13 +862,13 @@ Not enough cycle history yet.
 Continue tracking to improve estimates.
 ```
 
-Do not fabricate precise predictions from insufficient data.
+Don't fabricate precise predictions from insufficient data.
 
 ---
 
 # 26. Symptoms
 
-Allow the wife to record optional symptoms.
+Allow wife to record optional symptoms.
 
 Examples:
 
@@ -921,9 +921,9 @@ Flow
 ○ Heavy
 ```
 
-This should be optional.
+Should be optional.
 
-Do not force the user to record medical details.
+Don't force user to record medical details.
 
 ---
 
@@ -944,7 +944,7 @@ Mood
 
 Allow multiple moods if appropriate.
 
-Keep the interface simple.
+Keep interface simple.
 
 ---
 
@@ -969,9 +969,9 @@ Location:
 - Other
 ```
 
-This is tracking data, not diagnosis.
+This tracking data, not diagnosis.
 
-Do not provide medical diagnoses based on this information.
+Don't provide medical diagnoses based on this info.
 
 ---
 
@@ -991,7 +991,7 @@ Cycle notes
 "Period started later than expected."
 ```
 
-Notes are sensitive/private by default.
+Notes sensitive/private by default.
 
 ---
 
@@ -1017,7 +1017,7 @@ May 2026
 27 days
 ```
 
-Allow opening a cycle for details.
+Allow opening cycle for details.
 
 ---
 
@@ -1039,9 +1039,9 @@ Longest cycle:
 32 days
 ```
 
-Do not overstate statistical accuracy.
+Don't overstate statistical accuracy.
 
-Clearly indicate that these are based only on recorded history.
+Clearly indicate these based only on recorded history.
 
 ---
 
@@ -1051,7 +1051,7 @@ Menstrual cycle data must be:
 
 **PRIVATE BY DEFAULT.**
 
-The wife decides whether to share it with her partner.
+Wife decides whether to share with partner.
 
 Example:
 
@@ -1092,7 +1092,7 @@ Prefer more granular controls.
 
 # 34. Important Privacy Rule
 
-The husband must NEVER automatically receive:
+Husband must NEVER automatically receive:
 
 * menstrual dates
 * symptoms
@@ -1101,9 +1101,9 @@ The husband must NEVER automatically receive:
 * notes
 * cycle history
 
-simply because he is connected as the partner.
+just because connected as partner.
 
-The wife must explicitly opt into sharing.
+Wife must explicitly opt into sharing.
 
 Example:
 
@@ -1122,7 +1122,7 @@ Cannot infer it through API responses
 
 # 35. Shared Cycle View
 
-If the wife explicitly enables sharing, the husband may see only the information she selected.
+If wife explicitly enables sharing, husband may see only info she selected.
 
 Example:
 
@@ -1140,14 +1140,14 @@ Period dates
 Predicted period
 ```
 
-If symptoms were not shared:
+If symptoms not shared:
 
 ```text
 Symptoms:
 Private
 ```
 
-Do not expose hidden data through statistics, notifications, search, or synchronization metadata.
+Don't expose hidden data through statistics, notifications, search, or sync metadata.
 
 ---
 
@@ -1161,11 +1161,11 @@ Cycle logging reminder
 Missed logging reminder
 ```
 
-Do not create alarming notifications.
+Don't create alarming notifications.
 
 Notifications must respect privacy.
 
-Avoid sensitive text on the lock screen by default.
+Avoid sensitive text on lock screen by default.
 
 Instead of:
 
@@ -1179,17 +1179,17 @@ prefer:
 Cycle reminder
 ```
 
-unless the user explicitly enables sensitive notification content.
+unless user explicitly enables sensitive notification content.
 
 ---
 
 # 37. Pregnancy Mode — Optional
 
-If appropriate, design the architecture so a future pregnancy mode can be added.
+If appropriate, design architecture so future pregnancy mode addable.
 
-Do NOT automatically implement pregnancy calculations unless explicitly required.
+Don't automatically implement pregnancy calculations unless explicitly required.
 
-The current system should allow future extension:
+Current system should allow future extension:
 
 ```text
 Cycle Tracking
@@ -1198,17 +1198,17 @@ Future:
 Pregnancy Tracking
 ```
 
-Keep the data model extensible.
+Keep data model extensible.
 
 ---
 
 # 38. Medical Safety
 
-This application is a tracking tool.
+This app is tracking tool.
 
-It is NOT a medical diagnostic system.
+NOT medical diagnostic system.
 
-Do not implement claims such as:
+Don't implement claims such as:
 
 ```text
 "You are definitely ovulating."
@@ -1224,13 +1224,13 @@ Predicted
 Based on previous cycles
 ```
 
-If medical warnings are eventually added, they must be conservative and appropriately sourced.
+If medical warnings eventually added, must be conservative and appropriately sourced.
 
 ---
 
 # 39. Offline-First Architecture
 
-The application must work without Internet.
+App must work without Internet.
 
 Architecture:
 
@@ -1253,17 +1253,17 @@ Architecture:
               └─────────────────┘
 ```
 
-The UI should primarily read from local storage.
+UI should primarily read from local storage.
 
-Network synchronization updates local data.
+Network sync updates local data.
 
-Do not make the UI dependent on the network.
+Don't make UI dependent on network.
 
 ---
 
 # 40. Sensitive Data Sync
 
-Menstrual cycle information must have an additional privacy layer.
+Menstrual cycle info needs additional privacy layer.
 
 For every cycle-related record:
 
@@ -1331,7 +1331,7 @@ CONFLICT
 
 Use WorkManager.
 
-Synchronization should retry safely.
+Sync should retry safely.
 
 Operations should be idempotent where practical.
 
@@ -1354,7 +1354,7 @@ Document:
 PRIVATE
 ```
 
-Synchronization should produce:
+Sync should produce:
 
 ```text
 Backend
@@ -1372,9 +1372,9 @@ Private document
 Available to Wife devices only
 ```
 
-The husband's device should never download the private cycle and then hide it in the UI.
+Husband's device should never download private cycle then hide it in UI.
 
-The backend must prevent access in the first place.
+Backend must prevent access in first place.
 
 ---
 
@@ -1390,7 +1390,7 @@ User A → "Buy milk"
 User B → "Buy milk and bread"
 ```
 
-Do not silently lose changes.
+Don't silently lose changes.
 
 Use:
 
@@ -1426,7 +1426,7 @@ Wife device → Aug 14
 Partner device → Aug 15
 ```
 
-The owner of the cycle data should have authority to resolve the conflict.
+Owner of cycle data should have authority to resolve conflict.
 
 Partner edits to cycle data should generally not be allowed unless explicitly supported.
 
@@ -1434,7 +1434,7 @@ Partner edits to cycle data should generally not be allowed unless explicitly su
 
 # 44. File Synchronization
 
-Large files should not be embedded directly in normal JSON API requests.
+Large files shouldn't embed directly in normal JSON API requests.
 
 Use:
 
@@ -1464,7 +1464,7 @@ Use:
 
 # 45. Encryption
 
-Treat menstrual cycle information and personal documents as sensitive.
+Treat menstrual cycle info and personal documents as sensitive.
 
 Use:
 
@@ -1484,15 +1484,15 @@ Use Android Keystore where appropriate.
 
 For highly sensitive data, consider application-level encryption or end-to-end encryption.
 
-If E2EE is implemented:
+If E2EE implemented:
 
 * use established cryptographic libraries
-* do not invent cryptographic algorithms
+* don't invent cryptographic algorithms
 * document key management
 * document device recovery
 * document account recovery
 
-Do not claim "end-to-end encrypted" unless the implementation actually provides end-to-end encryption.
+Don't claim "end-to-end encrypted" unless implementation actually provides end-to-end encryption.
 
 ---
 
@@ -1544,7 +1544,7 @@ devices
 notifications
 ```
 
-Adjust according to the existing application.
+Adjust according to existing app.
 
 Use UUIDs.
 
@@ -1619,9 +1619,9 @@ share_notes
 updated_at
 ```
 
-Do not duplicate cycle data for the partner.
+Don't duplicate cycle data for partner.
 
-The partner should receive authorized views of the owner's data.
+Partner should receive authorized views of owner's data.
 
 ---
 
@@ -1660,7 +1660,7 @@ Never rely on Android UI restrictions.
 
 Test for indirect leaks.
 
-The husband's account must not learn private cycle information through:
+Husband's account must not learn private cycle info through:
 
 * Search
 * Statistics
@@ -1677,7 +1677,7 @@ The husband's account must not learn private cycle information through:
 * Background sync
 * Logs
 
-For example, do NOT return:
+For example, don't return:
 
 ```json
 {
@@ -1685,13 +1685,13 @@ For example, do NOT return:
 }
 ```
 
-to the husband if even the count itself reveals private information.
+to husband if even count itself reveals private info.
 
 ---
 
 # 50. Calendar
 
-The main application calendar may contain:
+Main app calendar may contain:
 
 ```text
 Tasks
@@ -1701,7 +1701,7 @@ Cycle events
 
 But cycle events must respect privacy.
 
-If the wife has not shared cycle data:
+If wife hasn't shared cycle data:
 
 ```text
 Husband calendar:
@@ -1715,15 +1715,15 @@ Husband calendar:
 Shared cycle information only
 ```
 
-Avoid visually exposing private cycle information through colors, dots, badges, or empty-space patterns.
+Avoid visually exposing private cycle info through colors, dots, badges, or empty-space patterns.
 
 ---
 
 # 51. Dashboard
 
-Create a clean dashboard.
+Create clean dashboard.
 
-Example for the wife:
+Example for wife:
 
 ```text
 Good morning 👋
@@ -1754,7 +1754,7 @@ invoice.pdf
 receipt.jpg
 ```
 
-Example for the husband when cycle data is private:
+Example for husband when cycle data private:
 
 ```text
 Good morning 👋
@@ -1772,7 +1772,7 @@ Folders
 📄 Documents
 ```
 
-No hidden cycle information should appear.
+No hidden cycle info should appear.
 
 ---
 
@@ -1789,9 +1789,9 @@ Examples:
 Log Period
 ```
 
-The **Log Period** action should only appear for the user who owns the cycle data.
+**Log Period** action should only appear for user who owns cycle data.
 
-Do not expose sensitive cycle information through widgets by default.
+Don't expose sensitive cycle info through widgets by default.
 
 ---
 
@@ -1809,7 +1809,7 @@ Custom
 
 Model recurring tasks efficiently.
 
-Do not generate thousands of unnecessary task records.
+Don't generate thousands of unnecessary task records.
 
 ---
 
@@ -1827,9 +1827,9 @@ Support tags:
 #medical
 ```
 
-Cycle-related tags should be treated as sensitive if they reveal private health information.
+Cycle-related tags should be treated as sensitive if revealing private health info.
 
-Do not expose private tags to the partner.
+Don't expose private tags to partner.
 
 ---
 
@@ -1891,7 +1891,7 @@ For sensitive data:
 Show private information in app previews
 ```
 
-Allow the user to disable it.
+Allow user to disable it.
 
 ---
 
@@ -1914,38 +1914,38 @@ Potentially sensitive:
 Your period starts tomorrow
 ```
 
-Default to a generic notification.
+Default to generic notification.
 
-Allow the user to explicitly enable sensitive notification content.
+Allow user to explicitly enable sensitive notification content.
 
 ---
 
 # 58. Document Privacy
 
-Documents have the same visibility model:
+Documents have same visibility model:
 
 ```text
 PRIVATE
 SHARED
 ```
 
-A private document:
+Private document:
 
 * syncs to owner's devices
-* is stored securely
+* stored securely
 * cannot be accessed by partner
 
-A shared document:
+Shared document:
 
 * syncs to authorized devices
-* is visible to both users
+* visible to both users
 * remains protected by backend authorization
 
 ---
 
 # 59. Document Attachments to Cycle
 
-Allow the wife to optionally attach documents to cycle records.
+Allow wife to optionally attach documents to cycle records.
 
 Examples:
 
@@ -1958,15 +1958,15 @@ Cycle
      └── image.jpg
 ```
 
-These attachments must inherit the cycle's privacy rules by default.
+Attachments must inherit cycle's privacy rules by default.
 
-If the cycle is private:
+If cycle private:
 
 ```text
 Document → Private
 ```
 
-If the cycle is shared:
+If cycle shared:
 
 ```text
 Document → Shared
@@ -1988,7 +1988,7 @@ Support:
 * large touch targets
 * keyboard navigation where appropriate
 
-Do not rely solely on color to communicate:
+Don't rely solely on color to communicate:
 
 * period days
 * fertile window
@@ -2003,7 +2003,7 @@ Use labels and patterns in addition to colors.
 
 Use modern Material 3.
 
-The application should feel like a polished native Android application.
+App should feel like polished native Android app.
 
 Use:
 
@@ -2042,14 +2042,14 @@ Shared
 Settings
 ```
 
-For the husband:
+For husband:
 
-If he does not have access to the wife's cycle data, the Cycle section should either:
+If no access to wife's cycle data, Cycle section should either:
 
 * not appear, or
 * show only explicitly shared cycle information
 
-Do not show an empty/private state that indirectly reveals that private data exists unless appropriate.
+Don't show empty/private state that indirectly reveals private data exists unless appropriate.
 
 ---
 
@@ -2097,7 +2097,7 @@ cycle updated date
 
 # 64. Local Sensitive Data Protection
 
-Do not assume that Room alone is sufficient for highly sensitive data.
+Don't assume Room alone sufficient for highly sensitive data.
 
 Evaluate:
 
@@ -2127,7 +2127,7 @@ authentication tokens
 
 While offline:
 
-The user must be able to:
+User must be able to:
 
 * create tasks
 * edit tasks
@@ -2139,7 +2139,7 @@ The user must be able to:
 * add symptoms
 * add notes
 
-Changes are saved locally.
+Changes saved locally.
 
 When Internet returns:
 
@@ -2157,7 +2157,7 @@ Partner devices where permitted
 
 # 66. Cycle Offline Behavior
 
-If the wife records:
+If wife records:
 
 ```text
 Period started:
@@ -2186,7 +2186,7 @@ Store
 Sync to wife's devices
 ```
 
-If the cycle is shared:
+If cycle shared:
 
 ```text
  ↓
@@ -2204,7 +2204,7 @@ Do NOT sync to husband
 
 # 67. Testing — General
 
-Testing is mandatory.
+Testing mandatory.
 
 Unit tests:
 
@@ -2258,11 +2258,11 @@ Duration:
 29
 ```
 
-Ensure predictions don't assume a fixed cycle.
+Ensure predictions don't assume fixed cycle.
 
 ### Insufficient history
 
-Ensure the app does not fabricate precise predictions.
+Ensure app doesn't fabricate precise predictions.
 
 ### Manual correction
 
@@ -2272,7 +2272,7 @@ Test editing previous cycle dates.
 
 # 69. Testing — Cycle Privacy
 
-These tests are critical.
+These tests critical.
 
 ### Test 1
 
@@ -2446,9 +2446,9 @@ Test:
 * search authorization
 * calendar authorization
 
-Do not only test the Android UI.
+Don't only test Android UI.
 
-Test the backend authorization directly.
+Test backend authorization directly.
 
 ---
 
@@ -2489,7 +2489,7 @@ Conflict handling
 
 # 73. Performance
 
-The app should remain responsive with:
+App should remain responsive with:
 
 ```text
 10,000+ tasks
@@ -2515,7 +2515,7 @@ Never load all documents into memory.
 
 # 74. Backend File Storage
 
-Store files outside the relational database where practical.
+Store files outside relational database where practical.
 
 Use:
 
@@ -2539,7 +2539,7 @@ Use authenticated access or short-lived signed URLs.
 
 # 75. Backend Deployment
 
-If a backend is required, provide Docker support.
+If backend required, provide Docker support.
 
 Example:
 
@@ -2553,7 +2553,7 @@ services:
   object-storage
 ```
 
-Do not commit secrets.
+Don't commit secrets.
 
 Use:
 
@@ -2571,11 +2571,11 @@ instead of:
 
 # 76. Data Migration
 
-If the existing website already contains data:
+If existing website already has data:
 
-create an import/migration system.
+create import/migration system.
 
-Do not delete existing data.
+Don't delete existing data.
 
 Potential:
 
@@ -2608,7 +2608,7 @@ Create:
 PROGRESS.md
 ```
 
-Keep it updated throughout implementation.
+Keep updated throughout implementation.
 
 Example:
 
@@ -2691,7 +2691,7 @@ Example:
 - [ ] Documentation
 ```
 
-Update this after every meaningful development phase.
+Update after every meaningful development phase.
 
 ---
 
@@ -2718,7 +2718,7 @@ Include:
 010-conflict-resolution.md
 ```
 
-Document why each decision was made.
+Document why each decision made.
 
 ---
 
@@ -2773,7 +2773,7 @@ Build in phases.
 
 # 80. Git Workflow
 
-Before modifying the project:
+Before modifying project:
 
 ```bash
 git status
@@ -2783,7 +2783,7 @@ git log --oneline -10
 
 Never overwrite uncommitted user changes.
 
-Create a feature branch:
+Create feature branch:
 
 ```text
 feature/android-app
@@ -2824,20 +2824,20 @@ production credentials
 
 # 81. Claude Code Execution Instructions
 
-You are the lead Android engineer.
+You lead Android engineer.
 
-Do not merely describe what should be done.
+Don't merely describe what should be done.
 
-**Actually implement the project.**
+**Actually implement project.**
 
-Start by inspecting the repository.
+Start by inspecting repo.
 
 Then:
 
-1. Read/use the relevant Android skills from:
+1. Read/use relevant Android skills from:
    https://github.com/rcosteira79/android-skills
 
-2. Analyze the existing website.
+2. Analyze existing website.
 
 3. Analyze its backend.
 
@@ -2845,11 +2845,11 @@ Then:
 
 5. Analyze authentication.
 
-6. Create the architecture plan.
+6. Create architecture plan.
 
 7. Create `PROGRESS.md`.
 
-8. Create the native Android application.
+8. Create native Android application.
 
 9. Implement existing functionality.
 
@@ -2893,7 +2893,7 @@ Then:
 
 29. Implement tests.
 
-30. Build the application.
+30. Build app.
 
 31. Run tests.
 
@@ -2921,17 +2921,17 @@ Update PROGRESS.md
 Commit
 ```
 
-Do not make one giant change.
+Don't make one giant change.
 
 ---
 
 # 82. Important Product Principle
 
-The menstrual cycle functionality is **not a secondary task timer feature**.
+Menstrual cycle functionality **not secondary task timer feature**.
 
-It is a dedicated health-data tracking module.
+Dedicated health-data tracking module.
 
-The architecture should clearly separate:
+Architecture should clearly separate:
 
 ```text
 Task Management
@@ -2951,13 +2951,13 @@ Cycle Tracking
         └── Cycle Sharing
 ```
 
-They may integrate in the UI, but their data models, permissions, and business logic should remain separate.
+May integrate in UI, but data models, permissions, business logic stay separate.
 
 ---
 
 # 83. Critical Privacy Principle
 
-The wife owns her menstrual-cycle data.
+Wife owns her menstrual-cycle data.
 
 Therefore:
 
@@ -2974,21 +2974,21 @@ Wife
         └── Shared with Partner
 ```
 
-The husband:
+Husband:
 
 ```text
 Can view only what the wife explicitly shares.
 ```
 
-He should not automatically gain access because the accounts are paired.
+Shouldn't automatically gain access just because accounts paired.
 
 ---
 
 # 84. Definition of Done
 
-The project is NOT complete merely because the Android APK builds.
+Project NOT complete merely because Android APK builds.
 
-It is complete when:
+Complete when:
 
 * Existing website functionality works in Android
 * Tasks work
@@ -3001,7 +3001,7 @@ It is complete when:
 * Cycle history works
 * Cycle calendar works
 * Predictions work
-* Predictions are clearly labeled as estimates
+* Predictions clearly labeled as estimates
 * Symptoms can be tracked
 * Mood can be tracked
 * Flow can be tracked
@@ -3015,22 +3015,22 @@ It is complete when:
 * Offline mode works
 * Synchronization works
 * Conflict handling exists
-* Backend authorization is tested
-* Local sensitive data is protected
-* Documents are protected
+* Backend authorization tested
+* Local sensitive data protected
+* Documents protected
 * Notifications respect privacy
 * Tests pass
 * Lint passes
 * Debug build works
 * Release build can be generated
 * Documentation exists
-* `PROGRESS.md` is current
+* `PROGRESS.md` current
 
 ---
 
 # 85. Final Report
 
-When implementation is complete, provide:
+When implementation complete, provide:
 
 ```text
 ## Implementation Summary
@@ -3100,13 +3100,13 @@ How conflicts are resolved
 How account/device recovery works
 ```
 
-Do not claim that the application is secure without verifying it through tests.
+Don't claim app secure without verifying through tests.
 
 ---
 
 # 86. Final Architecture Target
 
-The desired architecture should look approximately like:
+Desired architecture should look approximately like:
 
 ```text
                          ┌─────────────────────────┐
@@ -3159,7 +3159,7 @@ The desired architecture should look approximately like:
                          └─────────────────────────┘
 ```
 
-The fundamental security rule is:
+Fundamental security rule:
 
 ```text
 PRIVATE DATA
@@ -3175,6 +3175,6 @@ NEVER
 "Same workspace = access to everything"
 ```
 
-The menstrual cycle system must follow this rule strictly.
+Menstrual cycle system must follow this rule strictly.
 
-The app should be **offline-first, privacy-first, native Android, and designed specifically for two trusted users**, while remaining extensible for future features.
+App should be **offline-first, privacy-first, native Android, designed specifically for two trusted users**, while remaining extensible for future features.
