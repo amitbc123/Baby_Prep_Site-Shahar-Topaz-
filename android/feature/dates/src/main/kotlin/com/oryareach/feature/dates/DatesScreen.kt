@@ -63,9 +63,14 @@ fun DatesScreen(
             }
         },
     ) { padding ->
+        androidx.compose.material3.pulltorefresh.PullToRefreshBox(
+            isRefreshing = uiState.refreshing,
+            onRefresh = actions::onRefresh,
+            modifier = Modifier.fillMaxSize().padding(padding),
+        ) {
         if (uiState.dates.isEmpty()) {
             Column(
-                modifier = Modifier.fillMaxSize().padding(padding).padding(24.dp),
+                modifier = Modifier.fillMaxSize().padding(24.dp),
                 verticalArrangement = Arrangement.Center,
             ) {
                 Text(
@@ -76,7 +81,7 @@ fun DatesScreen(
             }
         } else {
             LazyColumn(
-                modifier = Modifier.fillMaxSize().padding(padding),
+                modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(16.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
@@ -84,6 +89,7 @@ fun DatesScreen(
                     DateRow(date = date, actions = actions)
                 }
             }
+        }
         }
     }
 
@@ -211,4 +217,5 @@ private object NoopDatesActions : DatesActions {
     override fun onWishChange(value: String) = Unit
     override fun onSubmit() = Unit
     override fun onDelete(id: String) = Unit
+    override fun onRefresh() = Unit
 }

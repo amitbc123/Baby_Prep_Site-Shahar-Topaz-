@@ -70,7 +70,12 @@ fun ShoppingScreen(
             }
         },
     ) { padding ->
-        Column(modifier = Modifier.fillMaxSize().padding(padding)) {
+        androidx.compose.material3.pulltorefresh.PullToRefreshBox(
+            isRefreshing = uiState.refreshing,
+            onRefresh = actions::onRefresh,
+            modifier = Modifier.fillMaxSize().padding(padding),
+        ) {
+        Column(modifier = Modifier.fillMaxSize()) {
             BudgetSummary(uiState = uiState)
 
             if (uiState.items.isEmpty()) {
@@ -95,6 +100,7 @@ fun ShoppingScreen(
                     }
                 }
             }
+        }
         }
     }
 
@@ -322,4 +328,5 @@ private object NoopShoppingActions : ShoppingActions {
     override fun onSubmit() = Unit
     override fun onStatusChange(id: String, status: ShoppingStatus) = Unit
     override fun onDelete(id: String) = Unit
+    override fun onRefresh() = Unit
 }

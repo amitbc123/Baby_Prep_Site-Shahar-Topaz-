@@ -144,6 +144,7 @@ val appModule = module {
             entryRepository = get(),
             documents = get(),
             auth = get(),
+            syncEngine = get(),
             workspaceId = { get<SessionState>().workspaceId },
         )
     }
@@ -151,6 +152,7 @@ val appModule = module {
         ShoppingViewModel(
             repository = get(),
             auth = get(),
+            syncEngine = get(),
             workspaceId = { get<SessionState>().workspaceId },
         )
     }
@@ -158,6 +160,7 @@ val appModule = module {
         DatesViewModel(
             repository = get(),
             auth = get(),
+            syncEngine = get(),
             workspaceId = { get<SessionState>().workspaceId },
         )
     }
@@ -177,6 +180,7 @@ val appModule = module {
             repository = get(),
             documents = get(),
             auth = get(),
+            syncEngine = get(),
             workspaceId = { get<SessionState>().workspaceId },
         )
     }
@@ -200,6 +204,7 @@ val appModule = module {
             tasks = get(),
             importantDates = get(),
             cycles = get(),
+            syncEngine = get(),
             workspaceId = { get<SessionState>().workspaceId },
         )
     }

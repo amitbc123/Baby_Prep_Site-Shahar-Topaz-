@@ -83,6 +83,11 @@ fun CycleScreen(
     modifier: Modifier = Modifier,
 ) {
     Surface(modifier = modifier.fillMaxSize().safeDrawingPadding(), color = MaterialTheme.colorScheme.background) {
+      androidx.compose.material3.pulltorefresh.PullToRefreshBox(
+        isRefreshing = uiState.refreshing,
+        onRefresh = actions::onRefresh,
+        modifier = Modifier.fillMaxSize(),
+      ) {
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(24.dp),
@@ -124,6 +129,7 @@ fun CycleScreen(
                 }
             }
         }
+      }
     }
 
     if (uiState.daySheetVisible) {
@@ -638,4 +644,5 @@ private object NoopCycleActions : CycleActions {
     override fun onToggleAttachments(cycleId: String) = Unit
     override fun onAttachDocument(name: String, mimeType: String, bytes: ByteArray) = Unit
     override fun onDeleteAttachment(document: Document) = Unit
+    override fun onRefresh() = Unit
 }

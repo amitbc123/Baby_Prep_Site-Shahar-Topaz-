@@ -127,7 +127,12 @@ fun FoldersScreen(
             }
         },
     ) { padding ->
-        Column(modifier = Modifier.fillMaxSize().padding(padding)) {
+        androidx.compose.material3.pulltorefresh.PullToRefreshBox(
+            isRefreshing = uiState.refreshing,
+            onRefresh = actions::onRefresh,
+            modifier = Modifier.fillMaxSize().padding(padding),
+        ) {
+        Column(modifier = Modifier.fillMaxSize()) {
             Breadcrumb(uiState = uiState, actions = actions)
 
             if (uiState.importing) {
@@ -159,6 +164,7 @@ fun FoldersScreen(
                     }
                 }
             }
+        }
         }
     }
 
@@ -441,4 +447,5 @@ private object NoopFoldersActions : FoldersActions {
     override fun onDismissDeleteDocument() = Unit
     override fun onPreviewDocument(document: Document) = Unit
     override fun onDismissPreview() = Unit
+    override fun onRefresh() = Unit
 }

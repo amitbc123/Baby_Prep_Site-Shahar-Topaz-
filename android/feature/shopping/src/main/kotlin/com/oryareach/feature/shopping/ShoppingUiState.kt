@@ -27,6 +27,7 @@ data class ShoppingUiState(
     // Transient UI-only: must not survive the screen.
     val sheetVisible: Boolean = false,
     val submitting: Boolean = false,
+    val refreshing: Boolean = false,
     @StringRes val errorMessage: Int? = null,
 ) {
     val canSubmitForm: Boolean get() = formName.isNotBlank() && !submitting

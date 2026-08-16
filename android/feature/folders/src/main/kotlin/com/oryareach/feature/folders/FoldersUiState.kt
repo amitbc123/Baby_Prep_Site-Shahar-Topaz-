@@ -24,6 +24,7 @@ data class FoldersUiState(
     val previewDocument: Document? = null,
     val previewContent: DocumentPreview? = null,
     val previewLoading: Boolean = false,
+    val refreshing: Boolean = false,
 ) {
     val currentParentId: String? get() = breadcrumb.lastOrNull()?.id
     val canSubmitCreate: Boolean get() = formName.isNotBlank()

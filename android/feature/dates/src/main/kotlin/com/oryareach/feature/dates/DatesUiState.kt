@@ -20,6 +20,7 @@ data class DatesUiState(
     val sheetVisible: Boolean = false,
     val datePickerVisible: Boolean = false,
     val submitting: Boolean = false,
+    val refreshing: Boolean = false,
     @StringRes val errorMessage: Int? = null,
 ) {
     val canSubmitForm: Boolean get() = formDate != null && formTitle.isNotBlank() && !submitting

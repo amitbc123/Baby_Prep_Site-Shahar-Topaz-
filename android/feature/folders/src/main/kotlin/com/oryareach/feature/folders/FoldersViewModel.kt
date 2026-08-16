@@ -39,6 +39,7 @@ interface FoldersActions {
     fun onDismissDeleteDocument()
     fun onPreviewDocument(document: Document)
     fun onDismissPreview()
+    fun onRefresh()
 }
 
 /**
@@ -50,6 +51,7 @@ class FoldersViewModel(
     private val repository: FolderRepository,
     private val documents: DocumentRepository,
     private val auth: AuthRepository,
+    private val syncEngine: com.oryareach.core.sync.SyncEngine,
     private val workspaceId: () -> String?,
 ) : ViewModel(), FoldersActions {
 
@@ -169,6 +171,15 @@ class FoldersViewModel(
     }
 
     override fun onDismissPreview() = set { it.copy(previewDocument = null, previewContent = null) }
+
+    override fun onRefresh() {
+        if (_uiState.value.refreshing) return
+        set { it.copy(refreshing = true) }
+        viewModelScope.launch {
+            syncEngine.sync()
+            set { it.copy(refreshing = false) }
+        }
+    }
 
     private fun toPreview(mimeType: String, bytes: ByteArray): DocumentPreview = when {
         mimeType.startsWith("text/") || mimeType == "application/json" ->

@@ -24,6 +24,7 @@ data class CalendarUiState(
     val visibleMonth: LocalDate = LocalDate(2000, 1, 1),
     val events: List<CalendarEvent> = emptyList(),
     val selectedDate: LocalDate? = null,
+    val refreshing: Boolean = false,
 ) {
     val eventsForSelectedDate: List<CalendarEvent>
         get() = selectedDate?.let { date -> events.filter { it.date == date } }.orEmpty()

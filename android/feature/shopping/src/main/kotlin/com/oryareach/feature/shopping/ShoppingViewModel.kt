@@ -32,6 +32,7 @@ interface ShoppingActions {
     fun onSubmit()
     fun onStatusChange(id: String, status: ShoppingStatus)
     fun onDelete(id: String)
+    fun onRefresh()
 }
 
 /**
@@ -41,6 +42,7 @@ interface ShoppingActions {
 class ShoppingViewModel(
     private val repository: ShoppingItemRepository,
     private val auth: AuthRepository,
+    private val syncEngine: com.oryareach.core.sync.SyncEngine,
     private val workspaceId: () -> String?,
 ) : ViewModel(), ShoppingActions {
 
@@ -149,6 +151,15 @@ class ShoppingViewModel(
 
     override fun onDelete(id: String) {
         viewModelScope.launch { repository.delete(id) }
+    }
+
+    override fun onRefresh() {
+        if (_uiState.value.refreshing) return
+        set { it.copy(refreshing = true) }
+        viewModelScope.launch {
+            syncEngine.sync()
+            set { it.copy(refreshing = false) }
+        }
     }
 
     private fun set(block: (ShoppingUiState) -> ShoppingUiState) {

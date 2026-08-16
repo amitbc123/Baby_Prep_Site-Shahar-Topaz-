@@ -56,6 +56,11 @@ fun CalendarScreen(
     modifier: Modifier = Modifier,
 ) {
     Surface(modifier = modifier.fillMaxSize().safeDrawingPadding(), color = MaterialTheme.colorScheme.background) {
+      androidx.compose.material3.pulltorefresh.PullToRefreshBox(
+        isRefreshing = uiState.refreshing,
+        onRefresh = actions::onRefresh,
+        modifier = Modifier.fillMaxSize(),
+      ) {
         Column(modifier = Modifier.fillMaxSize().padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             Text(
                 text = stringResource(R.string.calendar_title),
@@ -86,6 +91,7 @@ fun CalendarScreen(
                 LegendRow(color = MaterialTheme.colorScheme.error, label = stringResource(R.string.calendar_legend_period))
             }
         }
+      }
     }
 
     if (uiState.daySheetVisible) {
@@ -234,4 +240,5 @@ private object NoopCalendarActions : CalendarActions {
     override fun onSelectDate(date: LocalDate) = Unit
     override fun onDismissDaySheet() = Unit
     override fun onEventClick(event: CalendarEvent) = Unit
+    override fun onRefresh() = Unit
 }

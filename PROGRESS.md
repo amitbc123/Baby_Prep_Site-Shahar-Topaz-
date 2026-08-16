@@ -868,6 +868,25 @@ before called done-done):**
   stopped here on explicit instruction to wrap up session rather than leave five more
   modules half-wired; same copy-pasteable pattern as Tasks/Home, next session repeats it
   across remaining five.
+- **Pull-to-refresh rollout finished — Shopping, Dates, Documents (Folders), Cycle,
+  Calendar all now have it, same pattern as Tasks/Home**: each `UiState` gained
+  `refreshing: Boolean = false`, each `Actions` interface gained `onRefresh()`, each
+  `ViewModel` now takes `SyncEngine` and calls `.sync()` guarded by the same
+  `if (refreshing) return` re-entrancy check, each `Screen` wraps its content in
+  `PullToRefreshBox`, `AppModule` passes `syncEngine = get()` at all five call sites.
+  Two screens (Cycle, Calendar) don't use `Scaffold`/`LazyColumn` at top level like the
+  rest — `CycleScreen` wraps its `LazyColumn` inside `Surface`, `CalendarScreen` wraps a
+  plain non-scrolling `Column` inside `Surface` — `PullToRefreshBox` inserted around each
+  screen's existing root content regardless of that shape difference, only the previews'
+  `Noop*Actions` objects needed the same one-line `onRefresh() = Unit` addition all six
+  screens share. `./gradlew :app:compileDebugKotlin` and full `./gradlew test lint` both
+  green. Installed on connected MIUI device via `adb install -r`, launched via `monkey`,
+  confirmed resumed and awake with no `FATAL`/`AndroidRuntime` exceptions in `logcat` —
+  **launch-only smoke check**; actually pulling down on each of the five newly-wired
+  screens to confirm the spinner appears and a real sync round-trips wasn't done this
+  pass (no second device paired in this session to produce anything worth pulling for),
+  so still belongs on Phase 11's live-testing backlog, narrower than before: five taps
+  to confirm, not five features to wire.
 
 ## Phase 12 — UI/UX polish pass (queued, not started)
 

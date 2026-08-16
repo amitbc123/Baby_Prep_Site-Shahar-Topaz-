@@ -49,6 +49,7 @@ interface CycleActions {
     fun onToggleAttachments(cycleId: String)
     fun onAttachDocument(name: String, mimeType: String, bytes: ByteArray)
     fun onDeleteAttachment(document: Document)
+    fun onRefresh()
 }
 
 /**
@@ -62,6 +63,7 @@ class CycleViewModel(
     private val entryRepository: CycleEntryRepository,
     private val documents: DocumentRepository,
     private val auth: AuthRepository,
+    private val syncEngine: com.oryareach.core.sync.SyncEngine,
     private val workspaceId: () -> String?,
 ) : ViewModel(), CycleActions {
 
@@ -241,6 +243,15 @@ class CycleViewModel(
 
     override fun onDeleteAttachment(document: Document) {
         viewModelScope.launch { documents.delete(document.id) }
+    }
+
+    override fun onRefresh() {
+        if (_uiState.value.refreshing) return
+        set { it.copy(refreshing = true) }
+        viewModelScope.launch {
+            syncEngine.sync()
+            set { it.copy(refreshing = false) }
+        }
     }
 
     private fun set(block: (CycleUiState) -> CycleUiState) {

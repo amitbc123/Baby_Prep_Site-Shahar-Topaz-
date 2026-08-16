@@ -24,11 +24,13 @@ interface DatesActions {
     fun onWishChange(value: String)
     fun onSubmit()
     fun onDelete(id: String)
+    fun onRefresh()
 }
 
 class DatesViewModel(
     private val repository: ImportantDateRepository,
     private val auth: AuthRepository,
+    private val syncEngine: com.oryareach.core.sync.SyncEngine,
     private val workspaceId: () -> String?,
 ) : ViewModel(), DatesActions {
 
@@ -90,6 +92,15 @@ class DatesViewModel(
 
     override fun onDelete(id: String) {
         viewModelScope.launch { repository.delete(id) }
+    }
+
+    override fun onRefresh() {
+        if (_uiState.value.refreshing) return
+        set { it.copy(refreshing = true) }
+        viewModelScope.launch {
+            syncEngine.sync()
+            set { it.copy(refreshing = false) }
+        }
     }
 
     private fun set(block: (DatesUiState) -> DatesUiState) {

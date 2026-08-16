@@ -30,6 +30,7 @@ interface CalendarActions {
     fun onSelectDate(date: LocalDate)
     fun onDismissDaySheet()
     fun onEventClick(event: CalendarEvent)
+    fun onRefresh()
 }
 
 /**
@@ -42,6 +43,7 @@ class CalendarViewModel(
     private val tasks: TaskRepository,
     private val importantDates: ImportantDateRepository,
     private val cycles: CycleRepository,
+    private val syncEngine: com.oryareach.core.sync.SyncEngine,
     private val workspaceId: () -> String?,
 ) : ViewModel(), CalendarActions {
 
@@ -99,6 +101,15 @@ class CalendarViewModel(
 
     override fun onEventClick(event: CalendarEvent) {
         _effects.trySend(CalendarEffect.OpenEvent(event))
+    }
+
+    override fun onRefresh() {
+        if (_uiState.value.refreshing) return
+        set { it.copy(refreshing = true) }
+        viewModelScope.launch {
+            syncEngine.sync()
+            set { it.copy(refreshing = false) }
+        }
     }
 
     private fun set(block: (CalendarUiState) -> CalendarUiState) {
