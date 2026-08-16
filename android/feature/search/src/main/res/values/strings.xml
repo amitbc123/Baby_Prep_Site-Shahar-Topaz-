@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="search_title">Search</string>
+    <string name="search_placeholder">Search everything…</string>
+    <string name="search_no_results">No results.</string>
+    <string name="search_hint">Search across tasks, shopping, dates, folders, documents, and cycle history.</string>
+
+    <string name="search_type_task">Task</string>
+    <string name="search_type_shopping_item">Shopping</string>
+    <string name="search_type_important_date">Date</string>
+    <string name="search_type_folder">Folder</string>
+    <string name="search_type_document">Document</string>
+    <string name="search_type_cycle">Period</string>
+    <string name="search_type_cycle_entry">Cycle log</string>
+    <string name="search_type_other">Other</string>
+</resources>

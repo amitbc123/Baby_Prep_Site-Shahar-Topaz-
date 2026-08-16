@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="conflicts_title">%1$d sync conflicts</string>
+    <string name="conflicts_explanation">Both of you edited the same thing before it synced. Nothing is applied automatically — pick which version to keep.</string>
+    <string name="conflicts_mine">This device: %1$s</string>
+    <string name="conflicts_theirs">Partner\'s device: %1$s</string>
+    <string name="conflicts_keep_mine">Keep this device\'s version</string>
+    <string name="conflicts_keep_theirs">Keep partner\'s version</string>
+    <string name="conflicts_close">Close</string>
+    <string name="conflicts_banner">%1$d sync conflicts need attention</string>
+    <string name="conflicts_review">Review</string>
+
+    <string name="conflicts_type_task">Task</string>
+    <string name="conflicts_type_shopping_item">Shopping item</string>
+    <string name="conflicts_type_important_date">Important date</string>
+    <string name="conflicts_type_folder">Folder</string>
+    <string name="conflicts_type_document">Document</string>
+    <string name="conflicts_type_cycle">Period</string>
+    <string name="conflicts_type_cycle_entry">Cycle log</string>
+    <string name="conflicts_type_settings">Settings</string>
+</resources>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="pairing_choose_title">Set up your shared space</string>
+    <string name="pairing_choose_body">One of you creates the space, the other joins it with a code. Only the two of you can ever read what is inside.</string>
+    <string name="pairing_create">Create a new space</string>
+    <string name="pairing_join">Join with a code</string>
+
+    <string name="pairing_phrase_title">Write these 24 words down</string>
+    <string name="pairing_phrase_body">These words are the key to your data. If both phones are lost and you do not have them, nothing can be recovered — not by us, not by anyone. Write them on paper and keep them somewhere safe.</string>
+    <string name="pairing_phrase_confirm">I have written them down</string>
+    <string name="pairing_phrase_continue">Continue</string>
+
+    <string name="pairing_code_title">Enter the code</string>
+    <string name="pairing_code_body">Ask your partner to open the app and read out the code it shows.</string>
+    <string name="pairing_code_label">Invitation code</string>
+    <string name="pairing_code_submit">Join</string>
+
+    <string name="pairing_waiting_title">Almost there</string>
+    <string name="pairing_waiting_body">You have joined the space. Your partner needs to approve this phone before it can read anything — ask them to tap approve, then check again.</string>
+    <string name="pairing_check_again">Check again</string>
+    <string name="pairing_recover_with_phrase">Recover with a phrase instead</string>
+
+    <string name="pairing_recovery_entry_title">Enter your recovery phrase</string>
+    <string name="pairing_recovery_entry_body">Type the 24 words you wrote down when this space was created, separated by spaces, in order.</string>
+    <string name="pairing_recovery_entry_label">Recovery phrase</string>
+    <string name="pairing_recovery_entry_submit">Recover</string>
+    <string name="pairing_recovery_entry_cancel">Cancel</string>
+
+    <string name="pairing_ready_title">Your space is ready</string>
+    <string name="pairing_invite_generate">Invite your partner</string>
+    <string name="pairing_invite_body">Read this code out to your partner. It works once and expires in 24 hours.</string>
+    <string name="pairing_pending_title">Waiting for approval</string>
+    <string name="pairing_pending_body">This phone joined your space. Approve it only if you recognise it — approving hands it the key to everything.</string>
+    <string name="pairing_approve">Approve</string>
+    <string name="pairing_continue">Continue to the app</string>
+    <string name="pairing_devices_title">Paired devices</string>
+    <string name="pairing_revoke">Revoke</string>
+
+    <string name="pairing_error_offline">No connection. Check your internet and try again.</string>
+    <string name="pairing_error_timeout">The server took too long to answer. Try again.</string>
+    <string name="pairing_error_invalid_code">That code is not valid. It may have expired or already been used.</string>
+    <string name="pairing_error_workspace_full">This space already has two people in it.</string>
+    <string name="pairing_error_key_mismatch">This phone could not open the key it was given.</string>
+    <string name="pairing_error_invalid_phrase">That phrase is not valid. Check the words and try again.</string>
+    <string name="pairing_error_generic">Something went wrong. Try again.</string>
+</resources>

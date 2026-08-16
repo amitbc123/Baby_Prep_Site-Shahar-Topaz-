@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="tasks_title">משימות</string>
+    <string name="tasks_empty">אין עדיין משימות. הוסיפו את הראשונה.</string>
+    <string name="tasks_add">הוספת משימה</string>
+    <string name="tasks_edit_title">עריכת משימה</string>
+    <string name="tasks_add_title">משימה חדשה</string>
+    <string name="tasks_field_title">כותרת</string>
+    <string name="tasks_field_note">הערה (לא חובה)</string>
+    <string name="tasks_field_category">קטגוריה</string>
+    <string name="tasks_field_priority">עדיפות</string>
+    <string name="tasks_field_assignee">משויך ל</string>
+    <string name="tasks_save">שמירה</string>
+    <string name="tasks_delete">מחיקה</string>
+    <string name="tasks_delete_title">למחוק את המשימה?</string>
+    <string name="tasks_delete_body">"%1$s תימחק."</string>
+    <string name="tasks_cancel">ביטול</string>
+    <string name="tasks_seed_hospital_bag">הוספת רשימת תיק ליולדת</string>
+
+    <string-array name="hospital_bag_preset">
+        <item>תעודת זהות ותיק ביטוח לאומי</item>
+        <item>בגדי לידה וגרביים חמות</item>
+        <item>מטענים לטלפון</item>
+        <item>חטיפים ובקבוק מים</item>
+        <item>בגד יציאה לתינוקת + כובע</item>
+        <item>מושב בטיחות מותקן ברכב</item>
+        <item>טיטולים ומגבונים לחות</item>
+        <item>חיתולת ובגדי החלפה לתינוקת</item>
+        <item>ערכת טיפוח אישית</item>
+        <item>תחתונים חד פעמיים ותחבושות לאחר לידה</item>
+        <item>חזייה להנקה ורפידות הנקה</item>
+        <item>כרית הנקה</item>
+    </string-array>
+
+    <string name="task_category_home_prep">הכנת הבית</string>
+    <string name="task_category_documents_and_insurance">מסמכים וביטוח</string>
+    <string name="task_category_medical">רפואי</string>
+    <string name="task_category_hospital_bag">תיק לבית החולים</string>
+    <string name="task_category_other">אחר</string>
+
+    <string name="priority_low">נמוכה</string>
+    <string name="priority_normal">רגילה</string>
+    <string name="priority_high">גבוהה</string>
+
+    <string name="assignee_partner_one">בן/בת זוג 1</string>
+    <string name="assignee_partner_two">בן/בת זוג 2</string>
+    <string name="assignee_both">שנינו</string>
+    <string name="assignee_unassigned">לא משויך</string>
+    <string name="tasks_field_attachments">קבצים מצורפים</string>
+    <string name="tasks_attach_document">צירוף מסמך</string>
+    <string name="tasks_scan_document">סריקת מסמך</string>
+    <string name="tasks_field_due_date">תאריך יעד</string>
+    <string name="tasks_due_date_clear">ניקוי תאריך יעד</string>
+    <string name="tasks_due_date_confirm">אישור</string>
+    <string name="tasks_due_date_cancel">ביטול</string>
+    <string name="tasks_field_recurrence">חזרתיות</string>
+    <string name="tasks_recurrence_none">ללא</string>
+    <string name="tasks_recurrence_daily">יומי</string>
+    <string name="tasks_recurrence_weekly">שבועי</string>
+    <string name="tasks_recurrence_monthly">חודשי</string>
+    <string name="tasks_field_tags">תגיות</string>
+    <string name="tasks_field_tag_input">הוספת תגית</string>
+    <string name="tasks_add_tag">הוספה</string>
+    <string name="tasks_remove_tag">הסרת תגית</string>
+    <string name="tasks_remove_attachment">הסרת קובץ מצורף</string>
+</resources>

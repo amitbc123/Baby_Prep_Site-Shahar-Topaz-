@@ -1,0 +1,33 @@
+name: Supabase Access Control
+
+on:
+  push:
+    branches: [main, 'feature/**']
+    paths: ['supabase/**', '.github/workflows/supabase-tests.yml']
+  pull_request:
+    paths: ['supabase/**', '.github/workflows/supabase-tests.yml']
+
+concurrency:
+  group: supabase-tests-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  access-control:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Start local Supabase
+        run: supabase start -x realtime,imgproxy,studio,logflare,vector,supavisor,mailpit
+
+      # Applies every migration from scratch, so a migration that only works against an
+      # already-migrated database fails here rather than in production.
+      - name: Apply migrations
+        run: supabase db reset
+
+      - name: Access-control tests
+        run: supabase test db

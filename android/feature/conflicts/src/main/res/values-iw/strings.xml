@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="conflicts_title">%1$d התנגשויות סנכרון</string>
+    <string name="conflicts_explanation">שניכם ערכתם את אותו הדבר לפני שהוא הסתנכרן. שום דבר לא מוחל אוטומטית — בחרו איזו גרסה לשמור.</string>
+    <string name="conflicts_mine">המכשיר הזה: %1$s</string>
+    <string name="conflicts_theirs">מכשיר בן/בת הזוג: %1$s</string>
+    <string name="conflicts_keep_mine">שמירת גרסת המכשיר הזה</string>
+    <string name="conflicts_keep_theirs">שמירת גרסת בן/בת הזוג</string>
+    <string name="conflicts_close">סגור</string>
+    <string name="conflicts_banner">%1$d התנגשויות סנכרון דורשות תשומת לב</string>
+    <string name="conflicts_review">בדיקה</string>
+
+    <string name="conflicts_type_task">משימה</string>
+    <string name="conflicts_type_shopping_item">פריט קניות</string>
+    <string name="conflicts_type_important_date">תאריך חשוב</string>
+    <string name="conflicts_type_folder">תיקייה</string>
+    <string name="conflicts_type_document">מסמך</string>
+    <string name="conflicts_type_cycle">וסת</string>
+    <string name="conflicts_type_cycle_entry">רשומת מחזור</string>
+    <string name="conflicts_type_settings">הגדרות</string>
+</resources>

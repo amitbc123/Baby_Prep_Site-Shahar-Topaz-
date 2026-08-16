@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="folders_title">Documents</string>
+    <string name="folders_root">Documents</string>
+    <string name="folders_empty">No folders yet. Add the first one.</string>
+    <string name="folders_add">New folder</string>
+    <string name="folders_new_title">New folder</string>
+    <string name="folders_rename_title">Rename folder</string>
+    <string name="folders_field_name">Name</string>
+    <string name="folders_save">Save</string>
+    <string name="folders_cancel">Cancel</string>
+    <string name="folders_delete">Delete</string>
+    <string name="folders_delete_title">Delete folder?</string>
+    <string name="folders_delete_body">"%1$s and everything inside it will be deleted."</string>
+    <string name="folders_import">Import document</string>
+    <string name="folders_scan">Scan document</string>
+    <string name="folders_delete_document_title">Delete document?</string>
+    <string name="folders_delete_document_body">"%1$s will be deleted."</string>
+    <string name="folders_preview_close">Close</string>
+    <string name="folders_preview_unsupported">No preview available for this file type.</string>
+    <string name="folders_preview_failed">Could not load this document.</string>
+</resources>

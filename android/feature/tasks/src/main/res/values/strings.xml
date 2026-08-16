@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="tasks_title">Tasks</string>
+    <string name="tasks_empty">No tasks yet. Add the first one.</string>
+    <string name="tasks_add">Add task</string>
+    <string name="tasks_edit_title">Edit task</string>
+    <string name="tasks_add_title">New task</string>
+    <string name="tasks_field_title">Title</string>
+    <string name="tasks_field_note">Note (optional)</string>
+    <string name="tasks_field_category">Category</string>
+    <string name="tasks_field_priority">Priority</string>
+    <string name="tasks_field_assignee">Assigned to</string>
+    <string name="tasks_save">Save</string>
+    <string name="tasks_delete">Delete</string>
+    <string name="tasks_delete_title">Delete task?</string>
+    <string name="tasks_delete_body">"%1$s will be deleted."</string>
+    <string name="tasks_cancel">Cancel</string>
+    <string name="tasks_seed_hospital_bag">Add hospital bag checklist</string>
+
+    <string-array name="hospital_bag_preset">
+        <item>ID card and National Insurance file</item>
+        <item>Labor clothes and warm socks</item>
+        <item>Phone chargers</item>
+        <item>Snacks and a water bottle</item>
+        <item>Going-home outfit for the baby + hat</item>
+        <item>Car seat installed in the car</item>
+        <item>Diapers and wet wipes</item>
+        <item>Swaddle and a change of clothes for the baby</item>
+        <item>Personal toiletries kit</item>
+        <item>Disposable underwear and postpartum pads</item>
+        <item>Nursing bra and nursing pads</item>
+        <item>Nursing pillow</item>
+    </string-array>
+
+    <string name="task_category_home_prep">Home prep</string>
+    <string name="task_category_documents_and_insurance">Documents &amp; insurance</string>
+    <string name="task_category_medical">Medical</string>
+    <string name="task_category_hospital_bag">Hospital bag</string>
+    <string name="task_category_other">Other</string>
+
+    <string name="priority_low">Low</string>
+    <string name="priority_normal">Normal</string>
+    <string name="priority_high">High</string>
+
+    <string name="assignee_partner_one">Partner 1</string>
+    <string name="assignee_partner_two">Partner 2</string>
+    <string name="assignee_both">Both</string>
+    <string name="assignee_unassigned">Unassigned</string>
+    <string name="tasks_field_attachments">Attachments</string>
+    <string name="tasks_attach_document">Attach document</string>
+    <string name="tasks_scan_document">Scan document</string>
+    <string name="tasks_field_due_date">Due date</string>
+    <string name="tasks_due_date_clear">Clear due date</string>
+    <string name="tasks_due_date_confirm">Set</string>
+    <string name="tasks_due_date_cancel">Cancel</string>
+    <string name="tasks_field_recurrence">Repeat</string>
+    <string name="tasks_recurrence_none">Never</string>
+    <string name="tasks_recurrence_daily">Daily</string>
+    <string name="tasks_recurrence_weekly">Weekly</string>
+    <string name="tasks_recurrence_monthly">Monthly</string>
+    <string name="tasks_field_tags">Tags</string>
+    <string name="tasks_field_tag_input">Add a tag</string>
+    <string name="tasks_add_tag">Add</string>
+    <string name="tasks_remove_tag">Remove tag</string>
+    <string name="tasks_remove_attachment">Remove attachment</string>
+</resources>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="folders_title">מסמכים</string>
+    <string name="folders_root">מסמכים</string>
+    <string name="folders_empty">אין עדיין תיקיות. הוסיפו את הראשונה.</string>
+    <string name="folders_add">תיקייה חדשה</string>
+    <string name="folders_new_title">תיקייה חדשה</string>
+    <string name="folders_rename_title">שינוי שם תיקייה</string>
+    <string name="folders_field_name">שם</string>
+    <string name="folders_save">שמור</string>
+    <string name="folders_cancel">ביטול</string>
+    <string name="folders_delete">מחק</string>
+    <string name="folders_delete_title">למחוק את התיקייה?</string>
+    <string name="folders_delete_body">"%1$s וכל מה שבתוכה יימחקו."</string>
+    <string name="folders_import">ייבוא מסמך</string>
+    <string name="folders_scan">סריקת מסמך</string>
+    <string name="folders_delete_document_title">למחוק את המסמך?</string>
+    <string name="folders_delete_document_body">"%1$s יימחק."</string>
+    <string name="folders_preview_close">סגור</string>
+    <string name="folders_preview_unsupported">אין תצוגה מקדימה לסוג קובץ זה.</string>
+    <string name="folders_preview_failed">לא ניתן לטעון את המסמך.</string>
+</resources>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings_title">Settings</string>
+
+    <string name="settings_security_title">Security</string>
+    <string name="settings_biometric_unlock">Require biometric unlock</string>
+    <string name="settings_block_screenshots">Block screenshots</string>
+    <string name="settings_lock_now">Lock now</string>
+    <string name="settings_auto_lock_timeout">Auto-lock after %1$d minutes</string>
+    <string name="settings_auto_lock_minutes">%1$d minutes</string>
+
+    <string name="settings_notifications_title">Notifications</string>
+    <string name="settings_notifications_enabled">Daily reminder</string>
+    <string name="settings_notifications_body">A generic reminder — never any of your content, which the notification tray cannot protect.</string>
+
+    <string name="settings_recovery_title">Recovery phrase</string>
+    <string name="settings_recovery_body">The 24-word phrase you were shown when this workspace was created. It is the only way back in if every paired device is lost.</string>
+    <string name="settings_show_recovery_phrase">Show recovery phrase</string>
+    <string name="settings_recovery_phrase_title">Recovery phrase</string>
+
+    <string name="settings_devices_title">Devices</string>
+    <string name="settings_manage_devices">Manage devices</string>
+
+    <string name="settings_sign_out">Sign out</string>
+    <string name="settings_sign_out_title">Sign out?</string>
+    <string name="settings_sign_out_body">You will need to pair this device again to see your data.</string>
+
+    <string name="settings_close">Close</string>
+    <string name="settings_cancel">Cancel</string>
+</resources>

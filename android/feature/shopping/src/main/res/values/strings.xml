@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="shopping_title">Shopping</string>
+    <string name="shopping_empty">No items yet. Add the first one.</string>
+    <string name="shopping_add">Add item</string>
+    <string name="shopping_edit_title">Edit item</string>
+    <string name="shopping_add_title">New item</string>
+    <string name="shopping_field_name">Name</string>
+    <string name="shopping_field_category">Category</string>
+    <string name="shopping_field_estimated_price">Estimated price</string>
+    <string name="shopping_field_priority">Priority</string>
+    <string name="shopping_field_assignee">Assigned to</string>
+    <string name="shopping_field_link">Link (optional)</string>
+    <string name="shopping_field_note">Note (optional)</string>
+    <string name="shopping_save">Save</string>
+    <string name="shopping_delete">Delete</string>
+    <string name="shopping_delete_title">Delete item?</string>
+    <string name="shopping_delete_body">"%1$s will be deleted."</string>
+    <string name="shopping_cancel">Cancel</string>
+
+    <string name="shopping_budget_estimated">Estimated</string>
+    <string name="shopping_budget_spent">Spent</string>
+    <string name="shopping_budget_bought">Bought</string>
+
+    <string name="shopping_status_need">Need</string>
+    <string name="shopping_status_ordered">Ordered</string>
+    <string name="shopping_status_bought">Bought</string>
+
+    <string name="shopping_category_nursery">Nursery</string>
+    <string name="shopping_category_clothing">Clothing</string>
+    <string name="shopping_category_feeding">Feeding</string>
+    <string name="shopping_category_care_and_health">Care &amp; health</string>
+    <string name="shopping_category_safety">Safety</string>
+    <string name="shopping_category_maternity_supplies">Maternity supplies</string>
+    <string name="shopping_category_other">Other</string>
+
+    <string name="priority_low">Low</string>
+    <string name="priority_normal">Normal</string>
+    <string name="priority_high">High</string>
+
+    <string name="assignee_partner_one">Partner 1</string>
+    <string name="assignee_partner_two">Partner 2</string>
+    <string name="assignee_both">Both</string>
+    <string name="assignee_unassigned">Unassigned</string>
+</resources>

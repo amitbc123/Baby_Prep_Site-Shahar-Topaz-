@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="auth_title_sign_in">Welcome back</string>
+    <string name="auth_title_sign_up">Create your account</string>
+    <string name="auth_subtitle">A private space for the two of you.</string>
+    <string name="auth_email">Email</string>
+    <string name="auth_password">Password</string>
+    <string name="auth_password_hint">At least %1$d characters</string>
+    <string name="auth_remember_me">Remember me</string>
+    <string name="auth_show_password">Show password</string>
+    <string name="auth_hide_password">Hide password</string>
+    <string name="auth_sign_in">Sign in</string>
+    <string name="auth_sign_up">Create account</string>
+    <string name="auth_switch_to_sign_up">No account yet? Create one</string>
+    <string name="auth_switch_to_sign_in">Already have an account? Sign in</string>
+    <string name="auth_confirmation_sent">Check your email to confirm the account.</string>
+
+    <string name="auth_error_credentials">That email or password is not right.</string>
+    <string name="auth_error_offline">No connection. Check your internet and try again.</string>
+    <string name="auth_error_timeout">The server took too long to answer. Try again.</string>
+    <string name="auth_error_already_registered">That email already has an account.</string>
+    <string name="auth_error_generic">Something went wrong. Try again.</string>
+</resources>

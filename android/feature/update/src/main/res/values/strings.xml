@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="update_available_title">Version %1$s is available</string>
+    <string name="update_mandatory_notice">This update is required to keep using Sahar.</string>
+    <string name="update_downloading">Downloading…</string>
+    <string name="update_installing">Installing…</string>
+    <string name="update_failed">Update failed: %1$s</string>
+    <string name="update_install">Install</string>
+    <string name="update_view_release">View release</string>
+    <string name="update_later">Later</string>
+    <string name="update_skip">Skip this version</string>
+    <string name="settings_check_for_updates">Check for updates</string>
+    <string name="settings_up_to_date">You have the latest version</string>
+</resources>

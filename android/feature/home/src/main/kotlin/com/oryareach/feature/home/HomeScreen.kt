@@ -1,0 +1,419 @@
+package com.oryareach.feature.home
+
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberDatePickerState
+import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.drawscope.clipPath
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import com.oryareach.core.domain.home.dailyMessageIndex
+import com.oryareach.core.domain.pregnancy.PregnancyProgress
+import com.oryareach.core.ui.theme.NightPalette
+import com.oryareach.core.ui.theme.OrYareachTheme
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.todayIn
+import kotlinx.datetime.toLocalDateTime
+import kotlin.time.Clock
+import kotlin.time.Instant
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun HomeScreen(
+    uiState: HomeUiState,
+    actions: HomeActions,
+    modifier: Modifier = Modifier,
+) {
+    val context = LocalContext.current
+    val importLauncher = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
+        uri ?: return@rememberLauncherForActivityResult
+        val text = context.contentResolver.openInputStream(uri)?.use { it.readBytes().decodeToString() }
+        text?.let(actions::onImportJson)
+    }
+
+    Scaffold(modifier = modifier.fillMaxSize().safeDrawingPadding()) { padding ->
+        PullToRefreshBox(
+            isRefreshing = uiState.refreshing,
+            onRefresh = actions::onRefresh,
+            modifier = Modifier.fillMaxSize().padding(padding),
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+            ) {
+                Text(
+                    text = stringResource(R.string.home_title),
+                    style = MaterialTheme.typography.headlineMedium,
+                    color = MaterialTheme.colorScheme.onBackground,
+                    modifier = Modifier.semantics { heading() },
+                )
+                if (!uiState.hasDueDate) {
+                    NoDueDateCard(actions = actions)
+                } else {
+                    MoonCountdown(uiState = uiState)
+
+                    Text(
+                        text = dailyMessage(),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+
+                    uiState.progress?.let { progress -> WeeklyInfoCard(progress = progress) }
+
+                    BudgetSummaryCard(uiState = uiState)
+
+                    if (uiState.openTaskCount > 0) {
+                        OpenTasksCard(count = uiState.openTaskCount)
+                    }
+
+                    TextButton(onClick = actions::onEditDueDate, modifier = Modifier.fillMaxWidth()) {
+                        Text(stringResource(R.string.home_edit_due_date))
+                    }
+                }
+
+                TextButton(
+                    onClick = { importLauncher.launch(arrayOf("application/json")) },
+                    enabled = !uiState.importing,
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    Text(stringResource(R.string.home_import_from_web))
+                }
+            }
+        }
+    }
+
+    uiState.importResult?.let { result ->
+        AlertDialog(
+            onDismissRequest = actions::onDismissImportResult,
+            confirmButton = {
+                TextButton(onClick = actions::onDismissImportResult) { Text(stringResource(R.string.home_pick_confirm)) }
+            },
+            title = {
+                Text(
+                    stringResource(
+                        if (result is ImportResult.Success) R.string.home_import_done else R.string.home_import_failed,
+                    ),
+                )
+            },
+            text = {
+                if (result is ImportResult.Success) {
+                    Text(stringResource(R.string.home_import_summary, result.taskCount, result.shoppingCount, result.dateCount))
+                } else {
+                    Text(stringResource(R.string.home_import_failed_body))
+                }
+            },
+        )
+    }
+
+    if (uiState.sheetVisible) {
+        val sheetState = rememberModalBottomSheetState()
+        ModalBottomSheet(onDismissRequest = actions::onDismissSheet, sheetState = sheetState) {
+            DueDateForm(uiState = uiState, actions = actions)
+        }
+    }
+
+    if (uiState.datePickerVisible) {
+        val pickerState = rememberDatePickerState(initialSelectedDateMillis = uiState.editingLastPeriodDate?.toUtcMillis())
+        DatePickerDialog(
+            onDismissRequest = actions::onDismissDatePicker,
+            confirmButton = {
+                TextButton(onClick = {
+                    pickerState.selectedDateMillis?.let { actions.onLastPeriodChange(it.toLocalDate()) }
+                }) { Text(stringResource(R.string.home_pick_confirm)) }
+            },
+            dismissButton = {
+                TextButton(onClick = actions::onDismissDatePicker) { Text(stringResource(R.string.home_pick_cancel)) }
+            },
+        ) {
+            DatePicker(state = pickerState)
+        }
+    }
+}
+
+@Composable
+private fun dailyMessage(): String {
+    val messages = androidx.compose.ui.res.stringArrayResource(R.array.home_daily_messages)
+    val today = Clock.System.todayIn(TimeZone.currentSystemDefault())
+    val index = dailyMessageIndex(today, messages.size).coerceIn(0, messages.size - 1)
+    return messages[index]
+}
+
+@Composable
+private fun NoDueDateCard(actions: HomeActions) {
+    Card(modifier = Modifier.fillMaxWidth()) {
+        Column(modifier = Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Text(stringResource(R.string.home_no_due_date_title), style = MaterialTheme.typography.titleMedium)
+            Text(
+                text = stringResource(R.string.home_no_due_date_body),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            Button(onClick = actions::onEditDueDate, modifier = Modifier.fillMaxWidth()) {
+                Text(stringResource(R.string.home_save))
+            }
+        }
+    }
+}
+
+@Composable
+private fun MoonCountdown(uiState: HomeUiState) {
+    val progress = uiState.progress ?: return
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(NightPalette.sky, RoundedCornerShape(28.dp))
+            .padding(vertical = 28.dp, horizontal = 20.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        MoonCanvas(moonFraction = progress.moonFraction, modifier = Modifier.size(160.dp))
+
+        Spacer(Modifier.height(12.dp))
+
+        Text(
+            text = if (progress.hasArrived) {
+                uiState.babyName?.let { stringResource(R.string.home_arrived_title_named, it) }
+                    ?: stringResource(R.string.home_arrived_title)
+            } else {
+                stringResource(R.string.home_week_progress, progress.week, progress.dayOfWeek)
+            },
+            style = MaterialTheme.typography.titleLarge,
+            color = NightPalette.text,
+            textAlign = TextAlign.Center,
+        )
+
+        Text(
+            text = if (progress.hasArrived) {
+                stringResource(R.string.home_arrived_subtitle)
+            } else if (progress.daysLeft == 1) {
+                stringResource(R.string.home_days_left_one)
+            } else {
+                stringResource(R.string.home_days_left_other, progress.daysLeft)
+            },
+            style = MaterialTheme.typography.bodyMedium,
+            color = NightPalette.textMuted,
+            textAlign = TextAlign.Center,
+        )
+
+        if (!progress.hasArrived) {
+            WeeklyFruitAndAnimal(week = progress.week)
+        }
+    }
+}
+
+@Composable
+private fun WeeklyFruitAndAnimal(week: Int) {
+    val fruitNames = androidx.compose.ui.res.stringArrayResource(R.array.home_weekly_fruit_names)
+    val fruitEmoji = androidx.compose.ui.res.stringArrayResource(R.array.home_weekly_fruit_emoji)
+    val animalNames = androidx.compose.ui.res.stringArrayResource(R.array.home_weekly_animal_names)
+    val animalEmoji = androidx.compose.ui.res.stringArrayResource(R.array.home_weekly_animal_emoji)
+    val index = week - 4
+    if (index !in fruitNames.indices) return
+
+    Spacer(Modifier.height(10.dp))
+    Text(
+        text = "${fruitEmoji[index]} " +
+            stringResource(R.string.home_fruit_size, fruitNames[index]) +
+            "  •  ${animalEmoji[index]} " +
+            stringResource(R.string.home_animal_like, animalNames[index]),
+        style = MaterialTheme.typography.bodySmall,
+        color = NightPalette.text,
+        textAlign = TextAlign.Center,
+    )
+}
+
+@Composable
+private fun MoonCanvas(moonFraction: Float, modifier: Modifier = Modifier) {
+    Canvas(modifier = modifier) {
+        val scale = size.minDimension / 200f
+        val center = Offset(100f, 100f) * scale
+        val radius = 76f * scale
+
+        drawCircle(color = NightPalette.moonDim, radius = radius, center = center)
+
+        val path = Path().apply {
+            addOval(androidx.compose.ui.geometry.Rect(center = center, radius = radius))
+        }
+        clipPath(path) {
+            val fillY = (200f - moonFraction * 200f) * scale
+            drawRect(
+                brush = Brush.radialGradient(
+                    colors = listOf(NightPalette.glowStart, NightPalette.glowMid, NightPalette.glowEnd),
+                    center = Offset(center.x, center.y * 0.85f),
+                    radius = radius * 1.3f,
+                ),
+                topLeft = Offset(0f, fillY),
+                size = androidx.compose.ui.geometry.Size(size.width, (size.height - fillY).coerceAtLeast(0f)),
+            )
+        }
+
+        drawCircle(color = NightPalette.moonRim, radius = radius, center = center, style = Stroke(width = 1.5.dp.toPx()))
+    }
+}
+
+@Composable
+private fun WeeklyInfoCard(progress: PregnancyProgress) {
+    if (progress.hasArrived) return
+    val info = androidx.compose.ui.res.stringArrayResource(R.array.home_weekly_info)
+    val index = progress.week - 1
+    if (index !in info.indices) return
+
+    Card(modifier = Modifier.fillMaxWidth()) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(
+                text = stringResource(R.string.home_weekly_info_title),
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.primary,
+            )
+            Text(
+                text = info[index],
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier.padding(top = 4.dp),
+            )
+        }
+    }
+}
+
+@Composable
+private fun BudgetSummaryCard(uiState: HomeUiState) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(
+                text = stringResource(
+                    R.string.home_budget_spent_of_estimated,
+                    uiState.budgetSpent,
+                    uiState.budgetEstimated,
+                ),
+                style = MaterialTheme.typography.titleMedium,
+            )
+        }
+    }
+}
+
+@Composable
+private fun OpenTasksCard(count: Int) {
+    Card(modifier = Modifier.fillMaxWidth()) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(stringResource(R.string.home_open_tasks, count), style = MaterialTheme.typography.bodyMedium)
+        }
+    }
+}
+
+@Composable
+private fun DueDateForm(uiState: HomeUiState, actions: HomeActions) {
+    Column(
+        modifier = Modifier.fillMaxWidth().imePadding().padding(24.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        OutlinedButton(onClick = actions::onOpenDatePicker, modifier = Modifier.fillMaxWidth()) {
+            Text(uiState.editingLastPeriodDate?.toString() ?: stringResource(R.string.home_due_date_field))
+        }
+
+        OutlinedTextField(
+            value = uiState.editingBabyName,
+            onValueChange = actions::onBabyNameChange,
+            label = { Text(stringResource(R.string.home_baby_name_field)) },
+            singleLine = true,
+            modifier = Modifier.fillMaxWidth(),
+        )
+
+        Button(
+            onClick = actions::onSubmit,
+            enabled = uiState.canSubmitForm,
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            Text(stringResource(R.string.home_save))
+        }
+
+        Spacer(Modifier.height(8.dp))
+    }
+}
+
+private fun LocalDate.toUtcMillis(): Long =
+    Instant.parse("${this}T00:00:00Z").toEpochMilliseconds()
+
+private fun Long.toLocalDate(): LocalDate =
+    Instant.fromEpochMilliseconds(this).toLocalDateTime(TimeZone.UTC).date
+
+@Preview(showBackground = true)
+@Composable
+private fun HomePreview() {
+    OrYareachTheme {
+        HomeScreen(
+            uiState = HomeUiState(
+                dueDate = LocalDate(2026, 12, 25),
+                progress = PregnancyProgress(daysLeft = 60, week = 30, dayOfWeek = 3, hasArrived = false, moonFraction = 0.75f),
+                openTaskCount = 3,
+                budgetEstimated = 4000,
+                budgetSpent = 1200,
+            ),
+            actions = NoopHomeActions,
+        )
+    }
+}
+
+private object NoopHomeActions : HomeActions {
+    override fun onEditDueDate() = Unit
+    override fun onDismissSheet() = Unit
+    override fun onOpenDatePicker() = Unit
+    override fun onDismissDatePicker() = Unit
+    override fun onLastPeriodChange(value: LocalDate) = Unit
+    override fun onBabyNameChange(value: String) = Unit
+    override fun onSubmit() = Unit
+    override fun onImportJson(json: String) = Unit
+    override fun onDismissImportResult() = Unit
+    override fun onRefresh() = Unit
+}

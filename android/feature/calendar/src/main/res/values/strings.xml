@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="calendar_title">Calendar</string>
+    <string name="calendar_previous_month">Previous month</string>
+    <string name="calendar_next_month">Next month</string>
+    <string name="calendar_no_events">Nothing on this day.</string>
+
+    <string name="calendar_legend_task">Task due</string>
+    <string name="calendar_legend_important_date">Date</string>
+    <string name="calendar_legend_period">Period</string>
+    <string name="calendar_period_predicted">Predicted period</string>
+</resources>
