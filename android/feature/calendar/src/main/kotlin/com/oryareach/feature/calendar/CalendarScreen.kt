@@ -2,6 +2,8 @@ package com.oryareach.feature.calendar
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -41,6 +43,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.oryareach.core.model.EntityType
+import com.oryareach.core.ui.text.asLtrIsolate
 import com.oryareach.core.ui.theme.OrYareachTheme
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
@@ -62,7 +65,10 @@ fun CalendarScreen(
         onRefresh = actions::onRefresh,
         modifier = Modifier.fillMaxSize().padding(padding),
       ) {
-        Column(modifier = Modifier.fillMaxSize().padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        Column(
+            modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
             Text(
                 text = stringResource(R.string.calendar_title),
                 style = MaterialTheme.typography.headlineMedium,
@@ -78,7 +84,7 @@ fun CalendarScreen(
                 IconButton(onClick = actions::onPreviousMonth) {
                     Icon(Icons.Default.ChevronLeft, contentDescription = stringResource(R.string.calendar_previous_month))
                 }
-                Text(uiState.visibleMonth.toString(), style = MaterialTheme.typography.titleMedium)
+                Text(uiState.visibleMonth.toString().asLtrIsolate(), style = MaterialTheme.typography.titleMedium)
                 IconButton(onClick = actions::onNextMonth) {
                     Icon(Icons.Default.ChevronRight, contentDescription = stringResource(R.string.calendar_next_month))
                 }
@@ -172,7 +178,7 @@ private fun Dot(color: Color) {
 private fun DaySheetContent(uiState: CalendarUiState, actions: CalendarActions) {
     val date = uiState.selectedDate ?: return
     Column(modifier = Modifier.fillMaxWidth().padding(24.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        Text(date.toString(), style = MaterialTheme.typography.titleLarge)
+        Text(date.toString().asLtrIsolate(), style = MaterialTheme.typography.titleLarge)
 
         if (uiState.eventsForSelectedDate.isEmpty()) {
             Text(

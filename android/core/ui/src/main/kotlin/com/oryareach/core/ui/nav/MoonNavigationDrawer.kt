@@ -150,7 +150,7 @@ fun MoonTopBar(
         ) {
             Row(
                 modifier = Modifier
-                    .size(44.dp)
+                    .size(48.dp)
                     .clip(RoundedCornerShape(14.dp))
                     .selectable(selected = false, role = Role.Button, onClick = onMenuClick)
                     .semantics { contentDescription = menuContentDescription },

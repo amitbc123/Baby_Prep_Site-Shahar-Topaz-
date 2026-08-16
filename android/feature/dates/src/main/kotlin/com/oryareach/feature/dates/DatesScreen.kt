@@ -1,6 +1,8 @@
 package com.oryareach.feature.dates
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -181,7 +183,10 @@ private fun DateRow(date: ImportantDate, actions: DatesActions, onDeleteClick: (
 @Composable
 private fun DateForm(uiState: DatesUiState, actions: DatesActions) {
     Column(
-        modifier = Modifier.fillMaxWidth().imePadding().padding(24.dp),
+        modifier = Modifier.fillMaxWidth()
+            .verticalScroll(rememberScrollState())
+            .imePadding()
+            .padding(24.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         Text(

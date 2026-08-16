@@ -105,6 +105,60 @@ pass; `CalendarScreen`/`SearchScreen` not separately reviewed (`Calendar` alread
 in Phase 12) — worth a look if the user finds something specific on either, but nothing was
 found proactively worth changing blind.
 
+## Phase 15: full UIUX.md audit pass, README rewrite, release signing set up
+
+Ran `UIUX.md`'s checklist across all 13 screens (3 parallel research passes, code-only —
+no invented preferences, same bar as Phase 14). Found and fixed 9 real issues, all
+build-verified and several live-verified on-device (screenshots):
+
+- **Shopping's `ShoppingForm` sheet had no `verticalScroll`** — same defect class as the
+  `TaskForm` fix in `7217a9b`, just not applied to Shopping. Fixed, live-verified (Save
+  reachable after scroll).
+- **`DateForm` sheet**: same missing scroll, fixed for consistency.
+- **Folders' `Scaffold` missing `.safeDrawingPadding()`** — the one screen exposed to the
+  same status-bar-inset bug Phase 13 fixed for the drawer hamburger. Fixed.
+- **Shopping row never showed item priority** (a real, editable field) — only category and
+  price. Added, matching `TaskRow`'s `category · priority` pattern. Live-verified.
+- **Calendar's month header and day-sheet date rendered without `.asLtrIsolate()`** — every
+  other date-in-RTL-text spot in the app wraps it (`CycleScreen.kt` does, same date type);
+  Calendar was the one screen that skipped it. Fixed.
+- **Calendar screen had no scroll container** — plain `Column`, no escape hatch on small
+  screens / large font scale. Wrapped in `verticalScroll`.
+- **Drawer hamburger touch target was 44dp**, below Material's 48dp minimum, on the single
+  most-used control in the app. Bumped to 48dp, live-verified (drawer still opens fine).
+- **Pairing's `Heading()` helper missing `.semantics { heading() }`** — every other screen
+  got this in Phase 12; Pairing was the one screen left out.
+- **Home's budget summary showed two bare numbers with no label** (ambiguous which was
+  spent vs. estimated) — added a labeled string, matching Shopping's convention.
+  Live-verified.
+- **Home's "no due date" CTA button wasn't full-width**, unlike every other primary button
+  in a card across the app. Fixed.
+- **Update dialog crammed 4 button labels into one row** ("View release"/"Later"/"Skip" in
+  `dismissButton`, alongside "Install" in `confirmButton`) — moved "View release" into the
+  dialog body, dismissButton now single-purpose (or `null` when mandatory) like every other
+  dialog in the app.
+
+Verified the auto-update mechanism itself still works end-to-end after the dialog edit:
+on-device confirmed `UpdateViewModel.init` runs its check on launch (DataStore
+`last_checked_at` written, no crash) — no live GitHub release existed to exercise the
+"available" dialog branch itself, but the check/persist path and the edited dialog code
+both compile and run cleanly.
+
+**Docs**: deleted `task.md` and `docs/FINAL_REPORT.md` (both were already stub tombstones
+pointing elsewhere, no unique content, originals in git history). Rewrote `README.md` in
+English as an ELI5 intro (was Hebrew, terse) with a new CI/CD section (all 4 workflows
+explained) and an auto-update walkthrough (how releases publish, how the app checks/prompts/
+installs, how to trigger a manual check from Settings).
+
+**Release signing**: `v1.0.0`'s release workflow run failed at "Restore signing keystore"
+— by design (`docs/architecture/011`): no `ANDROID_KEYSTORE_BASE64` etc. secrets were set
+on the repo yet, so the workflow refused to fall back to an unsigned/debug-signed build.
+Generated a real release keystore (RSA-4096, PKCS12, `~/keystores/oryareach-release.jks`,
+kept outside the repo, user holds the offline backup) and set all 4 secrets
+(`ANDROID_KEYSTORE_BASE64`, `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS`,
+`ANDROID_KEY_PASSWORD`) via `gh secret set`. `v1.0.1` is the first tag built against real
+signing secrets.
+
 ## Known minor gaps (real, low-priority, not blocking)
 
 - Shopping alternatives (per-item price comparison): DB column exists (JSON list), no UI to

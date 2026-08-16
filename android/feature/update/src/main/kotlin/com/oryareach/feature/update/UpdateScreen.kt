@@ -32,6 +32,10 @@ fun UpdateDialog(uiState: UpdateUiState, actions: UpdateActions) {
                 }
                 manifest.notes.forEach { note -> Text("• $note") }
 
+                TextButton(onClick = actions::onViewRelease) {
+                    Text(stringResource(R.string.update_view_release))
+                }
+
                 if (uiState.downloading || uiState.installing) {
                     Column(modifier = Modifier.fillMaxWidth().padding(top = 8.dp)) {
                         if (uiState.downloading && uiState.totalBytes > 0) {
@@ -61,12 +65,11 @@ fun UpdateDialog(uiState: UpdateUiState, actions: UpdateActions) {
                 enabled = !uiState.downloading && !uiState.installing,
             ) { Text(stringResource(R.string.update_install)) }
         },
-        dismissButton = {
-            Column {
-                TextButton(onClick = actions::onViewRelease) {
-                    Text(stringResource(R.string.update_view_release))
-                }
-                if (!uiState.mandatory) {
+        dismissButton = if (uiState.mandatory) {
+            null
+        } else {
+            {
+                Column {
                     TextButton(onClick = actions::onLater) { Text(stringResource(R.string.update_later)) }
                     TextButton(onClick = actions::onSkip) { Text(stringResource(R.string.update_skip)) }
                 }

@@ -198,7 +198,9 @@ private fun NoDueDateCard(actions: HomeActions) {
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
-            Button(onClick = actions::onEditDueDate) { Text(stringResource(R.string.home_save)) }
+            Button(onClick = actions::onEditDueDate, modifier = Modifier.fillMaxWidth()) {
+                Text(stringResource(R.string.home_save))
+            }
         }
     }
 }
@@ -330,7 +332,11 @@ private fun BudgetSummaryCard(uiState: HomeUiState) {
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
-                text = "₪${uiState.budgetSpent} / ₪${uiState.budgetEstimated}",
+                text = stringResource(
+                    R.string.home_budget_spent_of_estimated,
+                    uiState.budgetSpent,
+                    uiState.budgetEstimated,
+                ),
                 style = MaterialTheme.typography.titleMedium,
             )
         }

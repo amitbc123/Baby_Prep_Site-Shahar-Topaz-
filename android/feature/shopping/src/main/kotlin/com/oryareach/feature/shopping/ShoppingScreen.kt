@@ -1,6 +1,8 @@
 package com.oryareach.feature.shopping
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -199,6 +201,7 @@ private fun ShoppingRow(item: ShoppingItem, actions: ShoppingActions, onDeleteCl
                     Text(text = item.name, style = MaterialTheme.typography.bodyLarge)
                     Text(
                         text = stringResource(item.category.labelRes()) +
+                            " · " + stringResource(item.priority.labelRes()) +
                             item.estimatedPrice?.let { " · " + formatIls(it) }.orEmpty(),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -226,7 +229,10 @@ private fun ShoppingRow(item: ShoppingItem, actions: ShoppingActions, onDeleteCl
 @Composable
 private fun ShoppingForm(uiState: ShoppingUiState, actions: ShoppingActions) {
     Column(
-        modifier = Modifier.fillMaxWidth().imePadding().padding(24.dp),
+        modifier = Modifier.fillMaxWidth()
+            .verticalScroll(rememberScrollState())
+            .imePadding()
+            .padding(24.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         Text(
